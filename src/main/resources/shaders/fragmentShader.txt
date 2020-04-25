@@ -1,0 +1,44 @@
+#version 460 core
+
+in vec2 passTextureCoords;
+in vec3 surfaceNormal;
+in vec3 toLightVector;
+in vec3 toCameraVector;
+in float visibility;
+in vec3 lightPos;
+
+uniform sampler2D textureSampler;
+uniform vec3 lightColour;
+uniform float reflectivity;
+uniform float shineDamper;
+uniform float fakeLighting;
+uniform vec3 skyColour;
+
+out vec4 outColour;
+
+void main(void) {
+    vec4 textureColour = texture(textureSampler, passTextureCoords);
+    if (textureColour.a < 0.5) {
+        discard;
+    }
+    vec3 actualNormal = surfaceNormal;
+    if (fakeLighting > 0.5) {
+        actualNormal = vec3(0.0,1.0,0.0);
+    }
+    vec3 unitNormal = normalize(actualNormal);
+    vec3 unitLightVector = normalize(lightPos);
+    float diffuseFactor = dot(unitNormal, unitLightVector);
+    float brightness = max(diffuseFactor, 0.2);
+    vec3 diffuse = brightness * lightColour;
+
+    vec3 unitCameraVector = normalize(toCameraVector);
+    vec3 fromLightVector = -unitLightVector;
+    vec3 reflectedVector = reflect(fromLightVector, unitNormal);
+    float specularFactor = dot(reflectedVector, unitCameraVector);
+    specularFactor = max(specularFactor, 0.0);
+    float dampedFactor = pow(specularFactor, shineDamper);
+    vec3 specular = dampedFactor * reflectivity * lightColour;
+
+    outColour = vec4(diffuse, 1.0) * textureColour + vec4(specular,1.0);
+    outColour = mix(vec4(skyColour, 1.0), outColour, visibility);
+}
