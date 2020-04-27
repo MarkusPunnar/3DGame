@@ -48,6 +48,6 @@ public class Plane3D {
 
     public boolean isFrontFacing(Vector3f direction) {
         float dot = normalizedNormal.dot(direction);
-        return dot <= 0;
+        return dot <= Math.pow(10, -2);
     }
 }

@@ -58,8 +58,8 @@ public class MathUtil {
         if (determinant < 0) {
             return Float.MAX_VALUE;
         }
-        float x1 = ((float) (-b + Math.sqrt(determinant) / (2 * a)));
-        float x2 = ((float) (-b - Math.sqrt(determinant) / (2 * a)));
+        float x1 = (float) ((-b + Math.sqrt(determinant)) / (2 * a));
+        float x2 = (float) ((-b - Math.sqrt(determinant)) / (2 * a));
         if (x2 < x1) {
             float temp = x2;
             x2 = x1;

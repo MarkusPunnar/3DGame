@@ -16,15 +16,14 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Player extends Entity {
 
-    private static final float RUN_SPEED = 10;
-    private static final float TURN_SPEED = 90;
-    private static final float GRAVITY = -100;
-    private static final float JUMP_POWER = 30;
+    private static final float RUN_SPEED = 20;
+    private static final float TURN_SPEED = 160;
+    private static final float JUMP_POWER = 90;
     private static final float TERRAIN_HEIGHT = 0;
     private static final float UNITS_PER_METER = 50;
 
     public static final float PLAYER_HITBOX_X = 6f;
-    public static final float PLAYER_HITBOX_Y = 10f;
+    public static final float PLAYER_HITBOX_Y = 9f;
     public static final float PLAYER_HITBOX_Z = 2.5f;
 
     private float currentSpeed;
@@ -45,34 +44,45 @@ public class Player extends Entity {
         float distanceMoved = currentSpeed * DisplayManager.getFrameTime();
         float dx = (float) (Math.sin(Math.toRadians(getRotationY())) * distanceMoved);
         float dz = (float) (Math.cos(Math.toRadians(getRotationY())) * distanceMoved);
-        Vector3f velocityR3 = new Vector3f(dx, 0, dz);
+        Vector3f velocityR3 = new Vector3f(dx, upwardsSpeed * DisplayManager.getFrameTime(), dz);
         loadedEntities.remove(this);
-        if (distanceMoved != 0) {
+        if (distanceMoved != 0 || upwardsSpeed != 0) {
             checkCollisionsAndSlide(loadedEntities, velocityR3);
        }
         loadedEntities.add(this);
-//        upwardsSpeed += GRAVITY * DisplayManager.getFrameTime();
-//        if (getPosition().y < TERRAIN_HEIGHT) {
-//            upwardsSpeed = 0;
-//            getPosition().y = TERRAIN_HEIGHT;
-//            isInAir = false;
-//        }
-        currentSpeed = 0.5f;
+        if (getPosition().y < TERRAIN_HEIGHT) {
+            upwardsSpeed = 0;
+            getPosition().y = TERRAIN_HEIGHT;
+            isInAir = false;
+        }
+        currentSpeed = 0;
         currentTurnSpeed = 0;
+        if (upwardsSpeed > 0) {
+            upwardsSpeed--;
+        }
+        else {
+            upwardsSpeed = 0;
+        }
     }
 
     private void checkCollisionsAndSlide(List<Entity> loadedEntities, Vector3f velocityR3) {
         CollisionPacket playerPacket = new CollisionPacket(new Vector3f(PLAYER_HITBOX_X,PLAYER_HITBOX_Y,PLAYER_HITBOX_Z),
                 velocityR3, new Vector3f(getPosition().x, getPosition().y + 9, getPosition().z - 1));
-        Vector3f finalPosition = collideWithWorld(playerPacket, loadedEntities, 0);
+        Vector3f playerPosition = collideWithWorld(playerPacket, loadedEntities, 0);
         Matrix3f ellipticInverse = MathUtil.getEllipticInverseMatrix();
+        playerPacket.setBasePoint(playerPosition);
+        Vector3f ellipticVelocity = new Vector3f(0,  -0.1f, 0);
+        playerPacket.setEllipticVelocity(ellipticVelocity);
+        Vector3f normalizedVelocity = new Vector3f();
+        playerPacket.setNormalizedEllipticVelocity(ellipticVelocity.normalize(normalizedVelocity));
+        Vector3f finalPosition = collideWithWorld(playerPacket, loadedEntities, 0);
         finalPosition.mul(ellipticInverse);
         setPosition(new Vector3f(finalPosition.x, finalPosition.y - 9, finalPosition.z + 1));
     }
 
     private Vector3f collideWithWorld(CollisionPacket packet, List<Entity> loadedEntities, int recursionDepth) {
         float unitScale = UNITS_PER_METER / 100.0f;
-        float veryCloseDistance = 0.001f * unitScale;
+        float veryCloseDistance = 0.005f * unitScale;
         if (recursionDepth > 5) {
             return packet.getBasePoint();
         }

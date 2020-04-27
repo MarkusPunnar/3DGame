@@ -63,7 +63,7 @@ public class CollisionUtil {
                         packet.getBasePoint().sub(trianglePlane.getNormalizedNormal(), subtracted);
                 packet.getEllipticVelocity().mul(t0, timeVelocity);
                 subtracted.add(timeVelocity, planeIntersectionPoint);
-                if (isPointInTriangle(planeIntersectionPoint, trianglePlane, p1, p2, p3)) {
+                if (isPointInTriangle(planeIntersectionPoint, p1, p2, p3)) {
                     foundCollision = true;
                     t = t0;
                     collisionPoint = planeIntersectionPoint;
@@ -101,7 +101,7 @@ public class CollisionUtil {
                 float edgeSquaredLength = edge.lengthSquared();
                 float edgeDotVelocity = edge.dot(packet.getEllipticVelocity());
                 float edgeDotBaseToVertex = edge.dot(baseToVertex);
-                a = edgeSquaredLength * (velocity.lengthSquared()) + edgeDotVelocity * edgeDotVelocity;
+                a = edgeSquaredLength * (-velocity.lengthSquared()) + edgeDotVelocity * edgeDotVelocity;
                 b = edgeSquaredLength * (2 * velocity.dot(baseToVertex)) - 2 * edgeDotVelocity * edgeDotBaseToVertex;
                 c = edgeSquaredLength * (1 - baseToVertex.lengthSquared()) + edgeDotBaseToVertex * edgeDotBaseToVertex;
                 newT = MathUtil.solveQuadratic(a, b, c, t);
@@ -114,6 +114,7 @@ public class CollisionUtil {
                         Vector3f scaledEdge = new Vector3f();
                         edge.mul(f, scaledEdge);
                         p1.add(scaledEdge, newCollisionPoint);
+                        collisionPoint = newCollisionPoint;
                     }
                 }
                 //p2 -> p3
@@ -122,7 +123,7 @@ public class CollisionUtil {
                 edgeSquaredLength = edge.lengthSquared();
                 edgeDotVelocity = edge.dot(packet.getEllipticVelocity());
                 edgeDotBaseToVertex = edge.dot(baseToVertex);
-                a = edgeSquaredLength * (velocity.lengthSquared()) + edgeDotVelocity * edgeDotVelocity;
+                a = edgeSquaredLength * (-velocity.lengthSquared()) + edgeDotVelocity * edgeDotVelocity;
                 b = edgeSquaredLength * (2 * velocity.dot(baseToVertex)) - 2 * edgeDotVelocity * edgeDotBaseToVertex;
                 c = edgeSquaredLength * (1 - baseToVertex.lengthSquared()) + edgeDotBaseToVertex * edgeDotBaseToVertex;
                 newT = MathUtil.solveQuadratic(a, b, c, t);
@@ -135,6 +136,7 @@ public class CollisionUtil {
                         Vector3f scaledEdge = new Vector3f();
                         edge.mul(f, scaledEdge);
                         p2.add(scaledEdge, newCollisionPoint);
+                        collisionPoint = newCollisionPoint;
                     }
                 }
                 //p3 -> p1
@@ -143,7 +145,7 @@ public class CollisionUtil {
                 edgeSquaredLength = edge.lengthSquared();
                 edgeDotVelocity = edge.dot(packet.getEllipticVelocity());
                 edgeDotBaseToVertex = edge.dot(baseToVertex);
-                a = edgeSquaredLength * (velocity.lengthSquared()) + edgeDotVelocity * edgeDotVelocity;
+                a = edgeSquaredLength * (-velocity.lengthSquared()) + edgeDotVelocity * edgeDotVelocity;
                 b = edgeSquaredLength * (2 * velocity.dot(baseToVertex)) - 2 * edgeDotVelocity * edgeDotBaseToVertex;
                 c = edgeSquaredLength * (1 - baseToVertex.lengthSquared()) + edgeDotBaseToVertex * edgeDotBaseToVertex;
                 newT = MathUtil.solveQuadratic(a, b, c, t);
@@ -156,6 +158,7 @@ public class CollisionUtil {
                         Vector3f scaledEdge = new Vector3f();
                         edge.mul(f, scaledEdge);
                         p3.add(scaledEdge, newCollisionPoint);
+                        collisionPoint = newCollisionPoint;
                     }
                 }
             }
@@ -183,7 +186,7 @@ public class CollisionUtil {
         return MathUtil.solveQuadratic(a, b, c, currentCollisionTime);
     }
 
-    private static boolean isPointInTriangle(Vector3f planeIntersectionPoint, Plane3D trianglePlane, Vector3f p1, Vector3f p2, Vector3f p3) {
+    private static boolean isPointInTriangle(Vector3f planeIntersectionPoint, Vector3f p1, Vector3f p2, Vector3f p3) {
         Vector3f firstTriangleEdge = new Vector3f();
         p2.sub(p1, firstTriangleEdge);
         Vector3f secondTriangleEdge = new Vector3f();
@@ -195,7 +198,7 @@ public class CollisionUtil {
         float gamma = firstTriangleEdge.cross(vectorToIntersection).dot(normal) / normal.dot(normal);
         float beta  = vectorToIntersection.cross(secondTriangleEdge).dot(normal) / normal.dot(normal);
         float alpha = 1 - gamma - beta;
-        return (alpha >= 0 && alpha <= 1 && beta >= 0 && beta <= 1 && gamma >= 0 && gamma <= 1);
+        return alpha >= 0 && alpha <= 1 && beta >= 0 && beta <= 1 && gamma >= 0 && gamma <= 1;
     }
 
     public static Vector3f[] convertToElliptic(Matrix3f ellipticMatrix, Matrix4f transformationMatrix, Triangle triangle) {
