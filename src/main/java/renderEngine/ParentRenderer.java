@@ -1,6 +1,7 @@
 package renderEngine;
 
 import entity.Entity;
+import entity.Player;
 import entity.RenderObject;
 import entity.env.Camera;
 import entity.env.Light;
@@ -74,10 +75,11 @@ public class ParentRenderer {
         terrains.add(terrain);
     }
 
-    public void processEntities(List<Entity> entities) {
+    public void processEntities(List<Entity> entities, Player player) {
         for (Entity entity : entities) {
             processEntity(entity);
         }
+        processEntity(player);
     }
 
     public void processTerrains(List<Terrain> terrains) {
