@@ -15,16 +15,17 @@ uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 lightPosition;
+uniform float tilingFactor;
 
 void main(void) {
     //Calculate vertex and light positions in world space
-    vec4 vertexViewSpacePosition = viewMatrix * transformationMatrix * vec4(aPosition, 1.0);
-    vec3 lightViewSpacePosition = (viewMatrix * transformationMatrix * vec4(lightPosition, 1.0)).xyz;
+    vec4 vertexWorldSpacePosition = transformationMatrix * vec4(aPosition, 1.0);
+    vec3 lightWorldSpacePosition = (transformationMatrix * vec4(lightPosition, 1.0)).xyz;
 
     //Pass information to fragment shader
-    textureCoords = aTextureCoords;
+    textureCoords = aTextureCoords * tilingFactor;
     normalCoords = aNormalCoords;
-    lightCoords = lightViewSpacePosition;
-    fragmentCoords = vertexViewSpacePosition.xyz;
-    gl_Position = projectionMatrix * vertexViewSpacePosition;
+    lightCoords = lightWorldSpacePosition;
+    fragmentCoords = vertexWorldSpacePosition.xyz;
+    gl_Position = projectionMatrix * viewMatrix * vertexWorldSpacePosition;
 }

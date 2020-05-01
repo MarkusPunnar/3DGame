@@ -39,6 +39,7 @@ public class StaticShader extends ShaderProgram implements Shader {
         int skyColourLocation = getUniformLocation("skyColour");
         int fakeLightingLocation = getUniformLocation("fakeLighting");
         int cameraPositionLocation = getUniformLocation("cameraCoords");
+        int tilingFactorLocation = getUniformLocation("tilingFactor");
         if (uniformLocations == null) {
             uniformLocations = new HashMap<>();
         }
@@ -52,6 +53,12 @@ public class StaticShader extends ShaderProgram implements Shader {
         uniformLocations.put("skyColour", skyColourLocation);
         uniformLocations.put("fakeLighting", fakeLightingLocation);
         uniformLocations.put("cameraCoords", cameraPositionLocation);
+        uniformLocations.put("tilingFactor", tilingFactorLocation);
+    }
+
+    public void loadTilingFactor(float tilingFactor) {
+        Integer tilingFactorLocation = uniformLocations.get("tilingFactor");
+        loadFloat(tilingFactorLocation, tilingFactor);
     }
 
     public void loadCameraPosition(Vector3f position) {

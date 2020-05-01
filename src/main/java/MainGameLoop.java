@@ -21,8 +21,8 @@ public class MainGameLoop {
         DisplayManager.createDisplay();
         Loader loader = new Loader();
         ParentRenderer renderer = new ParentRenderer();
-        SceneGenerator sceneGenerator = new SceneGenerator();
-        List<Entity> roomEntities = sceneGenerator.generateRoom(loader);
+        SceneGenerator sceneGenerator = new SceneGenerator(loader);
+        List<Entity> roomEntities = sceneGenerator.generateRoom();
         Player player = sceneGenerator.generatePlayer(loader);
         Light light = new Light(new Vector3f(30, 30, 100), new Vector3f(1, 1, 1));
         Camera camera = new Camera(player);
