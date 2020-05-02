@@ -1,8 +1,8 @@
 package util.math;
 
-import entity.Entity;
-import entity.Player;
-import entity.env.Camera;
+import object.Entity;
+import object.Player;
+import object.env.Camera;
 import org.joml.*;
 
 import java.lang.Math;

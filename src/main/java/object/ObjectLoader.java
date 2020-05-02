@@ -1,4 +1,4 @@
-package renderEngine;
+package object;
 
 import model.data.ModelData;
 import model.data.VertexData;

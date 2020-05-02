@@ -1,6 +1,6 @@
-package entity.terrain;
+package object.terrain;
 
-import entity.RenderObject;
+import object.RenderObject;
 import model.RawModel;
 import model.TexturedModel;
 import org.joml.Vector3f;

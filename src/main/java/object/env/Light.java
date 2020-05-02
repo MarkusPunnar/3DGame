@@ -1,4 +1,4 @@
-package entity.env;
+package object.env;
 
 import org.joml.Vector3f;
 

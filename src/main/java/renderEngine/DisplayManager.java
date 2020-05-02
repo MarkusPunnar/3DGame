@@ -80,4 +80,12 @@ public class DisplayManager {
     public static float getFrameTime() {
         return delta;
     }
+
+    public static int getWidth() {
+        return width;
+    }
+
+    public static int getHeight() {
+        return height;
+    }
 }

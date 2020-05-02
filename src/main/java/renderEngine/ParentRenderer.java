@@ -1,11 +1,12 @@
 package renderEngine;
 
-import entity.Entity;
-import entity.Player;
-import entity.RenderObject;
-import entity.env.Camera;
-import entity.env.Light;
-import entity.terrain.Terrain;
+import object.Entity;
+import interraction.Interactable;
+import object.Player;
+import object.RenderObject;
+import object.env.Camera;
+import object.env.Light;
+import object.terrain.Terrain;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 import shader.StaticShader;
@@ -126,5 +127,9 @@ public class ParentRenderer {
 
     public static void disableCulling() {
         glDisable(GL_CULL_FACE);
+    }
+
+    public Matrix4f getProjectionMatrix() {
+        return projectionMatrix;
     }
 }

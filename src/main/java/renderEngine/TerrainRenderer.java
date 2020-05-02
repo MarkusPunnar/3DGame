@@ -1,6 +1,6 @@
 package renderEngine;
 
-import entity.RenderObject;
+import object.RenderObject;
 import model.RawModel;
 import model.TexturedModel;
 import org.joml.Matrix4f;

@@ -1,4 +1,4 @@
-package entity;
+package object;
 
 import model.TexturedModel;
 import org.joml.Matrix3f;
@@ -48,7 +48,7 @@ public class Player extends Entity {
         loadedEntities.remove(this);
         if (distanceMoved != 0 || upwardsSpeed != 0) {
             checkCollisionsAndSlide(loadedEntities, velocityR3);
-       }
+        }
         loadedEntities.add(this);
         if (getPosition().y < TERRAIN_HEIGHT) {
             upwardsSpeed = 0;
@@ -59,19 +59,18 @@ public class Player extends Entity {
         currentTurnSpeed = 0;
         if (upwardsSpeed > 0) {
             upwardsSpeed--;
-        }
-        else {
+        } else {
             upwardsSpeed = 0;
         }
     }
 
     private void checkCollisionsAndSlide(List<Entity> loadedEntities, Vector3f velocityR3) {
-        CollisionPacket playerPacket = new CollisionPacket(new Vector3f(PLAYER_HITBOX_X,PLAYER_HITBOX_Y,PLAYER_HITBOX_Z),
+        CollisionPacket playerPacket = new CollisionPacket(new Vector3f(PLAYER_HITBOX_X, PLAYER_HITBOX_Y, PLAYER_HITBOX_Z),
                 velocityR3, new Vector3f(getPosition().x, getPosition().y + 9, getPosition().z - 1));
         Vector3f playerPosition = collideWithWorld(playerPacket, loadedEntities, 0);
         Matrix3f ellipticInverse = MathUtil.getEllipticInverseMatrix();
         playerPacket.setBasePoint(playerPosition);
-        Vector3f ellipticVelocity = new Vector3f(0,  -0.1f, 0);
+        Vector3f ellipticVelocity = new Vector3f(0, -0.1f, 0);
         playerPacket.setEllipticVelocity(ellipticVelocity);
         Vector3f normalizedVelocity = new Vector3f();
         playerPacket.setNormalizedEllipticVelocity(ellipticVelocity.normalize(normalizedVelocity));

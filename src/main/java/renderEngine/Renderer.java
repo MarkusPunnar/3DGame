@@ -1,6 +1,6 @@
 package renderEngine;
 
-import entity.RenderObject;
+import object.RenderObject;
 import model.TexturedModel;
 
 import java.util.Collection;

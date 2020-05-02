@@ -1,6 +1,6 @@
-package entity.env;
+package object.env;
 
-import entity.Player;
+import object.Player;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
@@ -17,10 +17,8 @@ public class Camera {
     private final float MIN_PITCH = 0;
 
     private float distanceFromPlayer = 30;
-    private float angleAroundPlayer = 0;
 
     private boolean rightMouseButtonPressed;
-    private boolean leftMouseButtonPressed;
 
     private Player player;
     private Vector3f position;
@@ -37,7 +35,6 @@ public class Camera {
         pitch = 0;
         roll = 0;
         rightMouseButtonPressed = false;
-        leftMouseButtonPressed = false;
         setCallBacks();
     }
 
@@ -61,26 +58,13 @@ public class Camera {
                cursorPos.y = y;
            }
         }
-        else if (leftMouseButtonPressed) {
-            try (MemoryStack stack = stackPush()) {
-                DoubleBuffer xBuffer = stack.callocDouble(1);
-                DoubleBuffer yBuffer = stack.callocDouble(1);
-                glfwGetCursorPos(DisplayManager.getWindow(), xBuffer, yBuffer);
-                float x = (float) xBuffer.get();
-                float y = (float) yBuffer.get();
-                float angleChange = cursorPos.x - x;
-                cursorPos.x = x;
-                cursorPos.y = y;
-                angleAroundPlayer -= angleChange;
-            }
-        }
         float horizontalDistance = calculateHorizontalDistance();
         float verticalDistance = calculateVerticalDistance();
         calculateCameraPosition(horizontalDistance, verticalDistance);
     }
 
     private void calculateCameraPosition(float horizontalDistance, float verticalDistance) {
-        float theta = ((float) Math.toRadians(player.getRotationY() + angleAroundPlayer));
+        float theta = ((float) Math.toRadians(player.getRotationY()));
         float offsetX = ((float) (Math.sin(theta) * horizontalDistance));
         float offsetZ = ((float) (Math.cos(theta) * horizontalDistance));
         position.x = player.getPosition().x - offsetX;
@@ -102,9 +86,6 @@ public class Camera {
         glfwSetMouseButtonCallback(window, (current, button, action, mods) -> {
             if (button == GLFW_MOUSE_BUTTON_RIGHT) {
                 rightMouseButtonPressed = action == GLFW_PRESS;
-            }
-            if (button == GLFW_MOUSE_BUTTON_LEFT) {
-                leftMouseButtonPressed = action == GLFW_PRESS;
             }
         });
     }

@@ -1,6 +1,6 @@
 package renderEngine;
 
-import entity.env.Light;
+import object.env.Light;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

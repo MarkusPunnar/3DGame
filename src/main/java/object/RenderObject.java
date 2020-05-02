@@ -1,4 +1,4 @@
-package entity;
+package object;
 
 import model.TexturedModel;
 import org.joml.Vector3f;
