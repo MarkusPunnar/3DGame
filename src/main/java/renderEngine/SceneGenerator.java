@@ -47,8 +47,8 @@ public class SceneGenerator {
         roomEntities.add(new Entity(barrelModel, new Vector3f(30,0,-33),0,0,0, new Vector3f(5)));
         //Generate tables and chairs
         TexturedModel tableModel = getTexturedModel("table");
-        roomEntities.addAll(generateTableWithChairs(tableModel, stoolModel, new Vector3f(-27, 0, 100)));
-        roomEntities.addAll(generateTableWithChairs(tableModel, stoolModel, new Vector3f(15, 0, 103)));
+        roomEntities.addAll(generateTableWithChairs(tableModel, stoolModel, new Vector3f(-27, 1.5f, 100)));
+        roomEntities.addAll(generateTableWithChairs(tableModel, stoolModel, new Vector3f(15, 1.5f, 103)));
         //Generate door
         Door door = new Door(getTexturedModel("door"), new Vector3f(-44, 0, -26), 0, 0, 0, new Vector3f(1));
         handler.addObject(door);
@@ -59,10 +59,10 @@ public class SceneGenerator {
     private List<Entity> generateTableWithChairs(TexturedModel tableModel, TexturedModel stoolModel, Vector3f tablePosition) {
         List<Entity> tables = new ArrayList<>();
         tables.add(new Entity(tableModel, tablePosition, 0, 0, 0, new Vector3f(0.75f)));
-        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x + 12, 0, tablePosition.z - 13), 0, 0, 0, new Vector3f(1, 0.8f, 1)));
-        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x - 10, 0, tablePosition.z - 13), 0, 0, 0, new Vector3f(1, 0.8f, 1)));
-        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x - 10, 0, tablePosition.z + 9), 0, 0, 0, new Vector3f(1, 0.8f, 1)));
-        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x + 12, 0, tablePosition.z + 9), 0, 0, 0, new Vector3f(1, 0.8f, 1)));
+        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x + 12, 1, tablePosition.z - 13), 0, 0, 0, new Vector3f(1, 0.8f, 1)));
+        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x - 10, 1, tablePosition.z - 13), 0, 0, 0, new Vector3f(1, 0.8f, 1)));
+        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x - 10, 1, tablePosition.z + 9), 0, 0, 0, new Vector3f(1, 0.8f, 1)));
+        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x + 12, 1, tablePosition.z + 9), 0, 0, 0, new Vector3f(1, 0.8f, 1)));
         return tables;
     }
 

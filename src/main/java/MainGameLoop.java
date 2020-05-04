@@ -23,7 +23,7 @@ public class MainGameLoop {
         InteractionHandler interactionHandler = new InteractionHandler(player);
         sceneGenerator.setInteractionHandler(interactionHandler);
         List<Entity> roomEntities = sceneGenerator.generateRoom();
-        Light light = new Light(new Vector3f(30, 30, 100), new Vector3f(1, 1, 1));
+        Light light = new Light(new Vector3f(30, 50, 100), new Vector3f(1, 1, 1));
         Camera camera = new Camera(player);
         MousePicker mousePicker = new MousePicker(renderer.getProjectionMatrix(), camera);
         while (!GLFW.glfwWindowShouldClose(DisplayManager.getWindow())) {

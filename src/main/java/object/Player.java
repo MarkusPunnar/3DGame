@@ -4,6 +4,7 @@ import model.TexturedModel;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.lwjgl.system.CallbackI;
 import renderEngine.DisplayManager;
 import util.CollisionPacket;
 import util.CollisionUtil;
@@ -16,10 +17,9 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Player extends Entity {
 
-    private static final float RUN_SPEED = 20;
+    private static final float RUN_SPEED = 30;
     private static final float TURN_SPEED = 160;
-    private static final float JUMP_POWER = 90;
-    private static final float TERRAIN_HEIGHT = 0;
+    private static final float JUMP_POWER = 80;
     private static final float UNITS_PER_METER = 50;
 
     public static final float PLAYER_HITBOX_X = 6f;
@@ -46,15 +46,8 @@ public class Player extends Entity {
         float dz = (float) (Math.cos(Math.toRadians(getRotationY())) * distanceMoved);
         Vector3f velocityR3 = new Vector3f(dx, upwardsSpeed * DisplayManager.getFrameTime(), dz);
         loadedEntities.remove(this);
-        if (distanceMoved != 0 || upwardsSpeed != 0) {
-            checkCollisionsAndSlide(loadedEntities, velocityR3);
-        }
+        checkCollisionsAndSlide(loadedEntities, velocityR3);
         loadedEntities.add(this);
-        if (getPosition().y < TERRAIN_HEIGHT) {
-            upwardsSpeed = 0;
-            getPosition().y = TERRAIN_HEIGHT;
-            isInAir = false;
-        }
         currentSpeed = 0;
         currentTurnSpeed = 0;
         if (upwardsSpeed > 0) {
@@ -66,22 +59,23 @@ public class Player extends Entity {
 
     private void checkCollisionsAndSlide(List<Entity> loadedEntities, Vector3f velocityR3) {
         CollisionPacket playerPacket = new CollisionPacket(new Vector3f(PLAYER_HITBOX_X, PLAYER_HITBOX_Y, PLAYER_HITBOX_Z),
-                velocityR3, new Vector3f(getPosition().x, getPosition().y + 9, getPosition().z - 1));
+                velocityR3, new Vector3f(getPosition().x, getPosition().y + 9, getPosition().z));
         Vector3f playerPosition = collideWithWorld(playerPacket, loadedEntities, 0);
         Matrix3f ellipticInverse = MathUtil.getEllipticInverseMatrix();
         playerPacket.setBasePoint(playerPosition);
-        Vector3f ellipticVelocity = new Vector3f(0, -0.1f, 0);
+        Vector3f ellipticVelocity = new Vector3f(0, -0.08f, 0);
         playerPacket.setEllipticVelocity(ellipticVelocity);
         Vector3f normalizedVelocity = new Vector3f();
         playerPacket.setNormalizedEllipticVelocity(ellipticVelocity.normalize(normalizedVelocity));
         Vector3f finalPosition = collideWithWorld(playerPacket, loadedEntities, 0);
         finalPosition.mul(ellipticInverse);
-        setPosition(new Vector3f(finalPosition.x, finalPosition.y - 9, finalPosition.z + 1));
+        isInAir = !finalPosition.equals(playerPosition.mul(ellipticInverse));
+        setPosition(new Vector3f(finalPosition.x, finalPosition.y - 9, finalPosition.z));
     }
 
     private Vector3f collideWithWorld(CollisionPacket packet, List<Entity> loadedEntities, int recursionDepth) {
-        float unitScale = UNITS_PER_METER / 100.0f;
-        float veryCloseDistance = 0.005f * unitScale;
+        float unitScale = UNITS_PER_METER / 500.0f;
+        float veryCloseDistance = 0.5f * unitScale;
         if (recursionDepth > 5) {
             return packet.getBasePoint();
         }
@@ -161,7 +155,6 @@ public class Player extends Entity {
         int spaceState = glfwGetKey(window, GLFW_KEY_SPACE);
         if (spaceState == GLFW_PRESS && !isInAir) {
             upwardsSpeed += JUMP_POWER;
-            isInAir = true;
         }
     }
 
