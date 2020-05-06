@@ -1,7 +1,7 @@
 package renderEngine;
 
-import object.RenderObject;
 import model.TexturedModel;
+import shader.Shader;
 
 import java.util.Collection;
 

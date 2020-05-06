@@ -6,6 +6,8 @@ public interface Interactable {
 
     void interact();
 
+    void openGui();
+
     Vector3f getPosition();
 
     float getInteractionTime();

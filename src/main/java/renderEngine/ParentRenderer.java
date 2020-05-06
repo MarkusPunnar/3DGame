@@ -1,16 +1,17 @@
 package renderEngine;
 
+import loader.Loader;
 import object.Entity;
-import interraction.Interactable;
 import object.Player;
-import object.RenderObject;
 import object.env.Camera;
 import object.env.Light;
 import object.terrain.Terrain;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
+import shader.Shader;
 import shader.StaticShader;
 import shader.TerrainShader;
+import texture.GuiTexture;
 import util.ObjectComparator;
 import util.math.MathUtil;
 
@@ -38,19 +39,23 @@ public class ParentRenderer {
 
     private Renderer entityRenderer;
     private Renderer terrainRenderer;
+    private Renderer guiRenderer;
 
     private Collection<RenderObject> entityBatches;
     private Collection<RenderObject> terrains;
+    private Collection<RenderObject> guis;
 
     private Matrix4f projectionMatrix;
 
-    public ParentRenderer() throws IOException {
+    public ParentRenderer(Loader loader) throws IOException {
         enableCulling();
         createProjectionMatrix();
         this.entityRenderer = new EntityRenderer(new StaticShader(), projectionMatrix);
         this.terrainRenderer = new TerrainRenderer(new TerrainShader(), projectionMatrix);
+        this.guiRenderer = new GuiRenderer(loader);
         this.entityBatches = new TreeSet<>(new ObjectComparator());
         this.terrains = new ArrayList<>();
+        this.guis = new ArrayList<>();
     }
 
 
@@ -76,6 +81,16 @@ public class ParentRenderer {
         terrains.add(terrain);
     }
 
+    public void processGuis(List<GuiTexture> guiList) {
+        for (GuiTexture gui : guiList) {
+            processGui(gui);
+        }
+    }
+
+    public void processGui(GuiTexture gui) {
+        guis.add(gui);
+    }
+
     public void processEntities(List<Entity> entities, Player player) {
         for (Entity entity : entities) {
             processEntity(entity);
@@ -93,6 +108,7 @@ public class ParentRenderer {
         prepare();
         doRender(entityRenderer, entityBatches, sun, camera);
         doRender(terrainRenderer, terrains, sun, camera);
+        doRender(guiRenderer, guis, null, null);
         entityBatches.clear();
         terrains.clear();
     }
@@ -100,10 +116,12 @@ public class ParentRenderer {
     private void doRender(Renderer renderer, Collection<RenderObject> objects, Light sun, Camera camera) {
         Shader shader = renderer.getShader();
         shader.start();
-        shader.loadLight(sun);
+        if (sun != null && camera != null) {
+            shader.loadLight(sun);
+            shader.loadCameraPosition(camera.getPosition());
+            shader.doLoadMatrix(MathUtil.createViewMatrix(camera), "viewMatrix");
+        }
         shader.loadSkyColour(RED, GREEN, BLUE);
-        shader.loadCameraPosition(camera.getPosition());
-        shader.doLoadMatrix(MathUtil.createViewMatrix(camera), "viewMatrix");
         renderer.render(objects);
         shader.stop();
     }
@@ -118,6 +136,7 @@ public class ParentRenderer {
     public void cleanUp() {
         entityRenderer.getShader().cleanUp();
         terrainRenderer.getShader().cleanUp();
+        guiRenderer.getShader().cleanUp();
     }
 
     public static void enableCulling() {

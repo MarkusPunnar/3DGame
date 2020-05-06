@@ -9,6 +9,12 @@ import java.lang.Math;
 
 public class MathUtil {
 
+    public static Matrix4f createTransformationMatrix(Vector3f position, Vector3f scale) {
+        Matrix4f matrix = new Matrix4f();
+        return matrix.translate(position)
+                .scale(scale);
+    }
+
     public static Matrix4f createTransformationMatrix(Entity entity) {
         return createTransformationMatrix(entity.getPosition(), entity.getRotationX(), entity.getRotationY(), entity.getRotationZ(), entity.getScaleVector());
     }

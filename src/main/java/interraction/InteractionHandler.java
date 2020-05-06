@@ -24,6 +24,10 @@ public class InteractionHandler {
         interactableObjects.add(object);
     }
 
+    public void addObjects(List<Interactable> objects) {
+        interactableObjects.addAll(objects);
+    }
+
     public void checkInteractions() {
         Vector3f playerPosition = player.getPosition();
         Interactable closest = null;
@@ -40,6 +44,7 @@ public class InteractionHandler {
         int fState = GLFW.glfwGetKey(DisplayManager.getWindow(), GLFW.GLFW_KEY_F);
         if (closestDistance < INTERACT_DISTANCE && fState == GLFW.GLFW_PRESS) {
             closest.interact();
+            closest.openGui();
         }
     }
 }

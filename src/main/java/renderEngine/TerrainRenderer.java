@@ -1,9 +1,9 @@
 package renderEngine;
 
-import object.RenderObject;
 import model.RawModel;
 import model.TexturedModel;
 import org.joml.Matrix4f;
+import shader.Shader;
 import shader.TerrainShader;
 import util.math.MathUtil;
 

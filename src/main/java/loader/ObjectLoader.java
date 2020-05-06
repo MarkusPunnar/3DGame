@@ -1,4 +1,4 @@
-package object;
+package loader;
 
 import model.data.ModelData;
 import model.data.VertexData;

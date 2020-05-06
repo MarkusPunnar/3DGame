@@ -1,10 +1,10 @@
 package object;
 
 import model.TexturedModel;
+import object.item.Item;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.system.CallbackI;
 import renderEngine.DisplayManager;
 import util.CollisionPacket;
 import util.CollisionUtil;
@@ -19,7 +19,7 @@ public class Player extends Entity {
 
     private static final float RUN_SPEED = 30;
     private static final float TURN_SPEED = 160;
-    private static final float JUMP_POWER = 80;
+    private static final float JUMP_POWER = 75;
     private static final float UNITS_PER_METER = 50;
 
     public static final float PLAYER_HITBOX_X = 6f;
@@ -30,12 +30,14 @@ public class Player extends Entity {
     private float currentTurnSpeed;
     private float upwardsSpeed;
     private boolean isInAir;
+    private Item[] inventory;
 
     public Player(TexturedModel texturedModel, Vector3f position, float rotationX, float rotationY, float rotationZ, Vector3f scaleVector) {
         super(texturedModel, position, rotationX, rotationY, rotationZ, scaleVector);
         currentSpeed = 0;
         currentTurnSpeed = 0;
         isInAir = false;
+        inventory = new Item[20];
     }
 
     public void move(List<Entity> loadedEntities) {
@@ -167,5 +169,9 @@ public class Player extends Entity {
         } else if (sState == GLFW_PRESS) {
             currentSpeed = -RUN_SPEED;
         }
+    }
+
+    public Item[] getInventory() {
+        return inventory;
     }
 }

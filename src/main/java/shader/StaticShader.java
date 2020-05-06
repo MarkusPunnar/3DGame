@@ -3,7 +3,6 @@ package shader;
 import object.env.Light;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import renderEngine.Shader;
 
 import java.io.IOException;
 import java.util.HashMap;

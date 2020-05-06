@@ -1,4 +1,4 @@
-package renderEngine;
+package loader;
 
 import model.RawModel;
 import org.joml.Vector3f;
@@ -38,6 +38,14 @@ public class Loader {
         List<Triangle> triangles = createTriangles(positions, indices);
         unbindVAO();
         return new RawModel(vaoID, indices.length, triangles);
+    }
+
+    public RawModel loadToVAO(float[] positions) {
+        int vaoID = createVAO();
+        VAOs.add(vaoID);
+        storeDataInAttributeList(0, 2, positions);
+        unbindVAO();
+        return new RawModel(vaoID, positions.length / 2, null);
     }
 
     private List<Triangle> createTriangles(float[] positions, int[] indices) {

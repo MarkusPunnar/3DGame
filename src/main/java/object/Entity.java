@@ -2,6 +2,7 @@ package object;
 
 import model.TexturedModel;
 import org.joml.Vector3f;
+import renderEngine.RenderObject;
 
 import java.util.Objects;
 

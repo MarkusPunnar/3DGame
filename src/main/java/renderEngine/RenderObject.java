@@ -1,4 +1,4 @@
-package object;
+package renderEngine;
 
 import model.TexturedModel;
 import org.joml.Vector3f;
