@@ -1,11 +1,11 @@
 package object.terrain;
 
-import renderEngine.RenderObject;
-import model.RawModel;
-import model.TexturedModel;
+import engine.render.RenderObject;
+import engine.model.RawModel;
+import engine.model.TexturedModel;
 import org.joml.Vector3f;
-import loader.Loader;
-import texture.ModelTexture;
+import engine.loader.Loader;
+import engine.texture.ModelTexture;
 
 public class Terrain implements RenderObject {
 

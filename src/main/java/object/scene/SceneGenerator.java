@@ -1,16 +1,16 @@
 package object.scene;
 
-import interraction.InteractionHandler;
+import game.state.GameState;
 import object.Entity;
 import util.FacingDirection;
-import loader.ObjectLoader;
+import engine.loader.ObjectLoader;
 import object.Player;
-import model.RawModel;
-import model.TexturedModel;
-import model.data.ModelData;
+import engine.model.RawModel;
+import engine.model.TexturedModel;
+import engine.model.data.ModelData;
 import org.joml.Vector3f;
-import loader.Loader;
-import texture.ModelTexture;
+import engine.loader.Loader;
+import engine.texture.ModelTexture;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -20,10 +20,11 @@ import java.util.List;
 public class SceneGenerator {
 
     private Loader loader;
-    private InteractionHandler handler;
+    private GameState gameState;
 
-    public SceneGenerator(Loader loader) {
+    public SceneGenerator(Loader loader, GameState state) {
         this.loader = loader;
+        this.gameState = state;
     }
 
     public List<Entity> generateTavern() throws IOException, URISyntaxException {
@@ -64,9 +65,9 @@ public class SceneGenerator {
         TexturedModel openChestModel = getTexturedModel("openchest", false);
         TexturedModel closedChestModel = getTexturedModel("closedchest", false);
         for (int i = 0; i < 3; i++) {
-            Chest chest = new Chest(openChestModel, new Vector3f(-5, 34.5f, 31 - 46.5f * i), 0, 0, 0, new Vector3f(1), openChestModel, closedChestModel);
+            Chest chest = new Chest(closedChestModel, new Vector3f(-5, 34.5f, 31 - 46.5f * i), 0, 0, 0, new Vector3f(1), openChestModel, closedChestModel);
             chests.add(chest);
-            handler.addObject(chest);
+            gameState.getHandlerState().registerInteractableObject(chest);
         }
         return chests;
     }
@@ -84,11 +85,11 @@ public class SceneGenerator {
         List<Entity> doors = new ArrayList<>();
         TexturedModel doorModel = getTexturedModel("door", false);
         Door door = new Door(doorModel, new Vector3f(-44, 0, -26.5f), 0, 0, 0, new Vector3f(1), FacingDirection.WEST);
-        handler.addObject(door);
+        gameState.getHandlerState().registerInteractableObject(door);
         doors.add(door);
         for (int i = 0; i < 3; i++) {
             door = new Door(doorModel, new Vector3f(-13.7f, 34.5f, 54.3f - 46.5f * i), 0, 0, 0, new Vector3f(1), FacingDirection.EAST);
-            handler.addObject(door);
+            gameState.getHandlerState().registerInteractableObject(door);
             doors.add(door);
         }
         return doors;
@@ -122,9 +123,5 @@ public class SceneGenerator {
         ModelTexture texture =  new ModelTexture(loader.loadTexture(fileName));
         texture.isTransparent(setTransparent);
         return new TexturedModel(rawModel, texture);
-    }
-
-    public void setInteractionHandler(InteractionHandler handler) {
-        this.handler = handler;
     }
 }

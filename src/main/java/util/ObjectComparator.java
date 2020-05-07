@@ -1,6 +1,6 @@
 package util;
 
-import renderEngine.RenderObject;
+import engine.render.RenderObject;
 
 import java.util.Comparator;
 

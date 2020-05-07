@@ -1,12 +1,13 @@
 package interraction;
 
+import game.state.GameState;
 import org.joml.Vector3f;
 
 public interface Interactable {
 
     void interact();
 
-    void openGui();
+    GameState handleGui(GameState state);
 
     Vector3f getPosition();
 

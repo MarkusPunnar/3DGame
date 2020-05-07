@@ -6,6 +6,8 @@ import object.env.Camera;
 import org.joml.*;
 
 import java.lang.Math;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class MathUtil {
 
@@ -78,5 +80,14 @@ public class MathUtil {
             return x2;
         }
         return Float.MAX_VALUE;
+    }
+
+    public static float roundFloat(float value, int precision) {
+        if (precision < 1) {
+            throw new IllegalArgumentException("Precision cannot be less than 1");
+        }
+        BigDecimal valueBd = new BigDecimal(value);
+        valueBd = valueBd.setScale(precision, RoundingMode.HALF_UP);
+        return valueBd.floatValue();
     }
 }

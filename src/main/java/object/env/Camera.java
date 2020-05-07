@@ -4,7 +4,7 @@ import object.Player;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
-import renderEngine.DisplayManager;
+import engine.DisplayManager;
 
 import java.nio.DoubleBuffer;
 

@@ -7,7 +7,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.MemoryStack;
-import renderEngine.DisplayManager;
+import engine.DisplayManager;
 import util.math.MathUtil;
 
 import java.nio.DoubleBuffer;
@@ -33,6 +33,12 @@ public class MousePicker {
     }
 
     private Vector3f calculateMouseRay() {
+        Vector2f normalizedDeviceCoords = calculateDeviceCoords();
+        Vector4f clipCoords = new Vector4f(normalizedDeviceCoords.x, normalizedDeviceCoords.y, -1f, 1f);
+        return convertToWorldSpace(convertToViewSpace(clipCoords));
+    }
+
+    public Vector2f calculateDeviceCoords() {
         float mouseX;
         float mouseY;
         try (MemoryStack stack = stackPush()) {
@@ -42,9 +48,7 @@ public class MousePicker {
             mouseX = ((float) xBuf.get());
             mouseY = ((float) yBuf.get());
         }
-        Vector2f normalizedDeviceCoords = getNormalizedDeviceCoords(mouseX, mouseY);
-        Vector4f clipCoords = new Vector4f(normalizedDeviceCoords.x, normalizedDeviceCoords.y, -1f, 1f);
-        return convertToWorldSpace(convertToViewSpace(clipCoords));
+        return getNormalizedDeviceCoords(mouseX, mouseY);
     }
 
     private Vector4f convertToViewSpace(Vector4f clipCoords) {

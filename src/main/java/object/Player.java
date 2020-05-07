@@ -1,11 +1,13 @@
 package object;
 
-import model.TexturedModel;
+import engine.model.TexturedModel;
+import interraction.Inventory;
 import object.item.Item;
+import object.item.Slot;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import renderEngine.DisplayManager;
+import engine.DisplayManager;
 import util.CollisionPacket;
 import util.CollisionUtil;
 import util.math.MathUtil;
@@ -30,14 +32,14 @@ public class Player extends Entity {
     private float currentTurnSpeed;
     private float upwardsSpeed;
     private boolean isInAir;
-    private Item[] inventory;
+    private Inventory inventory;
 
     public Player(TexturedModel texturedModel, Vector3f position, float rotationX, float rotationY, float rotationZ, Vector3f scaleVector) {
         super(texturedModel, position, rotationX, rotationY, rotationZ, scaleVector);
         currentSpeed = 0;
         currentTurnSpeed = 0;
         isInAir = false;
-        inventory = new Item[20];
+        inventory = new Inventory();
     }
 
     public void move(List<Entity> loadedEntities) {
@@ -171,7 +173,7 @@ public class Player extends Entity {
         }
     }
 
-    public Item[] getInventory() {
+    public Inventory getInventory() {
         return inventory;
     }
 }

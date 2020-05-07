@@ -1,6 +1,7 @@
 package object.scene;
 
-import model.TexturedModel;
+import engine.model.TexturedModel;
+import game.state.GameState;
 import object.Entity;
 import interraction.Interactable;
 import util.FacingDirection;
@@ -21,7 +22,7 @@ public class Door extends Entity implements Interactable {
 
     @Override
     public void interact() {
-        if (sinceLastInteraction > 0.5f) {
+        if (sinceLastInteraction > 0.2f) {
             if (!isOpened) {
                 switch (facingDirection) {
                     case WEST:
@@ -56,7 +57,8 @@ public class Door extends Entity implements Interactable {
     }
 
     @Override
-    public void openGui() {
+    public GameState handleGui(GameState state) {
+        return state;
     }
 
     public float getInteractionTime() {

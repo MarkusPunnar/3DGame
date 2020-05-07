@@ -1,8 +1,8 @@
 package object;
 
-import model.TexturedModel;
+import engine.model.TexturedModel;
 import org.joml.Vector3f;
-import renderEngine.RenderObject;
+import engine.render.RenderObject;
 
 import java.util.Objects;
 
