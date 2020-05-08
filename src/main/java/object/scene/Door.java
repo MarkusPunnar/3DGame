@@ -13,8 +13,8 @@ public class Door extends Entity implements Interactable {
     private float sinceLastInteraction;
     private FacingDirection facingDirection;
 
-    public Door(TexturedModel texturedModel, Vector3f position, float rotationX, float rotationY, float rotationZ, Vector3f scaleVector, FacingDirection direction) {
-        super(texturedModel, position, rotationX, rotationY, rotationZ, scaleVector);
+    public Door(TexturedModel texturedModel, Vector3f position, Vector3f rotation, Vector3f scaleVector, FacingDirection direction) {
+        super(texturedModel, position, rotation, scaleVector);
         this.isOpened = false;
         this.sinceLastInteraction = Float.MAX_VALUE;
         this.facingDirection = direction;

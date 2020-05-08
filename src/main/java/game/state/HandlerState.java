@@ -2,6 +2,8 @@ package game.state;
 
 import engine.render.RenderRequest;
 import interraction.Interactable;
+import interraction.Lootable;
+import object.item.Item;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -12,6 +14,8 @@ public class HandlerState {
 
     private Queue<RenderRequest> requests;
     private List<Interactable> interactableObjects;
+    private Lootable lastLooted;
+    private Item bindedItem;
 
     public HandlerState() {
         requests = new LinkedList<>();
@@ -32,5 +36,21 @@ public class HandlerState {
 
     public List<Interactable> getInteractableObjects() {
         return interactableObjects;
+    }
+
+    public Lootable getLastLooted() {
+        return lastLooted;
+    }
+
+    public void setLastLooted(Lootable lastLooted) {
+        this.lastLooted = lastLooted;
+    }
+
+    public Item getBindedItem() {
+        return bindedItem;
+    }
+
+    public void setBindedItem(Item bindedItem) {
+        this.bindedItem = bindedItem;
     }
 }

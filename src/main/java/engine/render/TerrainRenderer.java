@@ -53,7 +53,7 @@ public class TerrainRenderer implements Renderer {
     }
 
     public void prepareObject(RenderObject terrain) {
-        Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(terrain.getPosition(), 0, 0 , 0 ,terrain.getScaleVector());
+        Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(terrain.getPosition(), terrain.getRotation(), terrain.getScaleVector());
         shader.doLoadMatrix(transformationMatrix, "transformationMatrix");
     }
 }

@@ -3,10 +3,13 @@ package engine.texture;
 public enum GuiType {
 
     INVENTORY("inventory"),
-    INVENTORY_TITLE("purple"),
+    INVENTORY_TITLE("invtitle"),
+    CHEST_TITLE("chesttitle"),
+    CHEST("chest"),
     SLOT("slot"),
     SLOT_HOVER("hoverslot"),
-    CHEST("chest");
+    ICON("");
+
 
     private final String textureName;
 

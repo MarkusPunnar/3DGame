@@ -4,16 +4,14 @@ import engine.DisplayManager;
 import engine.loader.Loader;
 import engine.render.ParentRenderer;
 import game.state.GameState;
-import interraction.handle.Handler;
-import interraction.handle.RenderRequestHandler;
+import interraction.handle.*;
 import game.state.State;
-import interraction.handle.InteractionHandler;
 import interraction.MousePicker;
 import object.Entity;
 import object.Player;
 import object.env.Camera;
 import object.env.Light;
-import object.scene.SceneGenerator;
+import object.scene.TavernGenerator;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
@@ -29,13 +27,13 @@ public class MainGameLoop {
         Loader loader = new Loader();
         ParentRenderer renderer = new ParentRenderer(loader);
         GameState gameState = new GameState();
-        SceneGenerator sceneGenerator = new SceneGenerator(loader, gameState);
-        Player player = sceneGenerator.generatePlayer(loader);
-        List<Entity> roomEntities = sceneGenerator.generateTavern();
+        TavernGenerator tavernGenerator = new TavernGenerator(loader, gameState);
+        Player player = tavernGenerator.generatePlayer(loader);
+        List<Entity> roomEntities = tavernGenerator.generate();
         Light light = new Light(new Vector3f(30, 50, 100), new Vector3f(1, 1, 1));
         Camera camera = new Camera(player);
         MousePicker mousePicker = new MousePicker(renderer.getProjectionMatrix(), camera);
-        List<Handler> handlers = initHandlers(player, renderer);
+        List<Handler> handlers = initHandlers(player, renderer, mousePicker);
         while (!GLFW.glfwWindowShouldClose(DisplayManager.getWindow())) {
             if (gameState.getCurrentState() == State.IN_GAME) {
                 player.move(roomEntities);
@@ -54,10 +52,12 @@ public class MainGameLoop {
         DisplayManager.closeDisplay();
     }
 
-    private static List<Handler> initHandlers(Player player, ParentRenderer renderer) {
+    private static List<Handler> initHandlers(Player player, ParentRenderer renderer, MousePicker mousePicker) {
         List<Handler> handlers = new ArrayList<>();
         handlers.add(new InteractionHandler(player));
         handlers.add(new RenderRequestHandler(renderer, player));
+        handlers.add(new InventoryHandler(player, mousePicker));
+        handlers.add(new LootingHandler(player, mousePicker));
         return handlers;
     }
 }

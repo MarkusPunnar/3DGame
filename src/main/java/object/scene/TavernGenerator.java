@@ -2,6 +2,9 @@ package object.scene;
 
 import game.state.GameState;
 import object.Entity;
+import object.item.Coin;
+import object.item.Icon;
+import object.item.Item;
 import util.FacingDirection;
 import engine.loader.ObjectLoader;
 import object.Player;
@@ -17,36 +20,36 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SceneGenerator {
+public class TavernGenerator implements Generator {
 
     private Loader loader;
     private GameState gameState;
 
-    public SceneGenerator(Loader loader, GameState state) {
+    public TavernGenerator(Loader loader, GameState state) {
         this.loader = loader;
         this.gameState = state;
     }
 
-    public List<Entity> generateTavern() throws IOException, URISyntaxException {
+    public List<Entity> generate() throws IOException, URISyntaxException {
         List<Entity> roomEntities = new ArrayList<>();
         //Generate room background
         TexturedModel roomModel = getTexturedModel("room", false);
         roomModel.getTexture().isTransparent(true);
-        Entity room = new Entity(roomModel, new Vector3f(0,0,0), 0, 0, 0, new Vector3f(1));
+        Entity room = new Entity(roomModel, new Vector3f(), new Vector3f(), new Vector3f(1));
         roomEntities.add(room);
         //Generate stools
         TexturedModel stoolModel = getTexturedModel("stool", false);
         for (int i = 0; i < 3; i++) {
-            roomEntities.add(new Entity(stoolModel, new Vector3f(3 + 12 * i, 0, 25), 0, 0, 0, new Vector3f(1)));
+            roomEntities.add(new Entity(stoolModel, new Vector3f(3 + 12 * i, 0, 25), new Vector3f(), new Vector3f(1)));
         }
         for (int i = 0; i < 4; i++) {
-            roomEntities.add(new Entity(stoolModel, new Vector3f(-13, 0,8 - 15 * i), 0, 0, 0, new Vector3f(1)));
+            roomEntities.add(new Entity(stoolModel, new Vector3f(-13, 0,8 - 15 * i), new Vector3f(), new Vector3f(1)));
         }
         //Generate barrels
         TexturedModel barrelModel = getTexturedModel("barrel", false);
-        roomEntities.add(new Entity(barrelModel, new Vector3f(3,0,10),0,0,0, new Vector3f(5)));
-        roomEntities.add(new Entity(barrelModel, new Vector3f(28,0,-62),0,0,0, new Vector3f(5)));
-        roomEntities.add(new Entity(barrelModel, new Vector3f(30,0,-33),0,0,0, new Vector3f(5)));
+        roomEntities.add(new Entity(barrelModel, new Vector3f(3,0,10), new Vector3f(), new Vector3f(5)));
+        roomEntities.add(new Entity(barrelModel, new Vector3f(28,0,-62),new Vector3f(), new Vector3f(5)));
+        roomEntities.add(new Entity(barrelModel, new Vector3f(30,0,-33),new Vector3f(), new Vector3f(5)));
         //Generate tables and chairs
         TexturedModel tableModel = getTexturedModel("table", false);
         roomEntities.addAll(generateTableWithChairs(tableModel, stoolModel, new Vector3f(-27, 1.5f, 100)));
@@ -65,7 +68,8 @@ public class SceneGenerator {
         TexturedModel openChestModel = getTexturedModel("openchest", false);
         TexturedModel closedChestModel = getTexturedModel("closedchest", false);
         for (int i = 0; i < 3; i++) {
-            Chest chest = new Chest(closedChestModel, new Vector3f(-5, 34.5f, 31 - 46.5f * i), 0, 0, 0, new Vector3f(1), openChestModel, closedChestModel);
+            Chest chest = new Chest(closedChestModel, new Vector3f(-5, 34.5f, 31 - 46.5f * i), new Vector3f(), new Vector3f(1), openChestModel, closedChestModel);
+            chest.addItem(new Coin(loader, 10));
             chests.add(chest);
             gameState.getHandlerState().registerInteractableObject(chest);
         }
@@ -76,7 +80,7 @@ public class SceneGenerator {
         List<Entity> beds = new ArrayList<>();
         TexturedModel bedModel = getTexturedModel("bed", false);
         for (int i = 0; i < 3; i++) {
-            beds.add(new Entity(bedModel, new Vector3f(20, 34.5f, 31 - 46.5f * i), 0, 0, 0, new Vector3f(1)));
+            beds.add(new Entity(bedModel, new Vector3f(20, 34.5f, 31 - 46.5f * i), new Vector3f(), new Vector3f(1)));
         }
         return beds;
     }
@@ -84,11 +88,11 @@ public class SceneGenerator {
     private List<Entity> generateDoors() throws IOException, URISyntaxException {
         List<Entity> doors = new ArrayList<>();
         TexturedModel doorModel = getTexturedModel("door", false);
-        Door door = new Door(doorModel, new Vector3f(-44, 0, -26.5f), 0, 0, 0, new Vector3f(1), FacingDirection.WEST);
+        Door door = new Door(doorModel, new Vector3f(-44, 0, -26.5f), new Vector3f(), new Vector3f(1), FacingDirection.WEST);
         gameState.getHandlerState().registerInteractableObject(door);
         doors.add(door);
         for (int i = 0; i < 3; i++) {
-            door = new Door(doorModel, new Vector3f(-13.7f, 34.5f, 54.3f - 46.5f * i), 0, 0, 0, new Vector3f(1), FacingDirection.EAST);
+            door = new Door(doorModel, new Vector3f(-13.7f, 34.5f, 54.3f - 46.5f * i), new Vector3f(), new Vector3f(1), FacingDirection.EAST);
             gameState.getHandlerState().registerInteractableObject(door);
             doors.add(door);
         }
@@ -97,18 +101,18 @@ public class SceneGenerator {
 
     private List<Entity> generateTableWithChairs(TexturedModel tableModel, TexturedModel stoolModel, Vector3f tablePosition) {
         List<Entity> tables = new ArrayList<>();
-        tables.add(new Entity(tableModel, tablePosition, 0, 0, 0, new Vector3f(0.75f)));
-        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x + 12, 1, tablePosition.z - 13), 0, 0, 0, new Vector3f(1, 0.8f, 1)));
-        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x - 10, 1, tablePosition.z - 13), 0, 0, 0, new Vector3f(1, 0.8f, 1)));
-        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x - 10, 1, tablePosition.z + 9), 0, 0, 0, new Vector3f(1, 0.8f, 1)));
-        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x + 12, 1, tablePosition.z + 9), 0, 0, 0, new Vector3f(1, 0.8f, 1)));
+        tables.add(new Entity(tableModel, tablePosition, new Vector3f(), new Vector3f(0.75f)));
+        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x + 12, 1, tablePosition.z - 13), new Vector3f(), new Vector3f(1, 0.8f, 1)));
+        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x - 10, 1, tablePosition.z - 13), new Vector3f(), new Vector3f(1, 0.8f, 1)));
+        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x - 10, 1, tablePosition.z + 9), new Vector3f(), new Vector3f(1, 0.8f, 1)));
+        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x + 12, 1, tablePosition.z + 9), new Vector3f(), new Vector3f(1, 0.8f, 1)));
         return tables;
     }
 
     public Player generatePlayer(Loader loader) throws IOException, URISyntaxException {
         ModelTexture purpleTexture = new ModelTexture(loader.loadTexture("purple"));
         TexturedModel playerModel = getTexturedModel("player", purpleTexture);
-        return new Player(playerModel, new Vector3f(-20,34.5f,50),0,180,0, new Vector3f(3));
+        return new Player(playerModel, new Vector3f(-20,34.5f,50),new Vector3f(0, 180, 0), new Vector3f(3));
     }
 
     private TexturedModel getTexturedModel(String objName, ModelTexture texture) throws IOException, URISyntaxException {

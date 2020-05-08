@@ -18,15 +18,15 @@ public class MathUtil {
     }
 
     public static Matrix4f createTransformationMatrix(Entity entity) {
-        return createTransformationMatrix(entity.getPosition(), entity.getRotationX(), entity.getRotationY(), entity.getRotationZ(), entity.getScaleVector());
+        return createTransformationMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
     }
 
-    public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry, float rz, Vector3f scaleVector) {
+    public static Matrix4f createTransformationMatrix(Vector3f translation, Vector3f rotation, Vector3f scaleVector) {
         Matrix4f matrix = new Matrix4f();
         return matrix.translate(translation)
-                .rotate(((float) Math.toRadians(rz)), new Vector3f(0, 0, 1))
-                .rotate(((float) Math.toRadians(ry)), new Vector3f(0, 1, 0))
-                .rotate(((float) Math.toRadians(rx)), new Vector3f(1, 0, 0))
+                .rotate(((float) Math.toRadians(rotation.x)), new Vector3f(0, 0, 1))
+                .rotate(((float) Math.toRadians(rotation.y)), new Vector3f(0, 1, 0))
+                .rotate(((float) Math.toRadians(rotation.z)), new Vector3f(1, 0, 0))
                 .scale(scaleVector);
     }
 

@@ -62,7 +62,7 @@ public class EntityRenderer implements Renderer {
     }
 
     public void prepareObject(RenderObject entity) {
-        Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(entity.getPosition(), entity.getRotationX(), entity.getRotationY(), entity.getRotationZ(), entity.getScaleVector());
+        Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
         shader.doLoadMatrix(transformationMatrix, "transformationMatrix");
     }
 

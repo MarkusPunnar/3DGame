@@ -72,16 +72,8 @@ public class Terrain implements RenderObject {
         return new Vector3f(x, 0, z);
     }
 
-    public float getRotationX() {
-        return 0;
-    }
-
-    public float getRotationY() {
-        return 0;
-    }
-
-    public float getRotationZ() {
-        return 0;
+    public Vector3f getRotation() {
+        return new Vector3f();
     }
 
     public Vector3f getScaleVector() {

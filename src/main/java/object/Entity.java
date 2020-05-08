@@ -10,17 +10,13 @@ public class Entity implements RenderObject {
 
     private TexturedModel texturedModel;
     private Vector3f position;
-    private float rotationX;
-    private float rotationY;
-    private float rotationZ;
+    private Vector3f rotation;
     private Vector3f scaleVector;
 
-    public Entity(TexturedModel texturedModel, Vector3f position, float rotationX, float rotationY, float rotationZ, Vector3f scaleVector) {
+    public Entity(TexturedModel texturedModel, Vector3f position, Vector3f rotation, Vector3f scaleVector) {
         this.texturedModel = texturedModel;
         this.position = position;
-        this.rotationX = rotationX;
-        this.rotationY = rotationY;
-        this.rotationZ = rotationZ;
+        this.rotation = rotation;
         this.scaleVector = scaleVector;
     }
 
@@ -31,9 +27,9 @@ public class Entity implements RenderObject {
     }
 
     public void increaseRotation(float rx, float ry, float rz) {
-        rotationX += rx;
-        rotationY += ry;
-        rotationZ += rz;
+        rotation.x += rx;
+        rotation.y += ry;
+        rotation.z += rz;
     }
 
     public TexturedModel getTexturedModel() {
@@ -52,28 +48,12 @@ public class Entity implements RenderObject {
         this.position = position;
     }
 
-    public float getRotationX() {
-        return rotationX;
+    public Vector3f getRotation() {
+        return rotation;
     }
 
-    public void setRotationX(float rotationX) {
-        this.rotationX = rotationX;
-    }
-
-    public float getRotationY() {
-        return rotationY;
-    }
-
-    public void setRotationY(float rotationY) {
-        this.rotationY = rotationY;
-    }
-
-    public float getRotationZ() {
-        return rotationZ;
-    }
-
-    public void setRotationZ(float rotationZ) {
-        this.rotationZ = rotationZ;
+    public void setRotationX(Vector3f rotation) {
+        this.rotation = rotation;
     }
 
     public Vector3f getScaleVector() {
@@ -93,9 +73,7 @@ public class Entity implements RenderObject {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
         Entity entity = (Entity) other;
-        return Float.compare(entity.rotationX, rotationX) == 0 &&
-                Float.compare(entity.rotationY, rotationY) == 0 &&
-                Float.compare(entity.rotationZ, rotationZ) == 0 &&
+        return  rotation.equals(entity.getRotation()) &&
                 scaleVector.equals(entity.getScaleVector()) &&
                 texturedModel.equals(entity.texturedModel) &&
                 position.equals(entity.position);
@@ -103,6 +81,6 @@ public class Entity implements RenderObject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(texturedModel, position, rotationX, rotationY, rotationZ, scaleVector);
+        return Objects.hash(texturedModel, position, rotation, scaleVector);
     }
 }

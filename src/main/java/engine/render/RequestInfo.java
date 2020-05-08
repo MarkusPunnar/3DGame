@@ -5,24 +5,18 @@ import org.joml.Vector2f;
 
 public class RequestInfo {
 
-    private String textureName;
     private Vector2f texturePosition;
     private Vector2f textureScale;
     private GuiType guiType;
 
-    public RequestInfo(String textureName, Vector2f texturePosition, Vector2f textureScale, GuiType type) {
-        this.textureName = textureName;
+    public RequestInfo(Vector2f texturePosition, Vector2f textureScale, GuiType type) {
         this.texturePosition = texturePosition;
         this.textureScale = textureScale;
         this.guiType = type;
     }
 
     public RequestInfo(GuiType type) {
-       this(null, null, null, type);
-    }
-
-    public String getTextureName() {
-        return textureName;
+       this(null, null, type);
     }
 
     public Vector2f getTexturePosition() {

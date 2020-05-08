@@ -19,6 +19,9 @@ public class GuiTexture implements RenderObject {
         this.type = type;
     }
 
+    public GuiTexture() {
+    }
+
     @Override
     public int getID() {
         return textureID;
@@ -38,18 +41,8 @@ public class GuiTexture implements RenderObject {
     }
 
     @Override
-    public float getRotationX() {
-        return 0;
-    }
-
-    @Override
-    public float getRotationY() {
-        return 0;
-    }
-
-    @Override
-    public float getRotationZ() {
-        return 0;
+    public Vector3f getRotation() {
+        return new Vector3f();
     }
 
     @Override
@@ -59,5 +52,13 @@ public class GuiTexture implements RenderObject {
 
     public GuiType getType() {
         return type;
+    }
+
+    public void setPosition(Vector2f position) {
+        this.position = position;
+    }
+
+    public void setScale(Vector2f scale) {
+        this.scale = scale;
     }
 }

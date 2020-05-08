@@ -2,8 +2,6 @@ package object;
 
 import engine.model.TexturedModel;
 import interraction.Inventory;
-import object.item.Item;
-import object.item.Slot;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -34,8 +32,8 @@ public class Player extends Entity {
     private boolean isInAir;
     private Inventory inventory;
 
-    public Player(TexturedModel texturedModel, Vector3f position, float rotationX, float rotationY, float rotationZ, Vector3f scaleVector) {
-        super(texturedModel, position, rotationX, rotationY, rotationZ, scaleVector);
+    public Player(TexturedModel texturedModel, Vector3f position, Vector3f rotation, Vector3f scaleVector) {
+        super(texturedModel, position, rotation, scaleVector);
         currentSpeed = 0;
         currentTurnSpeed = 0;
         isInAir = false;
@@ -46,8 +44,8 @@ public class Player extends Entity {
         checkInputs();
         increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTime(), 0);
         float distanceMoved = currentSpeed * DisplayManager.getFrameTime();
-        float dx = (float) (Math.sin(Math.toRadians(getRotationY())) * distanceMoved);
-        float dz = (float) (Math.cos(Math.toRadians(getRotationY())) * distanceMoved);
+        float dx = (float) (Math.sin(Math.toRadians(getRotation().y)) * distanceMoved);
+        float dz = (float) (Math.cos(Math.toRadians(getRotation().y)) * distanceMoved);
         Vector3f velocityR3 = new Vector3f(dx, upwardsSpeed * DisplayManager.getFrameTime(), dz);
         loadedEntities.remove(this);
         checkCollisionsAndSlide(loadedEntities, velocityR3);
@@ -64,7 +62,7 @@ public class Player extends Entity {
     private void checkCollisionsAndSlide(List<Entity> loadedEntities, Vector3f velocityR3) {
         CollisionPacket playerPacket = new CollisionPacket(new Vector3f(PLAYER_HITBOX_X, PLAYER_HITBOX_Y, PLAYER_HITBOX_Z),
                 velocityR3, new Vector3f(getPosition().x, getPosition().y + 9, getPosition().z));
-        Vector3f playerPosition = collideWithWorld(playerPacket, loadedEntities, 0);
+        Vector3f playerPosition = velocityR3.equals(new Vector3f()) ? playerPacket.getBasePoint() : collideWithWorld(playerPacket, loadedEntities, 0);
         Matrix3f ellipticInverse = MathUtil.getEllipticInverseMatrix();
         playerPacket.setBasePoint(playerPosition);
         Vector3f ellipticVelocity = new Vector3f(0, -0.08f, 0);
