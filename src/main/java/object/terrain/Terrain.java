@@ -87,4 +87,9 @@ public class Terrain implements RenderObject {
     public int getID() {
         return texturedModel.getModelID();
     }
+
+    @Override
+    public int getPriority() {
+        return 0;
+    }
 }

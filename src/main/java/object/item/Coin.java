@@ -13,10 +13,16 @@ public class Coin extends Item {
         this.textureName = "coin";
     }
 
+    public boolean isStackable() {
+        return true;
+    }
+
+    @Override
     public int getAmount() {
         return amount;
     }
 
+    @Override
     public void setAmount(int amount) {
         this.amount = amount;
     }
@@ -24,4 +30,5 @@ public class Coin extends Item {
     public String getTextureName() {
         return textureName;
     }
+
 }

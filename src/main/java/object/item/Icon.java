@@ -8,10 +8,10 @@ import org.joml.Vector2f;
 public class Icon extends GuiTexture {
 
     public Icon(int textureID, Vector2f position, Vector2f scale) {
-        super(textureID, position, scale, GuiType.ICON);
+        super(textureID, position, scale, GuiType.ICON, 1);
     }
 
     public Icon(Loader loader, String textureName) {
-        super(loader.loadTexture(textureName), null, null, GuiType.ICON);
+        super(loader.loadTexture(textureName), null, null, GuiType.ICON, 1);
     }
 }

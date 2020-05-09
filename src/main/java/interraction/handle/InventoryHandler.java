@@ -1,7 +1,6 @@
 package interraction.handle;
 
 import game.state.GameState;
-import game.state.State;
 import interraction.Lootable;
 import interraction.MousePicker;
 import object.Player;
@@ -20,15 +19,20 @@ public class InventoryHandler implements Handler {
 
     @Override
     public GameState handle(GameState state) {
-        if (state.getCurrentState() != State.IN_INVENTORY && state.getCurrentState() != State.IN_CHEST) {
-            return state;
-        }
-        Slot[] inventorySlots = player.getInventory().getInventorySlots();
-        Lootable openLootable = state.getHandlerState().getLastLooted();
-        if (openLootable != null) {
-            return HandlerUtil.moveItems(inventorySlots, openLootable.getContent(), state, mousePicker);
-        } else {
-            return state;
+        switch (state.getCurrentState()) {
+            case IN_INVENTORY:
+                Slot[] inventorySlots = player.getInventory().getInventorySlots();
+                return HandlerUtil.moveItems(inventorySlots, inventorySlots, state, mousePicker);
+            case IN_CHEST:
+                inventorySlots = player.getInventory().getInventorySlots();
+                Lootable openLootable = state.getHandlerState().getLastLooted();
+                if (openLootable != null) {
+                    return HandlerUtil.moveItems(inventorySlots, openLootable.getContent(), state, mousePicker);
+                } else {
+                    return state;
+                }
+            default:
+                return state;
         }
     }
 }

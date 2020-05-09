@@ -38,7 +38,7 @@ public class Chest extends Entity implements Interactable, Lootable {
 
     @Override
     public void interact() {
-        if (sinceLastInteraction > 0.2f) {
+        if (sinceLastInteraction > 0.5f) {
             if (!isOpened) {
                 setTexturedModel(openModel);
                 isOpened = true;
@@ -79,18 +79,20 @@ public class Chest extends Entity implements Interactable, Lootable {
         return content;
     }
 
-    public void initSlot(int textureID, int hoverID, Vector2f position, Vector2f scale, int index) {
+    public Slot initSlot(int textureID, int hoverID, Vector2f position, Vector2f scale, int index) {
         Slot slot = content[index];
         slot.setID(textureID);
         slot.setNormalTextureID(textureID);
         slot.setHoverTextureID(hoverID);
         slot.setPosition(position);
         slot.setScale(scale);
+        slot.setType(GuiType.SLOT);
         if (slot.getItem() != null) {
             Icon itemIcon = slot.getItem().getIcon();
             itemIcon.setPosition(new Vector2f(slot.getPosition().x, slot.getPosition().y));
             itemIcon.setScale(new Vector2f(slot.getScaleVector().x / 1.3f, slot.getScaleVector().y / 1.3f));
         }
+        return slot;
     }
 
     public boolean addItem(Item item) {

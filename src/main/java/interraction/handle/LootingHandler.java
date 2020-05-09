@@ -1,16 +1,10 @@
 package interraction.handle;
 
-import engine.DisplayManager;
 import game.state.GameState;
 import game.state.State;
-import interraction.Inventory;
 import interraction.Lootable;
 import interraction.MousePicker;
 import object.Player;
-import object.item.Item;
-import object.item.Slot;
-import org.joml.Vector2f;
-import org.lwjgl.glfw.GLFW;
 import util.HandlerUtil;
 
 public class LootingHandler implements Handler {
@@ -32,6 +26,7 @@ public class LootingHandler implements Handler {
         if (currentLootable == null) {
             return state;
         }
-        return HandlerUtil.moveItems(currentLootable.getContent(), player.getInventory().getInventorySlots(), state, mousePicker);
+        GameState gameState = HandlerUtil.moveItems(currentLootable.getContent(), player.getInventory().getInventorySlots(), state, mousePicker);
+        return gameState;
     }
 }

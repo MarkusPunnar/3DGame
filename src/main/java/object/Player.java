@@ -1,9 +1,16 @@
 package object;
 
 import engine.model.TexturedModel;
+import engine.render.RenderRequest;
+import engine.render.RequestInfo;
+import engine.render.RequestType;
+import engine.texture.GuiType;
+import game.state.GameState;
+import interraction.Interactable;
 import interraction.Inventory;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import engine.DisplayManager;
 import util.CollisionPacket;
@@ -21,6 +28,7 @@ public class Player extends Entity {
     private static final float TURN_SPEED = 160;
     private static final float JUMP_POWER = 75;
     private static final float UNITS_PER_METER = 50;
+    private static final float INTERACT_DISTANCE = 20f;
 
     public static final float PLAYER_HITBOX_X = 6f;
     public static final float PLAYER_HITBOX_Y = 9f;
@@ -173,5 +181,24 @@ public class Player extends Entity {
 
     public Inventory getInventory() {
         return inventory;
+    }
+
+    public void interactWithInventory(GameState state) {
+        if (!inventory.isOpen()) {
+            state.getHandlerState().registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0, 0.15f), new Vector2f(0.6f, 0.6f), GuiType.INVENTORY)));
+        }
+        else {
+            state.getHandlerState().registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(GuiType.INVENTORY)));
+        }
+    }
+
+    public GameState interactWithObject(GameState state) {
+        Interactable closestObject = state.getHandlerState().getClosestObject();
+        float closestDistance = getPosition().distance(closestObject.getPosition());
+        if (closestDistance < INTERACT_DISTANCE) {
+            closestObject.interact();
+            state = closestObject.handleGui(state);
+        }
+        return state;
     }
 }

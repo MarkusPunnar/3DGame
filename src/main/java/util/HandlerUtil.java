@@ -1,6 +1,9 @@
 package util;
 
 import engine.DisplayManager;
+import engine.render.RenderRequest;
+import engine.render.RequestInfo;
+import engine.render.RequestType;
 import game.state.GameState;
 import interraction.MousePicker;
 import object.item.Item;
@@ -43,28 +46,46 @@ public class HandlerUtil {
                 if (leftMouseButtonPressed) {
                     state.getHandlerState().setBindedItem(activeSlot.getItem());
                     lastInteracted = activeSlot;
+                    activeSlot.resetTexture();
                 }
             }
         }
         else {
             if (leftMouseButtonPressed) {
+                //Move item
                 bindedItem.getIcon().setPosition(currentMousePosition);
             } else {
-                Slot activeSlot = HandlerUtil.calculateActiveSlot(destination, currentMousePosition);
-                Slot otherSlot = HandlerUtil.calculateActiveSlot(source, currentMousePosition);
-                if (activeSlot == null && otherSlot == null) {
-                    //Misplaced item
-                    bindedItem.getIcon().setPosition(new Vector2f(lastInteracted.getPosition().x, lastInteracted.getPosition().y));
-                    state.getHandlerState().setBindedItem(null);
-                    return state;
-                }
-                Slot selectedSlot = activeSlot == null ? otherSlot : activeSlot;
-                selectedSlot.setItem(bindedItem);
-                bindedItem.getIcon().setPosition(new Vector2f(selectedSlot.getPosition().x, selectedSlot.getPosition().y));
-                lastInteracted.setItem(null);
-                state.getHandlerState().setBindedItem(null);
+                placeItem(source, destination, state, currentMousePosition, bindedItem);
             }
         }
         return state;
+    }
+
+    private static void placeItem(Slot[] source, Slot[] destination, GameState state, Vector2f currentMousePosition, Item bindedItem) {
+        Slot activeSlot = HandlerUtil.calculateActiveSlot(destination, currentMousePosition);
+        Slot otherSlot = HandlerUtil.calculateActiveSlot(source, currentMousePosition);
+        if (activeSlot == null && otherSlot == null) {
+            //Misplaced item
+            bindedItem.getIcon().setPosition(new Vector2f(lastInteracted.getPosition().x, lastInteracted.getPosition().y));
+            state.getHandlerState().setBindedItem(null);
+            return;
+        }
+        Slot selectedSlot = activeSlot == null ? otherSlot : activeSlot;
+        if (selectedSlot.getItem() == null) {
+            selectedSlot.setItem(bindedItem);
+            bindedItem.getIcon().setPosition(new Vector2f(selectedSlot.getPosition().x, selectedSlot.getPosition().y));
+            lastInteracted.setItem(null);
+        } else {
+            if (!selectedSlot.equals(lastInteracted)) {
+                Item existingItem = selectedSlot.getItem();
+                existingItem.stack(lastInteracted.getItem());
+                state.getHandlerState().registerRequest(new RenderRequest(RequestType.REMOVE_ITEM, new RequestInfo(lastInteracted.getItem().getIcon())));
+                lastInteracted.setItem(null);
+            }
+            else {
+                bindedItem.getIcon().setPosition(new Vector2f(lastInteracted.getPosition().x, lastInteracted.getPosition().y));
+            }
+        }
+        state.getHandlerState().setBindedItem(null);
     }
 }

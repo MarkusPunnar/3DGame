@@ -22,7 +22,7 @@ public class Door extends Entity implements Interactable {
 
     @Override
     public void interact() {
-        if (sinceLastInteraction > 0.2f) {
+        if (sinceLastInteraction > 0.5f) {
             if (!isOpened) {
                 switch (facingDirection) {
                     case WEST:

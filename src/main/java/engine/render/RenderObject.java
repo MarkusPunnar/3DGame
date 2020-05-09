@@ -14,4 +14,6 @@ public interface RenderObject {
     Vector3f getRotation();
 
     Vector3f getScaleVector();
+
+    int getPriority();
 }

@@ -5,6 +5,7 @@ import object.Entity;
 import object.Player;
 import object.env.Camera;
 import object.env.Light;
+import object.item.Slot;
 import object.terrain.Terrain;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
@@ -12,6 +13,7 @@ import engine.shader.Shader;
 import engine.shader.StaticShader;
 import engine.shader.TerrainShader;
 import engine.texture.GuiTexture;
+import util.GuiComparator;
 import util.ObjectComparator;
 import util.OpenGLUtil;
 import util.math.MathUtil;
@@ -57,7 +59,7 @@ public class ParentRenderer {
         this.guiRenderer = new GuiRenderer(loader);
         this.entityBatches = new TreeSet<>(new ObjectComparator());
         this.terrains = new ArrayList<>();
-        this.guis = new ArrayList<>();
+        this.guis = new TreeSet<>(new GuiComparator());
         this.loader = loader;
     }
 
@@ -76,18 +78,12 @@ public class ParentRenderer {
 
 
 
-    public void processEntity(Entity entity) {
+    private void processEntity(Entity entity) {
         entityBatches.add(entity);
     }
 
-    public void processTerrain(Terrain terrain) {
+    private void processTerrain(Terrain terrain) {
         terrains.add(terrain);
-    }
-
-    public void processGuis(List<GuiTexture> guiList) {
-        for (GuiTexture gui : guiList) {
-            processGui(gui);
-        }
     }
 
     public void processGui(GuiTexture gui) {
@@ -99,12 +95,6 @@ public class ParentRenderer {
             processEntity(entity);
         }
         processEntity(player);
-    }
-
-    public void processTerrains(List<Terrain> terrains) {
-        for (Terrain terrain : terrains) {
-            processTerrain(terrain);
-        }
     }
 
     public void renderObjects(Light sun, Camera camera) {

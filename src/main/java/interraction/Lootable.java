@@ -7,5 +7,5 @@ public interface Lootable {
 
     Slot[] getContent();
 
-    void initSlot(int textureID, int hoverID, Vector2f position, Vector2f scale, int index);
+    Slot initSlot(int textureID, int hoverID, Vector2f position, Vector2f scale, int index);
 }

@@ -16,6 +16,7 @@ public class HandlerState {
     private List<Interactable> interactableObjects;
     private Lootable lastLooted;
     private Item bindedItem;
+    private Interactable closestObject;
 
     public HandlerState() {
         requests = new LinkedList<>();
@@ -52,5 +53,13 @@ public class HandlerState {
 
     public void setBindedItem(Item bindedItem) {
         this.bindedItem = bindedItem;
+    }
+
+    public Interactable getClosestObject() {
+        return closestObject;
+    }
+
+    public void setClosestObject(Interactable closestObject) {
+        this.closestObject = closestObject;
     }
 }

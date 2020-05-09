@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MainGameLoop {
 
@@ -33,6 +34,7 @@ public class MainGameLoop {
         Light light = new Light(new Vector3f(30, 50, 100), new Vector3f(1, 1, 1));
         Camera camera = new Camera(player);
         MousePicker mousePicker = new MousePicker(renderer.getProjectionMatrix(), camera);
+        gameState = initCallbacks(gameState, player);
         List<Handler> handlers = initHandlers(player, renderer, mousePicker);
         while (!GLFW.glfwWindowShouldClose(DisplayManager.getWindow())) {
             if (gameState.getCurrentState() == State.IN_GAME) {
@@ -59,5 +61,19 @@ public class MainGameLoop {
         handlers.add(new InventoryHandler(player, mousePicker));
         handlers.add(new LootingHandler(player, mousePicker));
         return handlers;
+    }
+
+    private static GameState initCallbacks(GameState state, Player player) {
+        AtomicReference<GameState> newState = new AtomicReference<>();
+        newState.set(state);
+        GLFW.glfwSetKeyCallback(DisplayManager.getWindow(), ((window, key, scancode, action, mods) -> {
+           if (key == GLFW.GLFW_KEY_I && action == GLFW.GLFW_PRESS && List.of(State.IN_GAME, State.IN_INVENTORY).contains(state.getCurrentState())) {
+               player.interactWithInventory(state);
+           }
+           else if (key == GLFW.GLFW_KEY_F && action == GLFW.GLFW_PRESS && List.of(State.IN_GAME, State.IN_CHEST).contains(state.getCurrentState())) {
+               newState.set(player.interactWithObject(state));
+           }
+        }));
+        return newState.get();
     }
 }
