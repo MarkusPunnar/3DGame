@@ -14,9 +14,11 @@ import object.Player;
 import object.item.Item;
 import object.item.Slot;
 import org.joml.Vector2f;
+import util.GuiComparator;
 import util.math.MathUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
@@ -127,7 +129,7 @@ public class RenderRequestHandler implements Handler {
         float titleY = position.y + scale.y - height;
         Vector2f titlePosition = new Vector2f(position.x, titleY);
         Vector2f titleScale = new Vector2f(scale.x, height);
-        renderer.processGui(new GuiTexture(titleTextureID, titlePosition, titleScale, GuiType.INVENTORY_TITLE, 0));
+        renderer.processGui(new GuiTexture(titleTextureID, titlePosition, titleScale, GuiType.INVENTORY_TITLE));
     }
 
     private void renderGrid(float n, float m, RequestInfo requestInfo, GameState state) {

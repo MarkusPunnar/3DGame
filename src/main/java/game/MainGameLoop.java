@@ -3,6 +3,8 @@ package game;
 import engine.DisplayManager;
 import engine.loader.Loader;
 import engine.render.ParentRenderer;
+import engine.render.RenderObject;
+import engine.texture.ModelTexture;
 import game.state.GameState;
 import interraction.handle.*;
 import game.state.State;
@@ -11,15 +13,20 @@ import object.Entity;
 import object.Player;
 import object.env.Camera;
 import object.env.Light;
-import object.scene.TavernGenerator;
+import object.scene.generation.TavernGenerator;
+import object.terrain.Terrain;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
+import util.octree.BoundingBox;
+import util.octree.OctTree;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class MainGameLoop {
 
@@ -31,17 +38,31 @@ public class MainGameLoop {
         TavernGenerator tavernGenerator = new TavernGenerator(loader, gameState);
         Player player = tavernGenerator.generatePlayer(loader);
         List<Entity> roomEntities = tavernGenerator.generate();
-        Light light = new Light(new Vector3f(30, 50, 100), new Vector3f(1, 1, 1));
+        OctTree octTree =  new OctTree(new BoundingBox(new Vector3f(-200, -1, -200), new Vector3f(200, 100, 200)));
+        Light light = new Light(new Vector3f(3000, 5000, 10000), new Vector3f(1, 1, 1));
         Camera camera = new Camera(player);
         MousePicker mousePicker = new MousePicker(renderer.getProjectionMatrix(), camera);
+        camera.setMousePicker(mousePicker);
         gameState = initCallbacks(gameState, player);
         List<Handler> handlers = initHandlers(player, renderer, mousePicker);
+
+        //temporary terrain code
+        List<Terrain> terrains = new ArrayList<>();
+        ModelTexture grassTexture = new ModelTexture(loader.loadTexture("grass"));
+        terrains.add(new Terrain(-1,-1, loader, grassTexture));
+        List<RenderObject> renderObjects = new ArrayList<>(roomEntities);
+        renderObjects.addAll(terrains);
+        octTree.initTree(renderObjects);
+        gameState.setCurrentTree(octTree);
+
         while (!GLFW.glfwWindowShouldClose(DisplayManager.getWindow())) {
+            System.out.println("Frame: " + DisplayManager.getFrameTime() + " y: " + player.getPosition().y);
             if (gameState.getCurrentState() == State.IN_GAME) {
-                player.move(roomEntities);
+                player.move(renderObjects, gameState);
                 camera.move();
             }
             mousePicker.update();
+            renderer.processTerrains(terrains);
             renderer.processEntities(roomEntities, player);
             for (Handler handler : handlers) {
                 gameState = handler.handle(gameState);
@@ -72,6 +93,9 @@ public class MainGameLoop {
            }
            else if (key == GLFW.GLFW_KEY_F && action == GLFW.GLFW_PRESS && List.of(State.IN_GAME, State.IN_CHEST).contains(state.getCurrentState())) {
                newState.set(player.interactWithObject(state));
+           }
+           else if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE && state.getCurrentState().equals(State.IN_GAME)) {
+               GLFW.glfwSetWindowShouldClose(window, true);
            }
         }));
         return newState.get();

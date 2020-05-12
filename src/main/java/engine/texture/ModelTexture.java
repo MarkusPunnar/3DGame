@@ -6,23 +6,12 @@ public class ModelTexture {
 
     private float reflectivity;
     private float shineDamper;
-    private float tilingFactor;
 
     private boolean transparency;
     private boolean useFakeLighting;
 
     public ModelTexture(int textureID) {
         this.textureID = textureID;
-        reflectivity = 0;
-        shineDamper = 1;
-        tilingFactor = 1;
-        transparency = false;
-        useFakeLighting = false;
-    }
-
-    public ModelTexture(int textureID, float tilingFactor) {
-        this.textureID = textureID;
-        this.tilingFactor = tilingFactor;
         reflectivity = 0;
         shineDamper = 1;
         transparency = false;
@@ -63,13 +52,5 @@ public class ModelTexture {
 
     public void setShineDamper(float shineDamper) {
         this.shineDamper = shineDamper;
-    }
-
-    public float getTilingFactor() {
-        return tilingFactor;
-    }
-
-    public void setTilingFactor(float tilingFactor) {
-        this.tilingFactor = tilingFactor;
     }
 }

@@ -2,7 +2,6 @@ package engine.shader;
 
 import object.env.Light;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -10,8 +9,8 @@ import java.util.Map;
 
 public class TerrainShader extends ShaderProgram implements Shader {
 
-    private static final String VERTEX_FILE = "shaders/terrainVertexShader.txt";
-    private static final String FRAGMENT_FILE = "shaders/terrainFragmentShader.txt";
+    private static final String VERTEX_FILE = "shaders/terrainVertexShader.glsl";
+    private static final String FRAGMENT_FILE = "shaders/terrainFragmentShader.glsl";
 
     private Map<String, Integer> uniformLocations;
 
@@ -21,9 +20,9 @@ public class TerrainShader extends ShaderProgram implements Shader {
 
     @Override
     protected void bindAttributes() {
-        bindAttribute(0, "position");
-        bindAttribute(1, "textureCoords");
-        bindAttribute(2, "normalCoords");
+        bindAttribute(0, "aPosition");
+        bindAttribute(1, "aTextureCoords");
+        bindAttribute(2, "aNormalCoords");
     }
 
     @Override
@@ -35,8 +34,6 @@ public class TerrainShader extends ShaderProgram implements Shader {
         int lightColourLocation = getUniformLocation("lightColour");
         int reflectivityLocation = getUniformLocation("reflectivity");
         int shineDamperLocation = getUniformLocation("shineDamper");
-        int skyColourLocation = getUniformLocation("skyColour");
-        int cameraPositionLocation = getUniformLocation("cameraCoords");
         if (uniformLocations == null) {
             uniformLocations = new HashMap<>();
         }
@@ -47,18 +44,6 @@ public class TerrainShader extends ShaderProgram implements Shader {
         uniformLocations.put("lightColour", lightColourLocation);
         uniformLocations.put("reflectivity", reflectivityLocation);
         uniformLocations.put("shineDamper", shineDamperLocation);
-        uniformLocations.put("skyColour", skyColourLocation);
-        uniformLocations.put("cameraCoords", cameraPositionLocation);
-    }
-
-    public void loadCameraPosition(Vector3f position) {
-        Integer cameraPositionLocation = uniformLocations.get("cameraCoords");
-        loadVector(cameraPositionLocation, position);
-    }
-
-    public void loadSkyColour(float red, float green, float blue) {
-        Integer skyColourPosition = uniformLocations.get("skyColour");
-        loadVector(skyColourPosition, new Vector3f(red, green, blue));
     }
 
     public void loadLight(Light light) {

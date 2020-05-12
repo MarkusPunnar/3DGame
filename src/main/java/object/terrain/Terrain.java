@@ -9,8 +9,8 @@ import engine.texture.ModelTexture;
 
 public class Terrain implements RenderObject {
 
-    private static final float SIZE = 800;
-    private static final int VERTICES = 128;
+    private static final float SIZE = 200;
+    private static final int VERTICES = 100;
 
     private float x;
     private float z;
@@ -69,7 +69,7 @@ public class Terrain implements RenderObject {
     }
 
     public Vector3f getPosition() {
-        return new Vector3f(x, 0, z);
+        return new Vector3f(x, -0.1f, z);
     }
 
     public Vector3f getRotation() {

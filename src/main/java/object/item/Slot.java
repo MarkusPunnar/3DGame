@@ -11,12 +11,13 @@ public class Slot extends GuiTexture {
     private int hoverTextureID;
 
     public Slot(int textureID, Vector2f position, Vector2f scale, int hoverTextureID) {
-        super(textureID, position, scale, GuiType.SLOT, 0);
+        super(textureID, position, scale, GuiType.SLOT);
         this.normalTextureID = textureID;
         this.hoverTextureID = hoverTextureID;
     }
 
     public Slot() {
+        super(0, null, null, GuiType.SLOT);
     }
 
     public Item getItem() {

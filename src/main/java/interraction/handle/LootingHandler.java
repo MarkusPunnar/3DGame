@@ -26,7 +26,6 @@ public class LootingHandler implements Handler {
         if (currentLootable == null) {
             return state;
         }
-        GameState gameState = HandlerUtil.moveItems(currentLootable.getContent(), player.getInventory().getInventorySlots(), state, mousePicker);
-        return gameState;
+        return HandlerUtil.moveItems(currentLootable.getContent(), player.getInventory().getInventorySlots(), state, mousePicker);
     }
 }

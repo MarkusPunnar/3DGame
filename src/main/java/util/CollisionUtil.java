@@ -201,13 +201,19 @@ public class CollisionUtil {
         return alpha >= 0 && alpha <= 1 && beta >= 0 && beta <= 1 && gamma >= 0 && gamma <= 1;
     }
 
-    public static Vector3f[] convertToElliptic(Matrix3f ellipticMatrix, Matrix4f transformationMatrix, Triangle triangle) {
+    public static Vector3f[] convertToElliptic(Matrix3f ellipticMatrix, Triangle triangle) {
         Vector3f[] verticesElliptic = new Vector3f[3];
         for (int i = 0; i < triangle.getVertices().length; i++) {
-            Vector3f transformedVertex = MathUtil.getCoordinates(new Vector4f(triangle.getVertices()[i], 1.0f).mul(transformationMatrix));
-            verticesElliptic[i] = transformedVertex.mul(ellipticMatrix);
+            verticesElliptic[i] = triangle.getVertices()[i].mul(ellipticMatrix, new Vector3f());
         }
         return verticesElliptic;
     }
 
+    public static Vector3f[] convertToWorld(Matrix4f transformationMatrix, Triangle triangle) {
+        Vector3f[] worldVertices = new Vector3f[3];
+        for (int i = 0; i < triangle.getVertices().length; i++) {
+            worldVertices[i] = MathUtil.getCoordinates(new Vector4f(triangle.getVertices()[i], 1.0f).mul(transformationMatrix, new Vector4f()));
+        }
+        return worldVertices;
+    }
 }

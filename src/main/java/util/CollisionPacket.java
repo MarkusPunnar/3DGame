@@ -6,8 +6,6 @@ import util.math.MathUtil;
 
 public class CollisionPacket {
 
-    private Vector3f sphereRadius;
-
     private Vector3f velocityR3;
     private Vector3f positionR3;
 
@@ -19,8 +17,7 @@ public class CollisionPacket {
     private float nearestDistance;
     private Vector3f intersectionPoint;
 
-    public CollisionPacket(Vector3f sphereRadius, Vector3f velocityR3, Vector3f positionR3) {
-        this.sphereRadius = sphereRadius;
+    public CollisionPacket(Vector3f velocityR3, Vector3f positionR3) {
         this.velocityR3 = velocityR3;
         this.positionR3 = positionR3;
         Matrix3f ellipticMatrix = MathUtil.getEllipticMatrix();
@@ -33,14 +30,6 @@ public class CollisionPacket {
         foundCollision = false;
         nearestDistance = Float.MAX_VALUE;
         intersectionPoint = new Vector3f();
-    }
-
-    public Vector3f getSphereRadius() {
-        return sphereRadius;
-    }
-
-    public void setSphereRadius(Vector3f sphereRadius) {
-        this.sphereRadius = sphereRadius;
     }
 
     public Vector3f getVelocityR3() {

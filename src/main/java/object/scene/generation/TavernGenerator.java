@@ -1,10 +1,10 @@
-package object.scene;
+package object.scene.generation;
 
 import game.state.GameState;
 import object.Entity;
 import object.item.Coin;
-import object.item.Icon;
-import object.item.Item;
+import object.scene.Chest;
+import object.scene.Door;
 import util.FacingDirection;
 import engine.loader.ObjectLoader;
 import object.Player;
@@ -112,7 +112,7 @@ public class TavernGenerator implements Generator {
     public Player generatePlayer(Loader loader) throws IOException, URISyntaxException {
         ModelTexture purpleTexture = new ModelTexture(loader.loadTexture("purple"));
         TexturedModel playerModel = getTexturedModel("player", purpleTexture);
-        return new Player(playerModel, new Vector3f(-20,34.5f,50),new Vector3f(0, 180, 0), new Vector3f(3));
+        return new Player(playerModel, new Vector3f(-150,0,-50),new Vector3f(), new Vector3f(3));
     }
 
     private TexturedModel getTexturedModel(String objName, ModelTexture texture) throws IOException, URISyntaxException {

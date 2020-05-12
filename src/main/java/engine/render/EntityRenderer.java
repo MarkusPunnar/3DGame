@@ -51,7 +51,6 @@ public class EntityRenderer implements Renderer {
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
-        shader.loadTilingFactor(texturedModel.getTexture().getTilingFactor());
         shader.loadShineVariables(texturedModel.getTexture().getReflectivity(), texturedModel.getTexture().getShineDamper());
         shader.loadFakeLighting(texturedModel.getTexture().useFakeLighting());
         if (texturedModel.getTexture().isTransparent()) {

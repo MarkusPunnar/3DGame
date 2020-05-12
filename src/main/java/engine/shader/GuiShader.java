@@ -26,14 +26,6 @@ public class GuiShader extends ShaderProgram implements Shader {
     }
 
     @Override
-    public void loadSkyColour(float red, float green, float blue) {
-    }
-
-    @Override
-    public void loadCameraPosition(Vector3f position) {
-    }
-
-    @Override
     protected void bindAttributes() {
         bindAttribute(0, "positionCoords");
     }

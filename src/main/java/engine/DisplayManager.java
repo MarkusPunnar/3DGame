@@ -21,7 +21,7 @@ public class DisplayManager {
     private static int height = 720;
     private static long window = NULL;
 
-    private static long lastFrameTime = 0L;
+    private static double lastFrameTime = 0.0;
     private static float delta;
 
     public static void createDisplay() {
@@ -35,11 +35,6 @@ public class DisplayManager {
         if (window == NULL) {
             throw new RuntimeException("ERROR: Window not created");
         }
-        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> { //Set close actions
-            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
-                GLFW.glfwSetWindowShouldClose(window, true);
-            }
-        });
         try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1); //Get integer buffers
             IntBuffer pHeight = stack.mallocInt(1);
@@ -49,7 +44,8 @@ public class DisplayManager {
                 glfwSetWindowPos(window, (vidMode.width() - pWidth.get()) / 2, (vidMode.height() - pHeight.get()) / 2);
             }
         }
-        lastFrameTime = getCurrentTime();
+        lastFrameTime = GLFW.glfwGetTime();
+        delta = ((float) lastFrameTime);
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1); //Enable V-Sync
         GL.createCapabilities();
@@ -67,8 +63,8 @@ public class DisplayManager {
             height = heightBuffer.get();
         }
         GL11.glViewport(0, 0, width, height);
-        long currentFrameTime = getCurrentTime();
-        delta = (currentFrameTime - lastFrameTime) / 1000f;
+        double currentFrameTime = GLFW.glfwGetTime();
+        delta = ((float) (currentFrameTime - lastFrameTime));
         lastFrameTime = currentFrameTime;
     }
 
@@ -81,10 +77,6 @@ public class DisplayManager {
 
     public static long getWindow() {
         return window;
-    }
-
-    public static long getCurrentTime() {
-        return System.currentTimeMillis();
     }
 
     public static float getFrameTime() {

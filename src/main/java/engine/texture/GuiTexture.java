@@ -9,21 +9,24 @@ import java.util.Objects;
 
 public class GuiTexture implements RenderObject {
 
+    private static int INCREMENT = 0;
+
     private int textureID;
     private Vector2f position;
     private Vector2f scale;
     private GuiType type;
     private int priority;
 
-    public GuiTexture(int textureID, Vector2f position, Vector2f scale, GuiType type, int priority) {
+    public GuiTexture(int textureID, Vector2f position, Vector2f scale, GuiType type) {
         this.textureID = textureID;
         this.position = position;
         this.scale = scale;
         this.type = type;
-        this.priority = priority;
-    }
-
-    public GuiTexture() {
+        this.priority = INCREMENT;
+        if (type == GuiType.ICON) {
+            this.priority += 1000;
+        }
+        INCREMENT++;
     }
 
     @Override

@@ -6,6 +6,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import util.math.structure.Triangle;
+import util.octree.BoundingBox;
+import util.octree.OctTree;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -24,9 +26,15 @@ import static org.lwjgl.opengl.GL30.*;
 
 public class Loader {
 
-    private List<Integer> VAOs = new ArrayList<>();
-    private List<Integer> VBOs = new ArrayList<>();
-    private List<Integer> textures = new ArrayList<>();
+    private List<Integer> VAOs;
+    private List<Integer> VBOs;
+    private List<Integer> textures;
+
+    public Loader() {
+        this.VAOs = new ArrayList<>();
+        this.VBOs = new ArrayList<>();
+        this.textures = new ArrayList<>();
+    }
 
     public RawModel loadToVAO(float[] positions, int[] indices, float[] normals, float[] textureCoords) {
         int vaoID = createVAO();
@@ -60,7 +68,8 @@ public class Loader {
                 current++;
                 i++;
             }
-           triangles.add(new Triangle(vertices));
+            Triangle triangle = new Triangle(vertices);
+            triangles.add(triangle);
         }
         return triangles;
     }

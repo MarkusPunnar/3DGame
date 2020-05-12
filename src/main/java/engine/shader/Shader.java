@@ -16,7 +16,4 @@ public interface Shader {
 
     void doLoadMatrix(Matrix4f matrix, String uniformName);
 
-    void loadSkyColour(float red, float green, float blue);
-
-    void loadCameraPosition(Vector3f position);
 }

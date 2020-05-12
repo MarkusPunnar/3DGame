@@ -1,5 +1,6 @@
 package util.math;
 
+import engine.render.RenderObject;
 import object.Entity;
 import object.Player;
 import object.env.Camera;
@@ -17,8 +18,8 @@ public class MathUtil {
                 .scale(scale);
     }
 
-    public static Matrix4f createTransformationMatrix(Entity entity) {
-        return createTransformationMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
+    public static Matrix4f createTransformationMatrix(RenderObject object) {
+        return createTransformationMatrix(object.getPosition(), object.getRotation(), object.getScaleVector());
     }
 
     public static Matrix4f createTransformationMatrix(Vector3f translation, Vector3f rotation, Vector3f scaleVector) {
@@ -34,7 +35,7 @@ public class MathUtil {
         Matrix4f matrix = new Matrix4f();
         Vector3f cameraPos = camera.getPosition();
         Vector3f playerPos = camera.getPlayer().getPosition();
-        return matrix.lookAt(cameraPos, new Vector3f(playerPos.x, playerPos.y + 10, playerPos.z), new Vector3f(0, 1, 0));
+        return matrix.lookAt(cameraPos, new Vector3f(playerPos.x, playerPos.y + 20, playerPos.z), new Vector3f(0, 1, 0));
     }
 
     public static Matrix3f getEllipticMatrix() {
@@ -58,7 +59,7 @@ public class MathUtil {
     }
 
     public static boolean floatEquals(float a, float b) {
-        return Math.abs(a - b) <= Math.pow(10, -4);
+        return Math.abs(a - b) <= Math.pow(10, -2);
     }
 
     public static float solveQuadratic(float a, float b, float c, float maxVal) {

@@ -1,4 +1,4 @@
-package object.scene;
+package object.scene.generation;
 
 import object.Entity;
 

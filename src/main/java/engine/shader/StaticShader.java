@@ -2,7 +2,6 @@ package engine.shader;
 
 import object.env.Light;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -35,10 +34,7 @@ public class StaticShader extends ShaderProgram implements Shader {
         int lightColourLocation = getUniformLocation("lightColour");
         int reflectivityLocation = getUniformLocation("reflectivity");
         int shineDamperLocation = getUniformLocation("shineDamper");
-        int skyColourLocation = getUniformLocation("skyColour");
         int fakeLightingLocation = getUniformLocation("fakeLighting");
-        int cameraPositionLocation = getUniformLocation("cameraCoords");
-        int tilingFactorLocation = getUniformLocation("tilingFactor");
         if (uniformLocations == null) {
             uniformLocations = new HashMap<>();
         }
@@ -49,25 +45,7 @@ public class StaticShader extends ShaderProgram implements Shader {
         uniformLocations.put("lightColour", lightColourLocation);
         uniformLocations.put("reflectivity", reflectivityLocation);
         uniformLocations.put("shineDamper", shineDamperLocation);
-        uniformLocations.put("skyColour", skyColourLocation);
         uniformLocations.put("fakeLighting", fakeLightingLocation);
-        uniformLocations.put("cameraCoords", cameraPositionLocation);
-        uniformLocations.put("tilingFactor", tilingFactorLocation);
-    }
-
-    public void loadTilingFactor(float tilingFactor) {
-        Integer tilingFactorLocation = uniformLocations.get("tilingFactor");
-        loadFloat(tilingFactorLocation, tilingFactor);
-    }
-
-    public void loadCameraPosition(Vector3f position) {
-        Integer cameraPositionLocation = uniformLocations.get("cameraCoords");
-        loadVector(cameraPositionLocation, position);
-    }
-
-    public void loadSkyColour(float red, float green, float blue) {
-        Integer skyColourPosition = uniformLocations.get("skyColour");
-        loadVector(skyColourPosition, new Vector3f(red, green, blue));
     }
 
     public void loadFakeLighting(boolean fakeLighting) {

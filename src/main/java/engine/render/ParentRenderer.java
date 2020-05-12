@@ -86,6 +86,12 @@ public class ParentRenderer {
         terrains.add(terrain);
     }
 
+    public void processTerrains(List<Terrain> terrains) {
+        for (Terrain terrain : terrains) {
+            processTerrain(terrain);
+        }
+    }
+
     public void processGui(GuiTexture gui) {
         guis.add(gui);
     }
@@ -111,10 +117,8 @@ public class ParentRenderer {
         shader.start();
         if (sun != null && camera != null) {
             shader.loadLight(sun);
-            shader.loadCameraPosition(camera.getPosition());
             shader.doLoadMatrix(MathUtil.createViewMatrix(camera), "viewMatrix");
         }
-        shader.loadSkyColour(RED, GREEN, BLUE);
         renderer.render(objects);
         shader.stop();
     }

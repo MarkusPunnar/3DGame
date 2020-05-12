@@ -1,6 +1,8 @@
 package object;
 
+import engine.loader.Loader;
 import engine.model.TexturedModel;
+import engine.render.RenderObject;
 import engine.render.RenderRequest;
 import engine.render.RequestInfo;
 import engine.render.RequestType;
@@ -17,16 +19,18 @@ import util.CollisionPacket;
 import util.CollisionUtil;
 import util.math.MathUtil;
 import util.math.structure.*;
+import util.octree.BoundingBox;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Player extends Entity {
 
-    private static final float RUN_SPEED = 30;
-    private static final float TURN_SPEED = 160;
-    private static final float JUMP_POWER = 75;
+    private static final float FORWARD_SPEED = 30;
+    private static final float SIDEWAYS_SPEED = 30;
+    private static final float JUMP_POWER = 40;
     private static final float UNITS_PER_METER = 50;
     private static final float INTERACT_DISTANCE = 20f;
 
@@ -34,32 +38,34 @@ public class Player extends Entity {
     public static final float PLAYER_HITBOX_Y = 9f;
     public static final float PLAYER_HITBOX_Z = 2.5f;
 
-    private float currentSpeed;
-    private float currentTurnSpeed;
+    private float currentForwardSpeed;
+    private float currentSidewaysSpeed;
     private float upwardsSpeed;
     private boolean isInAir;
     private Inventory inventory;
 
     public Player(TexturedModel texturedModel, Vector3f position, Vector3f rotation, Vector3f scaleVector) {
         super(texturedModel, position, rotation, scaleVector);
-        currentSpeed = 0;
-        currentTurnSpeed = 0;
+        currentForwardSpeed = 0;
+        currentSidewaysSpeed = 0;
         isInAir = false;
         inventory = new Inventory();
     }
 
-    public void move(List<Entity> loadedEntities) {
+    public void move(List<RenderObject> renderedObjects, GameState state) {
         checkInputs();
-        increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTime(), 0);
-        float distanceMoved = currentSpeed * DisplayManager.getFrameTime();
-        float dx = (float) (Math.sin(Math.toRadians(getRotation().y)) * distanceMoved);
-        float dz = (float) (Math.cos(Math.toRadians(getRotation().y)) * distanceMoved);
+        float distanceMovedForward = currentForwardSpeed * DisplayManager.getFrameTime();
+        float dx = (float) (Math.sin(Math.toRadians(getRotation().y)) * distanceMovedForward);
+        float dz = (float) (Math.cos(Math.toRadians(getRotation().y)) * distanceMovedForward);
+        float distanceMovedSideways = currentSidewaysSpeed * DisplayManager.getFrameTime();
+        dx -= (float) (Math.sin(Math.toRadians(getRotation().y - 90))) * distanceMovedSideways;
+        dz -= (float) (Math.cos(Math.toRadians(getRotation().y - 90))) * distanceMovedSideways;
         Vector3f velocityR3 = new Vector3f(dx, upwardsSpeed * DisplayManager.getFrameTime(), dz);
-        loadedEntities.remove(this);
-        checkCollisionsAndSlide(loadedEntities, velocityR3);
-        loadedEntities.add(this);
-        currentSpeed = 0;
-        currentTurnSpeed = 0;
+        renderedObjects.remove(this);
+        checkCollisionsAndSlide(renderedObjects, state, velocityR3);
+        renderedObjects.add(this);
+        currentForwardSpeed = 0;
+        currentSidewaysSpeed = 0;
         if (upwardsSpeed > 0) {
             upwardsSpeed--;
         } else {
@@ -67,29 +73,28 @@ public class Player extends Entity {
         }
     }
 
-    private void checkCollisionsAndSlide(List<Entity> loadedEntities, Vector3f velocityR3) {
-        CollisionPacket playerPacket = new CollisionPacket(new Vector3f(PLAYER_HITBOX_X, PLAYER_HITBOX_Y, PLAYER_HITBOX_Z),
-                velocityR3, new Vector3f(getPosition().x, getPosition().y + 9, getPosition().z));
-        Vector3f playerPosition = velocityR3.equals(new Vector3f()) ? playerPacket.getBasePoint() : collideWithWorld(playerPacket, loadedEntities, 0);
+    private void checkCollisionsAndSlide(List<RenderObject> renderedObjects, GameState state, Vector3f velocityR3) {
+        CollisionPacket playerPacket = new CollisionPacket(velocityR3, new Vector3f(getPosition().x, getPosition().y + PLAYER_HITBOX_Y, getPosition().z));
+        Vector3f playerPosition = velocityR3.equals(new Vector3f()) ? playerPacket.getBasePoint() : collideWithWorld(playerPacket, renderedObjects, state,  0);
         Matrix3f ellipticInverse = MathUtil.getEllipticInverseMatrix();
         playerPacket.setBasePoint(playerPosition);
         Vector3f ellipticVelocity = new Vector3f(0, -0.08f, 0);
         playerPacket.setEllipticVelocity(ellipticVelocity);
         Vector3f normalizedVelocity = new Vector3f();
         playerPacket.setNormalizedEllipticVelocity(ellipticVelocity.normalize(normalizedVelocity));
-        Vector3f finalPosition = collideWithWorld(playerPacket, loadedEntities, 0);
+        Vector3f finalPosition = collideWithWorld(playerPacket, renderedObjects, state, 0);
         finalPosition.mul(ellipticInverse);
-        isInAir = !finalPosition.equals(playerPosition.mul(ellipticInverse));
+        isInAir = !finalPosition.equals(playerPosition.mul(ellipticInverse), 0.01f);
         setPosition(new Vector3f(finalPosition.x, finalPosition.y - 9, finalPosition.z));
     }
 
-    private Vector3f collideWithWorld(CollisionPacket packet, List<Entity> loadedEntities, int recursionDepth) {
+    private Vector3f collideWithWorld(CollisionPacket packet, List<RenderObject> renderedObjects, GameState state, int recursionDepth) {
         float unitScale = UNITS_PER_METER / 500.0f;
         float veryCloseDistance = 0.5f * unitScale;
         if (recursionDepth > 5) {
             return packet.getBasePoint();
         }
-        packet = checkCollision(loadedEntities, packet);
+        packet = checkCollision(renderedObjects, state, packet);
         if (!packet.hasFoundCollision()) {
             Vector3f finalPos = new Vector3f();
             packet.getBasePoint().add(packet.getEllipticVelocity(), finalPos);
@@ -124,39 +129,42 @@ public class Player extends Entity {
         packet.setNormalizedEllipticVelocity(new Vector3f(newVelocityVector).normalize());
         packet.setBasePoint(newBasePoint);
         packet.setFoundCollision(false);
-        return collideWithWorld(packet, loadedEntities, recursionDepth + 1);
+        return collideWithWorld(packet, renderedObjects, state, recursionDepth + 1);
     }
 
-    private CollisionPacket checkCollision(List<Entity> loadedEntities, CollisionPacket packet) {
+    private CollisionPacket checkCollision(List<RenderObject> renderedObjects, GameState state, CollisionPacket packet) {
         Matrix3f ellipticMatrix = MathUtil.getEllipticMatrix();
-        //Check every loaded entity except the player
-        for (Entity entity : loadedEntities) {
-            Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(entity);
-            List<Triangle> entityTriangles = entity.getTexturedModel().getRawModel().getTriangles();
-            //Check every triangle
-            for (Triangle triangle : entityTriangles) {
-                //Convert coordinates to elliptic basis
-                Vector3f[] verticesElliptic = CollisionUtil.convertToElliptic(ellipticMatrix, transformationMatrix, triangle);
-                packet = CollisionUtil.checkTriangle(packet, verticesElliptic[0], verticesElliptic[1], verticesElliptic[2]);
+        BoundingBox playerBox = new BoundingBox(new Vector3f(getPosition().x - PLAYER_HITBOX_X - 2, getPosition().y - PLAYER_HITBOX_Y - 2, getPosition().z - PLAYER_HITBOX_Z - 2),
+                new Vector3f(getPosition().x + PLAYER_HITBOX_X + 2, getPosition().y + PLAYER_HITBOX_Y + 2, getPosition().z + PLAYER_HITBOX_Z + 2));
+        Set<Triangle> closeTriangles = state.getCurrentTree().getCloseTriangles(playerBox);
+        for (RenderObject object : renderedObjects) {
+            Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(object);
+            List<Triangle> objectTriangles = object.getTexturedModel().getRawModel().getTriangles();
+            for (Triangle triangle : objectTriangles) {
+                Triangle worldTriangle = new Triangle(CollisionUtil.convertToWorld(transformationMatrix, triangle));
+                if (closeTriangles.contains(worldTriangle)) {
+                    Vector3f[] verticesElliptic = CollisionUtil.convertToElliptic(ellipticMatrix, worldTriangle);
+                    packet = CollisionUtil.checkTriangle(packet, verticesElliptic[0], verticesElliptic[1], verticesElliptic[2]);
+                }
             }
         }
         return packet;
     }
 
     private void checkInputs() {
-        checkMovement();
-        checkTurning();
+        checkForwardMovement();
+        checkSidewaysMovement();
         checkJump();
     }
 
-    private void checkTurning() {
+    private void checkSidewaysMovement() {
         long window = DisplayManager.getWindow();
         int aState = glfwGetKey(window, GLFW_KEY_A);
         int dState = glfwGetKey(window, GLFW_KEY_D);
-        if (dState == GLFW_PRESS) {
-            currentTurnSpeed = -TURN_SPEED;
-        } else if (aState == GLFW_PRESS) {
-            currentTurnSpeed = TURN_SPEED;
+        if (aState == GLFW_PRESS) {
+            currentSidewaysSpeed = SIDEWAYS_SPEED;
+        } else if (dState == GLFW_PRESS) {
+            currentSidewaysSpeed = -SIDEWAYS_SPEED;
         }
     }
 
@@ -168,14 +176,14 @@ public class Player extends Entity {
         }
     }
 
-    private void checkMovement() {
+    private void checkForwardMovement() {
         long window = DisplayManager.getWindow();
         int wState = glfwGetKey(window, GLFW_KEY_W);
         int sState = glfwGetKey(window, GLFW_KEY_S);
         if (wState == GLFW_PRESS) {
-            currentSpeed = RUN_SPEED;
+            currentForwardSpeed = FORWARD_SPEED;
         } else if (sState == GLFW_PRESS) {
-            currentSpeed = -RUN_SPEED;
+            currentForwardSpeed = -FORWARD_SPEED;
         }
     }
 
