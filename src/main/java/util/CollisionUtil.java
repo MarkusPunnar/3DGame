@@ -15,7 +15,7 @@ public class CollisionUtil {
         return basePoint.dot(plane.getNormalizedNormal()) + plane.getCoefficients()[3];
     }
 
-    public static CollisionPacket checkTriangle(CollisionPacket packet, Vector3f p1, Vector3f p2, Vector3f p3) {
+    public static void checkTriangle(CollisionPacket packet, Vector3f p1, Vector3f p2, Vector3f p3) {
         Plane3D trianglePlane = new Plane3D(p1, p2, p3);
         //Check only triangles facing the velocity vector
         if (trianglePlane.isFrontFacing(packet.getNormalizedEllipticVelocity())) {
@@ -27,7 +27,7 @@ public class CollisionUtil {
                 //Velocity is parallel to plane
                 if (Math.abs(signedDistanceToPlane) >= 1.0f) {
                     //No collision possible
-                    return packet;
+                    return;
                 } else {
                     //Sphere is embedded in plane
                     embeddedInPlane = true;
@@ -45,7 +45,7 @@ public class CollisionUtil {
             }
             if (t0 > 1.0f || t1 < 0.0f) {
                 //No collision possible
-                return packet;
+                return;
             }
             //Clamp to [0,1]
             if (t0 < 0.0f) t0 = 0.0f;
@@ -171,7 +171,6 @@ public class CollisionUtil {
                 }
             }
         }
-        return packet;
     }
 
     private static float checkCollisionWithVertex(CollisionPacket packet, Vector3f vertex, float currentCollisionTime) {

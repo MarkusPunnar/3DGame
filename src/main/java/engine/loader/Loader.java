@@ -5,9 +5,7 @@ import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
-import util.math.structure.Triangle;
 import util.octree.BoundingBox;
-import util.octree.OctTree;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -43,9 +41,50 @@ public class Loader {
         storeDataInAttributeList(0, 3, positions);
         storeDataInAttributeList(1, 2, textureCoords);
         storeDataInAttributeList(2, 3, normals);
-        List<Triangle> triangles = createTriangles(positions, indices);
+        BoundingBox modelBoundingBox = createBoundingBox(positions);
         unbindVAO();
-        return new RawModel(vaoID, indices.length, triangles);
+        return new RawModel(vaoID, indices.length, modelBoundingBox);
+    }
+
+    private BoundingBox createBoundingBox(float[] positions) {
+        float minX = Float.MAX_VALUE;
+        float maxX = Float.MIN_VALUE;
+        float minY = Float.MAX_VALUE;
+        float maxY = Float.MIN_VALUE;
+        float minZ = Float.MAX_VALUE;
+        float maxZ = Float.MIN_VALUE;
+        for (int i = 0; i < positions.length; i++) {
+            int rem = i % 3;
+            float coord = positions[i];
+            switch (rem) {
+                case 0:
+                    if (coord > maxX) {
+                        maxX = coord;
+                    }
+                    if (coord < minX) {
+                        minX = coord;
+                    }
+                    break;
+                case 1:
+                    if (coord > maxY) {
+                        maxY = coord;
+                    }
+                    if (coord < minY) {
+                        minY = coord;
+                    }
+                    break;
+                case 2:
+                    if (coord > maxZ) {
+                        maxZ = coord;
+                    }
+                    if (coord < minZ) {
+                        minZ = coord;
+                    }
+                    break;
+                default:
+            }
+        }
+        return new BoundingBox(new Vector3f(minX, minY , minZ), new Vector3f(maxX, maxY, maxZ));
     }
 
     public RawModel loadToVAO(float[] positions) {
@@ -54,24 +93,6 @@ public class Loader {
         storeDataInAttributeList(0, 2, positions);
         unbindVAO();
         return new RawModel(vaoID, positions.length / 2, null);
-    }
-
-    private List<Triangle> createTriangles(float[] positions, int[] indices) {
-        List<Triangle> triangles = new ArrayList<>();
-        for (int i = 0; i < indices.length;) {
-            Vector3f[] vertices = new Vector3f[3];
-            int current = 0;
-            while (current < 3) {
-                int index = indices[i];
-                Vector3f vertex = new Vector3f(positions[3 * index], positions[3 * index + 1], positions[3 * index + 2]);
-                vertices[i % 3] = vertex;
-                current++;
-                i++;
-            }
-            Triangle triangle = new Triangle(vertices);
-            triangles.add(triangle);
-        }
-        return triangles;
     }
 
     public int loadTexture(String fileName) {
@@ -89,7 +110,7 @@ public class Loader {
             try {
                 image = STBImage.stbi_load(Paths.get(location.toURI()).toString(), widthBuffer, heightBuffer, comp, 4);
                 if (image == null) {
-                    throw new IllegalArgumentException("Failed to load engine.texture image: " + STBImage.stbi_failure_reason());
+                    throw new IllegalArgumentException("Failed to load texture image: " + STBImage.stbi_failure_reason());
                 }
                 width = widthBuffer.get();
                 height = heightBuffer.get();

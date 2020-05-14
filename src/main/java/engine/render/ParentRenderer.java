@@ -5,7 +5,6 @@ import object.Entity;
 import object.Player;
 import object.env.Camera;
 import object.env.Light;
-import object.item.Slot;
 import object.terrain.Terrain;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
@@ -44,9 +43,9 @@ public class ParentRenderer {
     private Renderer terrainRenderer;
     private Renderer guiRenderer;
 
-    private Collection<RenderObject> entityBatches;
-    private Collection<RenderObject> terrains;
-    private Collection<RenderObject> guis;
+    private Collection<Entity> entityBatches;
+    private Collection<Terrain> terrains;
+    private Collection<GuiTexture> guis;
 
     private Matrix4f projectionMatrix;
     private Loader loader;
@@ -78,7 +77,7 @@ public class ParentRenderer {
 
 
 
-    private void processEntity(Entity entity) {
+    public void processEntity(Entity entity) {
         entityBatches.add(entity);
     }
 
@@ -112,7 +111,7 @@ public class ParentRenderer {
         terrains.clear();
     }
 
-    private void doRender(Renderer renderer, Collection<RenderObject> objects, Light sun, Camera camera) {
+    private void doRender(Renderer renderer, Collection<? extends RenderObject> objects, Light sun, Camera camera) {
         Shader shader = renderer.getShader();
         shader.start();
         if (sun != null && camera != null) {
@@ -144,7 +143,7 @@ public class ParentRenderer {
         return loader;
     }
 
-    public Collection<RenderObject> getGuis() {
+    public Collection<GuiTexture> getGuis() {
         return guis;
     }
 }

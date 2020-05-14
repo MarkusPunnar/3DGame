@@ -26,7 +26,7 @@ public class EntityRenderer implements Renderer {
         shader.stop();
     }
 
-    public void render(Collection<RenderObject> entities) {
+    public void render(Collection<? extends RenderObject> entities) {
         for (RenderObject entity : entities) {
             TexturedModel texturedModel = entity.getTexturedModel();
             checkCurrentBind(texturedModel);
@@ -40,12 +40,12 @@ public class EntityRenderer implements Renderer {
     private void checkCurrentBind(TexturedModel texturedModel) {
         if (currentTexture == null || !currentTexture.equals(texturedModel)) {
             unbindModel();
-            bindTexturedModel(texturedModel);
+            bindModel(texturedModel);
             currentTexture = texturedModel;
         }
     }
 
-    public void bindTexturedModel(TexturedModel texturedModel) {
+    public void bindModel(TexturedModel texturedModel) {
         RawModel rawModel = texturedModel.getRawModel();
         glBindVertexArray(rawModel.getVaoID());
         glEnableVertexAttribArray(0);

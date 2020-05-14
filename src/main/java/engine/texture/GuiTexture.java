@@ -7,7 +7,7 @@ import engine.render.RenderObject;
 
 import java.util.Objects;
 
-public class GuiTexture implements RenderObject {
+public class GuiTexture extends RenderObject {
 
     private static int INCREMENT = 0;
 
@@ -73,7 +73,6 @@ public class GuiTexture implements RenderObject {
         this.scale = scale;
     }
 
-    @Override
     public int getPriority() {
         return priority;
     }

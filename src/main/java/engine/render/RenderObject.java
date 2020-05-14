@@ -3,17 +3,15 @@ package engine.render;
 import engine.model.TexturedModel;
 import org.joml.Vector3f;
 
-public interface RenderObject {
+public abstract class RenderObject {
 
-    int getID();
+    public abstract int getID();
 
-    TexturedModel getTexturedModel();
+    public abstract TexturedModel getTexturedModel();
 
-    Vector3f getPosition();
+    public abstract Vector3f getPosition();
 
-    Vector3f getRotation();
+    public abstract Vector3f getRotation();
 
-    Vector3f getScaleVector();
-
-    int getPriority();
+    public abstract Vector3f getScaleVector();
 }

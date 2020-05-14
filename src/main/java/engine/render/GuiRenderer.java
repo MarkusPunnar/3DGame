@@ -27,7 +27,7 @@ public class GuiRenderer implements Renderer {
     }
 
     @Override
-    public void render(Collection<RenderObject> objects) {
+    public void render(Collection<? extends RenderObject> objects) {
         shader.start();
         GL30.glBindVertexArray(quadModel.getVaoID());
         GL20.glEnableVertexAttribArray(0);
@@ -54,7 +54,7 @@ public class GuiRenderer implements Renderer {
     }
 
     @Override
-    public void bindTexturedModel(TexturedModel model) {
+    public void bindModel(TexturedModel model) {
     }
 
     @Override

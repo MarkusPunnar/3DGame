@@ -30,7 +30,7 @@ public class Player extends Entity {
 
     private static final float FORWARD_SPEED = 30;
     private static final float SIDEWAYS_SPEED = 30;
-    private static final float JUMP_POWER = 40;
+    private static final float JUMP_POWER = 50;
     private static final float UNITS_PER_METER = 50;
     private static final float INTERACT_DISTANCE = 20f;
 
@@ -60,14 +60,17 @@ public class Player extends Entity {
         float distanceMovedSideways = currentSidewaysSpeed * DisplayManager.getFrameTime();
         dx -= (float) (Math.sin(Math.toRadians(getRotation().y - 90))) * distanceMovedSideways;
         dz -= (float) (Math.cos(Math.toRadians(getRotation().y - 90))) * distanceMovedSideways;
-        Vector3f velocityR3 = new Vector3f(dx, upwardsSpeed * DisplayManager.getFrameTime(), dz);
+        Vector3f velocityR3 = new Vector3f(dx, upwardsSpeed * DisplayManager.getFrameTime() * 2f, dz);
         renderedObjects.remove(this);
         checkCollisionsAndSlide(renderedObjects, state, velocityR3);
         renderedObjects.add(this);
         currentForwardSpeed = 0;
         currentSidewaysSpeed = 0;
+        if (getPosition().y < 0) {
+            getPosition().y = 0;
+        }
         if (upwardsSpeed > 0) {
-            upwardsSpeed--;
+            upwardsSpeed -= 75f * DisplayManager.getFrameTime();
         } else {
             upwardsSpeed = 0;
         }
@@ -78,14 +81,14 @@ public class Player extends Entity {
         Vector3f playerPosition = velocityR3.equals(new Vector3f()) ? playerPacket.getBasePoint() : collideWithWorld(playerPacket, renderedObjects, state,  0);
         Matrix3f ellipticInverse = MathUtil.getEllipticInverseMatrix();
         playerPacket.setBasePoint(playerPosition);
-        Vector3f ellipticVelocity = new Vector3f(0, -0.08f, 0);
+        Vector3f ellipticVelocity = new Vector3f(0, -0.09f, 0);
         playerPacket.setEllipticVelocity(ellipticVelocity);
         Vector3f normalizedVelocity = new Vector3f();
         playerPacket.setNormalizedEllipticVelocity(ellipticVelocity.normalize(normalizedVelocity));
         Vector3f finalPosition = collideWithWorld(playerPacket, renderedObjects, state, 0);
         finalPosition.mul(ellipticInverse);
         isInAir = !finalPosition.equals(playerPosition.mul(ellipticInverse), 0.01f);
-        setPosition(new Vector3f(finalPosition.x, finalPosition.y - 9, finalPosition.z));
+        setPosition(new Vector3f(finalPosition.x, finalPosition.y - PLAYER_HITBOX_Y, finalPosition.z));
     }
 
     private Vector3f collideWithWorld(CollisionPacket packet, List<RenderObject> renderedObjects, GameState state, int recursionDepth) {
@@ -94,7 +97,7 @@ public class Player extends Entity {
         if (recursionDepth > 5) {
             return packet.getBasePoint();
         }
-        packet = checkCollision(renderedObjects, state, packet);
+        checkCollision(renderedObjects, state, packet);
         if (!packet.hasFoundCollision()) {
             Vector3f finalPos = new Vector3f();
             packet.getBasePoint().add(packet.getEllipticVelocity(), finalPos);
@@ -115,6 +118,10 @@ public class Player extends Entity {
         Vector3f slidePlaneOrigin = new Vector3f(packet.getIntersectionPoint());
         Vector3f slidePlaneNormal = new Vector3f();
         newBasePoint.sub(packet.getIntersectionPoint(), slidePlaneNormal);
+        if (packet.getNearestDistance() == 0.0f && packet.hasFoundCollision()) {
+            newBasePoint.add(slidePlaneNormal.normalize(0.01f));
+            return newBasePoint;
+        }
         slidePlaneNormal.normalize();
         Plane3D slidingPlane = new Plane3D(slidePlaneNormal, slidePlaneOrigin);
         Vector3f newDestinationPoint = new Vector3f();
@@ -132,7 +139,7 @@ public class Player extends Entity {
         return collideWithWorld(packet, renderedObjects, state, recursionDepth + 1);
     }
 
-    private CollisionPacket checkCollision(List<RenderObject> renderedObjects, GameState state, CollisionPacket packet) {
+    private void checkCollision(List<RenderObject> renderedObjects, GameState state, CollisionPacket packet) {
         Matrix3f ellipticMatrix = MathUtil.getEllipticMatrix();
         BoundingBox playerBox = new BoundingBox(new Vector3f(getPosition().x - PLAYER_HITBOX_X - 2, getPosition().y - PLAYER_HITBOX_Y - 2, getPosition().z - PLAYER_HITBOX_Z - 2),
                 new Vector3f(getPosition().x + PLAYER_HITBOX_X + 2, getPosition().y + PLAYER_HITBOX_Y + 2, getPosition().z + PLAYER_HITBOX_Z + 2));
@@ -144,11 +151,10 @@ public class Player extends Entity {
                 Triangle worldTriangle = new Triangle(CollisionUtil.convertToWorld(transformationMatrix, triangle));
                 if (closeTriangles.contains(worldTriangle)) {
                     Vector3f[] verticesElliptic = CollisionUtil.convertToElliptic(ellipticMatrix, worldTriangle);
-                    packet = CollisionUtil.checkTriangle(packet, verticesElliptic[0], verticesElliptic[1], verticesElliptic[2]);
+                    CollisionUtil.checkTriangle(packet, verticesElliptic[0], verticesElliptic[1], verticesElliptic[2]);
                 }
             }
         }
-        return packet;
     }
 
     private void checkInputs() {
@@ -200,13 +206,12 @@ public class Player extends Entity {
         }
     }
 
-    public GameState interactWithObject(GameState state) {
+    public void interactWithObject(GameState state) {
         Interactable closestObject = state.getHandlerState().getClosestObject();
         float closestDistance = getPosition().distance(closestObject.getPosition());
         if (closestDistance < INTERACT_DISTANCE) {
             closestObject.interact();
             state = closestObject.handleGui(state);
         }
-        return state;
     }
 }

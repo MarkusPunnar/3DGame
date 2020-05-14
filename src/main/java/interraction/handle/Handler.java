@@ -4,5 +4,5 @@ import game.state.GameState;
 
 public interface Handler {
 
-    GameState handle(GameState state);
+    void handle(GameState state);
 }

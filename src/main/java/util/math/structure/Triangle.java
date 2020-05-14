@@ -17,6 +17,10 @@ public class Triangle {
         this.vertices = vertices;
     }
 
+    public Triangle(Vector3f p1, Vector3f p2, Vector3f p3) {
+        this.vertices = new Vector3f[]{p1, p2, p3};
+    }
+
     public Vector3f[] getVertices() {
         return vertices;
     }

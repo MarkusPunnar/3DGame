@@ -1,5 +1,6 @@
 package interraction.handle;
 
+import engine.DisplayManager;
 import engine.render.ParentRenderer;
 import engine.render.RenderObject;
 import engine.render.RenderRequest;
@@ -14,6 +15,7 @@ import object.Player;
 import object.item.Item;
 import object.item.Slot;
 import org.joml.Vector2f;
+import org.lwjgl.glfw.GLFW;
 import util.GuiComparator;
 import util.math.MathUtil;
 
@@ -32,7 +34,7 @@ public class RenderRequestHandler implements Handler {
         this.player = player;
     }
 
-    public GameState handle(GameState state) {
+    public void handle(GameState state) {
         Queue<RenderRequest> requests = state.getHandlerState().getRequests();
         while (requests.peek() != null) {
             RenderRequest request = requests.poll();
@@ -58,11 +60,13 @@ public class RenderRequestHandler implements Handler {
                             removeGui(List.of(GuiType.INVENTORY_TITLE, GuiType.SLOT, GuiType.SLOT_HOVER, GuiType.ICON));
                             state.setCurrentState(State.IN_GAME);
                             player.getInventory().setOpen(false);
+                            GLFW.glfwSetCursorPos(DisplayManager.getWindow(), DisplayManager.getWidth() / 2f, DisplayManager.getHeight() / 2f);
                             break;
                         case CHEST:
                             removeGui(List.of(GuiType.CHEST_TITLE, GuiType.SLOT, GuiType.SLOT_HOVER, GuiType.ICON));
                             state.setCurrentState(State.IN_GAME);
                             state.getHandlerState().setLastLooted(null);
+                            GLFW.glfwSetCursorPos(DisplayManager.getWindow(), DisplayManager.getWidth() / 2f, DisplayManager.getHeight() / 2f);
                             break;
                         default:
                     }
@@ -72,7 +76,6 @@ public class RenderRequestHandler implements Handler {
                 default:
             }
         }
-        return state;
     }
 
     private void removeGui(List<GuiType> typesToRemove) {

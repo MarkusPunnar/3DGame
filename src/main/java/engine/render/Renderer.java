@@ -11,11 +11,11 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 public interface Renderer {
 
-    void render(Collection<RenderObject> objects);
+    void render(Collection<? extends RenderObject> objects);
 
     Shader getShader();
 
-    void bindTexturedModel(TexturedModel model);
+    void bindModel(TexturedModel model);
 
     default void unbindModel() {
         glDisableVertexAttribArray(0);

@@ -6,7 +6,7 @@ import engine.render.RenderObject;
 
 import java.util.Objects;
 
-public class Entity implements RenderObject {
+public class Entity extends RenderObject {
 
     private TexturedModel texturedModel;
     private Vector3f position;
@@ -52,7 +52,7 @@ public class Entity implements RenderObject {
         return rotation;
     }
 
-    public void setRotationX(Vector3f rotation) {
+    public void setRotation(Vector3f rotation) {
         this.rotation = rotation;
     }
 
@@ -66,11 +66,6 @@ public class Entity implements RenderObject {
 
     public int getID() {
         return texturedModel.getModelID();
-    }
-
-    @Override
-    public int getPriority() {
-        return 0;
     }
 
     @Override

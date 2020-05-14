@@ -27,25 +27,17 @@ public class StaticShader extends ShaderProgram implements Shader {
 
     @Override
     protected void getAllUniformLocations() {
-        int transformationMatrixLocation = getUniformLocation("transformationMatrix");
-        int projectionMatrixLocation = getUniformLocation("projectionMatrix");
-        int viewMatrixLocation = getUniformLocation("viewMatrix");
-        int lightPositionLocation = getUniformLocation("lightPosition");
-        int lightColourLocation = getUniformLocation("lightColour");
-        int reflectivityLocation = getUniformLocation("reflectivity");
-        int shineDamperLocation = getUniformLocation("shineDamper");
-        int fakeLightingLocation = getUniformLocation("fakeLighting");
         if (uniformLocations == null) {
             uniformLocations = new HashMap<>();
         }
-        uniformLocations.put("transformationMatrix", transformationMatrixLocation);
-        uniformLocations.put("projectionMatrix", projectionMatrixLocation);
-        uniformLocations.put("viewMatrix", viewMatrixLocation);
-        uniformLocations.put("lightPosition", lightPositionLocation);
-        uniformLocations.put("lightColour", lightColourLocation);
-        uniformLocations.put("reflectivity", reflectivityLocation);
-        uniformLocations.put("shineDamper", shineDamperLocation);
-        uniformLocations.put("fakeLighting", fakeLightingLocation);
+        uniformLocations.put("transformationMatrix", getUniformLocation("transformationMatrix"));
+        uniformLocations.put("projectionMatrix", getUniformLocation("projectionMatrix"));
+        uniformLocations.put("viewMatrix", getUniformLocation("viewMatrix"));
+        uniformLocations.put("lightPosition", getUniformLocation("lightPosition"));
+        uniformLocations.put("lightColour", getUniformLocation("lightColour"));
+        uniformLocations.put("reflectivity", getUniformLocation("reflectivity"));
+        uniformLocations.put("shineDamper", getUniformLocation("shineDamper"));
+        uniformLocations.put("fakeLighting", getUniformLocation("fakeLighting"));
     }
 
     public void loadFakeLighting(boolean fakeLighting) {

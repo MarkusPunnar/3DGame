@@ -14,7 +14,7 @@ public class InteractionHandler implements Handler {
         this.player = player;
     }
 
-    public GameState handle(GameState state) {
+    public void handle(GameState state) {
         Vector3f playerPosition = player.getPosition();
         float closestDistance = Float.MAX_VALUE;
         for (Interactable object : state.getHandlerState().getInteractableObjects()) {
@@ -26,6 +26,5 @@ public class InteractionHandler implements Handler {
                 closestDistance = distance;
             }
         }
-        return state;
     }
 }

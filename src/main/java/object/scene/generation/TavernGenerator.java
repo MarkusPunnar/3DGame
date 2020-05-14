@@ -112,7 +112,7 @@ public class TavernGenerator implements Generator {
     public Player generatePlayer(Loader loader) throws IOException, URISyntaxException {
         ModelTexture purpleTexture = new ModelTexture(loader.loadTexture("purple"));
         TexturedModel playerModel = getTexturedModel("player", purpleTexture);
-        return new Player(playerModel, new Vector3f(-150,0,-50),new Vector3f(), new Vector3f(3));
+        return new Player(playerModel, new Vector3f(0,0,-25),new Vector3f(), new Vector3f(3));
     }
 
     private TexturedModel getTexturedModel(String objName, ModelTexture texture) throws IOException, URISyntaxException {

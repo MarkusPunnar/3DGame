@@ -3,11 +3,13 @@ package object.terrain;
 import engine.render.RenderObject;
 import engine.model.RawModel;
 import engine.model.TexturedModel;
+import engine.texture.TerrainTexture;
+import engine.texture.TerrainTexturePack;
 import org.joml.Vector3f;
 import engine.loader.Loader;
 import engine.texture.ModelTexture;
 
-public class Terrain implements RenderObject {
+public class Terrain extends RenderObject {
 
     private static final float SIZE = 200;
     private static final int VERTICES = 100;
@@ -15,11 +17,15 @@ public class Terrain implements RenderObject {
     private float x;
     private float z;
     private TexturedModel texturedModel;
+    private TerrainTexturePack texturePack;
+    private TerrainTexture blendMap;
 
-    public Terrain(int gridX, int gridZ, Loader loader, ModelTexture texture) {
+    public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack pack, TerrainTexture blendMap) {
         this.x = gridX * SIZE;
         this.z = gridZ * SIZE;
-        this.texturedModel = new TexturedModel(generateTerrain(loader), texture);
+        this.texturedModel = new TexturedModel(generateTerrain(loader), null);
+        this.texturePack = pack;
+        this.blendMap = blendMap;
     }
 
     private RawModel generateTerrain(Loader loader) {
@@ -88,8 +94,11 @@ public class Terrain implements RenderObject {
         return texturedModel.getModelID();
     }
 
-    @Override
-    public int getPriority() {
-        return 0;
+    public TerrainTexturePack getTexturePack() {
+        return texturePack;
+    }
+
+    public TerrainTexture getBlendMap() {
+        return blendMap;
     }
 }

@@ -58,6 +58,10 @@ public abstract class ShaderProgram {
         return glGetUniformLocation(programID, uniformName);
     }
 
+    protected void loadInt(int location, int value) {
+        glUniform1i(location, value);
+    }
+
     protected void loadFloat(int location, float value) {
         glUniform1f(location, value);
     }
