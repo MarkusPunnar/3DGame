@@ -24,6 +24,4 @@ public interface Renderer {
         glBindVertexArray(0);
         OpenGLUtil.enableCulling();
     }
-
-    void prepareObject(RenderObject object);
 }

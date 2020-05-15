@@ -12,6 +12,6 @@ public class Icon extends GuiTexture {
     }
 
     public Icon(Loader loader, String textureName) {
-        super(loader.loadTexture(textureName), null, null, GuiType.ICON);
+        super(loader.loadIconTexture(textureName), null, null, GuiType.ICON);
     }
 }

@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
+import util.math.structure.Triangle;
 import util.octree.BoundingBox;
 
 import java.net.URISyntaxException;
@@ -87,6 +88,24 @@ public class Loader {
         return new BoundingBox(new Vector3f(minX, minY , minZ), new Vector3f(maxX, maxY, maxZ));
     }
 
+    public List<Triangle> createTriangles(float[] positions, int[] indices) {
+        List<Triangle> triangles = new ArrayList<>();
+        for (int i = 0; i < indices.length;) {
+            Vector3f[] vertices = new Vector3f[3];
+            int current = 0;
+            while (current < 3) {
+                int index = indices[i];
+                Vector3f vertex = new Vector3f(positions[3 * index], positions[3 * index + 1], positions[3 * index + 2]);
+                vertices[i % 3] = vertex;
+                current++;
+                i++;
+            }
+            Triangle triangle = new Triangle(vertices);
+            triangles.add(triangle);
+        }
+        return triangles;
+    }
+
     public RawModel loadToVAO(float[] positions) {
         int vaoID = createVAO();
         VAOs.add(vaoID);
@@ -95,7 +114,23 @@ public class Loader {
         return new RawModel(vaoID, positions.length / 2, null);
     }
 
-    public int loadTexture(String fileName) {
+    public int loadIconTexture(String fileName) {
+        return loadTexture("icons/" + fileName);
+    }
+
+    public int loadObjectTexture(String fileName) {
+        return loadTexture("objects/" + fileName);
+    }
+
+    public int loadGuiTexture(String fileName) {
+        return loadTexture("guis/" + fileName);
+    }
+
+    public int loadTerrainTexture(String fileName) {
+        return loadTexture("terrains/" + fileName);
+    }
+
+    private int loadTexture(String fileName) {
         int textureID;
         int width, height;
         ByteBuffer image;

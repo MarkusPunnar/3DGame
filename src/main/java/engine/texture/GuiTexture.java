@@ -1,13 +1,14 @@
 package engine.texture;
 
 import engine.model.TexturedModel;
+import engine.shader.Shader;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import engine.render.RenderObject;
 
 import java.util.Objects;
 
-public class GuiTexture extends RenderObject {
+public class GuiTexture implements RenderObject {
 
     private static int INCREMENT = 0;
 
@@ -55,6 +56,11 @@ public class GuiTexture extends RenderObject {
     @Override
     public Vector3f getScaleVector() {
         return new Vector3f(scale, 1);
+    }
+
+    @Override
+    public void prepareObject(Shader shader) {
+
     }
 
     public GuiType getType() {

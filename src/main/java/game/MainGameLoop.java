@@ -2,17 +2,14 @@ package game;
 
 import engine.DisplayManager;
 import engine.loader.Loader;
-import engine.model.RawModel;
-import engine.model.TexturedModel;
 import engine.render.ParentRenderer;
 import engine.render.RenderObject;
-import engine.texture.ModelTexture;
 import engine.texture.TerrainTexture;
 import engine.texture.TerrainTexturePack;
 import game.state.GameState;
-import interraction.handle.*;
 import game.state.State;
 import interraction.MousePicker;
+import interraction.handle.*;
 import object.Entity;
 import object.Player;
 import object.env.Camera;
@@ -21,7 +18,6 @@ import object.scene.generation.TavernGenerator;
 import object.terrain.Terrain;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import util.math.structure.Triangle;
 import util.octree.BoundingBox;
 import util.octree.OctTree;
 
@@ -30,7 +26,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 public class MainGameLoop {
 
@@ -52,13 +49,13 @@ public class MainGameLoop {
 
         //temporary terrain code
         List<Terrain> terrains = new ArrayList<>();
-        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
-        TerrainTexture greenTexture = new TerrainTexture(loader.loadTexture("moss"));
-        TerrainTexture redTexture = new TerrainTexture(loader.loadTexture("mud"));
-        TerrainTexture blueTexture = new TerrainTexture(loader.loadTexture("path"));
+        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTerrainTexture("grass"));
+        TerrainTexture greenTexture = new TerrainTexture(loader.loadTerrainTexture("moss"));
+        TerrainTexture redTexture = new TerrainTexture(loader.loadTerrainTexture("mud"));
+        TerrainTexture blueTexture = new TerrainTexture(loader.loadTerrainTexture("path"));
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, redTexture, greenTexture, blueTexture);
-        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
-//        terrains.add(new Terrain(-1,-1, loader, texturePack, blendMap));
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTerrainTexture("blendMap"));
+        terrains.add(new Terrain(-1,-1, loader, texturePack, blendMap));
 //        terrains.add(new Terrain(0,0, loader, texturePack, blendMap));
 //        terrains.add(new Terrain(-1,0, loader, texturePack, blendMap));
 //        terrains.add(new Terrain(0,-1, loader, texturePack, blendMap));

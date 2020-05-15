@@ -72,4 +72,8 @@ public class RawModel {
     public List<Triangle> getTriangles() {
         return triangles;
     }
+
+    public void setTriangles(List<Triangle> triangles) {
+        this.triangles = triangles;
+    }
 }

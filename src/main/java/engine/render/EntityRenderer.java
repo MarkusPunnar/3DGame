@@ -5,7 +5,6 @@ import engine.model.TexturedModel;
 import org.joml.Matrix4f;
 import engine.shader.StaticShader;
 import util.OpenGLUtil;
-import util.math.MathUtil;
 
 import java.util.Collection;
 
@@ -30,7 +29,7 @@ public class EntityRenderer implements Renderer {
         for (RenderObject entity : entities) {
             TexturedModel texturedModel = entity.getTexturedModel();
             checkCurrentBind(texturedModel);
-            prepareObject(entity);
+            entity.prepareObject(shader);
             glDrawElements(GL_TRIANGLES, texturedModel.getRawModel().getVertexCount(), GL_UNSIGNED_INT, 0);
         }
         unbindModel();
@@ -58,11 +57,6 @@ public class EntityRenderer implements Renderer {
         }
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texturedModel.getTexture().getTextureID());
-    }
-
-    public void prepareObject(RenderObject entity) {
-        Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(entity.getPosition(), entity.getRotation(), entity.getScaleVector());
-        shader.doLoadMatrix(transformationMatrix, "transformationMatrix");
     }
 
     public StaticShader getShader() {

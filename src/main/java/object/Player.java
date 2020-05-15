@@ -30,7 +30,7 @@ public class Player extends Entity {
 
     private static final float FORWARD_SPEED = 30;
     private static final float SIDEWAYS_SPEED = 30;
-    private static final float JUMP_POWER = 50;
+    private static final float JUMP_POWER = 45;
     private static final float UNITS_PER_METER = 50;
     private static final float INTERACT_DISTANCE = 20f;
 
@@ -66,9 +66,6 @@ public class Player extends Entity {
         renderedObjects.add(this);
         currentForwardSpeed = 0;
         currentSidewaysSpeed = 0;
-        if (getPosition().y < 0) {
-            getPosition().y = 0;
-        }
         if (upwardsSpeed > 0) {
             upwardsSpeed -= 75f * DisplayManager.getFrameTime();
         } else {
@@ -81,7 +78,7 @@ public class Player extends Entity {
         Vector3f playerPosition = velocityR3.equals(new Vector3f()) ? playerPacket.getBasePoint() : collideWithWorld(playerPacket, renderedObjects, state,  0);
         Matrix3f ellipticInverse = MathUtil.getEllipticInverseMatrix();
         playerPacket.setBasePoint(playerPosition);
-        Vector3f ellipticVelocity = new Vector3f(0, -0.09f, 0);
+        Vector3f ellipticVelocity = new Vector3f(0, -0.08f, 0);
         playerPacket.setEllipticVelocity(ellipticVelocity);
         Vector3f normalizedVelocity = new Vector3f();
         playerPacket.setNormalizedEllipticVelocity(ellipticVelocity.normalize(normalizedVelocity));

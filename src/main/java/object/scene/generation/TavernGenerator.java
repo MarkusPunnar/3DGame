@@ -34,8 +34,10 @@ public class TavernGenerator implements Generator {
         List<Entity> roomEntities = new ArrayList<>();
         //Generate room background
         TexturedModel roomModel = getTexturedModel("room", false);
-        roomModel.getTexture().isTransparent(true);
         Entity room = new Entity(roomModel, new Vector3f(), new Vector3f(), new Vector3f(1));
+        ModelData roomBoxData = ObjectLoader.loadObjectModel("roombox");
+        room.getTexturedModel().getRawModel().setTriangles(loader.createTriangles(roomBoxData.getVertices(), roomBoxData.getIndices()));
+        room.getTexturedModel().getTexture().isTransparent(true);
         roomEntities.add(room);
         //Generate stools
         TexturedModel stoolModel = getTexturedModel("stool", false);
@@ -60,7 +62,18 @@ public class TavernGenerator implements Generator {
         roomEntities.addAll(generateBeds());
         //Generate chests
         roomEntities.addAll(generateChests());
+        //Generate nightstands
+        roomEntities.addAll(generateNightstands());
         return roomEntities;
+    }
+
+    private List<Entity> generateNightstands() throws IOException, URISyntaxException {
+        List<Entity> nightstands = new ArrayList<>();
+        TexturedModel nightstandModel = getTexturedModel("nightstand", false);
+        for (int i = 0; i < 3; i++) {
+            nightstands.add(new Entity(nightstandModel, new Vector3f(31, 34.5f, 50 - 46.5f * i), new Vector3f(0, -90, 0), new Vector3f(20)));
+        }
+        return nightstands;
     }
 
     private List<Entity> generateChests() throws IOException, URISyntaxException {
@@ -110,9 +123,9 @@ public class TavernGenerator implements Generator {
     }
 
     public Player generatePlayer(Loader loader) throws IOException, URISyntaxException {
-        ModelTexture purpleTexture = new ModelTexture(loader.loadTexture("purple"));
+        ModelTexture purpleTexture = new ModelTexture(loader.loadObjectTexture("purple"));
         TexturedModel playerModel = getTexturedModel("player", purpleTexture);
-        return new Player(playerModel, new Vector3f(0,0,-25),new Vector3f(), new Vector3f(3));
+        return new Player(playerModel, new Vector3f(-30,34.5f,-25),new Vector3f(), new Vector3f(3));
     }
 
     private TexturedModel getTexturedModel(String objName, ModelTexture texture) throws IOException, URISyntaxException {
@@ -124,7 +137,7 @@ public class TavernGenerator implements Generator {
     private TexturedModel getTexturedModel(String fileName, boolean setTransparent) throws URISyntaxException, IOException {
         ModelData modelData = ObjectLoader.loadObjectModel(fileName);
         RawModel rawModel = loader.loadToVAO(modelData.getVertices(), modelData.getIndices(), modelData.getNormals(), modelData.getTextureCoords());
-        ModelTexture texture =  new ModelTexture(loader.loadTexture(fileName));
+        ModelTexture texture =  new ModelTexture(loader.loadObjectTexture(fileName));
         texture.isTransparent(setTransparent);
         return new TexturedModel(rawModel, texture);
     }

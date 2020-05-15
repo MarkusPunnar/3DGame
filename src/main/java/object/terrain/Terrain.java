@@ -3,13 +3,21 @@ package object.terrain;
 import engine.render.RenderObject;
 import engine.model.RawModel;
 import engine.model.TexturedModel;
+import engine.shader.Shader;
 import engine.texture.TerrainTexture;
 import engine.texture.TerrainTexturePack;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import engine.loader.Loader;
 import engine.texture.ModelTexture;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import util.math.MathUtil;
 
-public class Terrain extends RenderObject {
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL13.*;
+
+public class Terrain implements RenderObject {
 
     private static final float SIZE = 200;
     private static final int VERTICES = 100;
@@ -64,6 +72,26 @@ public class Terrain extends RenderObject {
             }
         }
         return loader.loadToVAO(vertices, indices, normals, textureCoords);
+    }
+
+
+    public void prepareObject(Shader shader) {
+        bindTextures();
+        Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(getPosition(), getRotation(), getScaleVector());
+        shader.doLoadMatrix(transformationMatrix, "transformationMatrix");
+    }
+
+    private void bindTextures() {
+        GL13.glActiveTexture(GL_TEXTURE0);
+        GL11.glBindTexture(GL_TEXTURE_2D, texturePack.getBackgroundTexture().getTextureID());
+        GL13.glActiveTexture(GL_TEXTURE1);
+        GL11.glBindTexture(GL_TEXTURE_2D, texturePack.getRedTexture().getTextureID());
+        GL13.glActiveTexture(GL_TEXTURE2);
+        GL11.glBindTexture(GL_TEXTURE_2D, texturePack.getGreenTexture().getTextureID());
+        GL13.glActiveTexture(GL_TEXTURE3);
+        GL11.glBindTexture(GL_TEXTURE_2D, texturePack.getBlueTexture().getTextureID());
+        GL13.glActiveTexture(GL_TEXTURE4);
+        GL11.glBindTexture(GL_TEXTURE_2D, blendMap.getTextureID());
     }
 
     public float getX() {

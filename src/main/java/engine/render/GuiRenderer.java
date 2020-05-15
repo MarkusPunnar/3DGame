@@ -56,8 +56,4 @@ public class GuiRenderer implements Renderer {
     @Override
     public void bindModel(TexturedModel model) {
     }
-
-    @Override
-    public void prepareObject(RenderObject object) {
-    }
 }

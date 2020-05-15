@@ -16,11 +16,9 @@ import object.item.Item;
 import object.item.Slot;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
-import util.GuiComparator;
 import util.math.MathUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
@@ -125,7 +123,7 @@ public class RenderRequestHandler implements Handler {
 
     private void renderTitle(float n, RequestInfo requestInfo, GuiType titleType) {
         Loader loader = renderer.getLoader();
-        int titleTextureID = loader.loadTexture(titleType.getTextureName());
+        int titleTextureID = loader.loadGuiTexture(titleType.getTextureName());
         Vector2f position = requestInfo.getTexturePosition();
         Vector2f scale = requestInfo.getTextureScale();
         float height = scale.y / n;
@@ -139,8 +137,8 @@ public class RenderRequestHandler implements Handler {
         Vector2f scale = requestInfo.getTextureScale();
         Vector2f position = requestInfo.getTexturePosition();
         Loader loader = renderer.getLoader();
-        int slotTextureID = loader.loadTexture(GuiType.SLOT.getTextureName());
-        int slotHoverTextureID = loader.loadTexture(GuiType.SLOT_HOVER.getTextureName());
+        int slotTextureID = loader.loadGuiTexture(GuiType.SLOT.getTextureName());
+        int slotHoverTextureID = loader.loadGuiTexture(GuiType.SLOT_HOVER.getTextureName());
         float slotWidth = (2 * scale.x) / m;
         float slotHeight = (2 * scale.y) / n;
         Vector2f upperLeftCorner = new Vector2f(position.x - scale.x, position.y + scale.y - slotHeight);
