@@ -1,7 +1,7 @@
 package object.item;
 
 import engine.texture.GuiTexture;
-import engine.texture.GuiType;
+import engine.texture.ObjectType;
 import org.joml.Vector2f;
 
 public class Slot extends GuiTexture {
@@ -11,13 +11,13 @@ public class Slot extends GuiTexture {
     private int hoverTextureID;
 
     public Slot(int textureID, Vector2f position, Vector2f scale, int hoverTextureID) {
-        super(textureID, position, scale, GuiType.SLOT);
+        super(textureID, position, scale, ObjectType.SLOT);
         this.normalTextureID = textureID;
         this.hoverTextureID = hoverTextureID;
     }
 
     public Slot() {
-        super(0, null, null, GuiType.SLOT);
+        super(0, null, null, ObjectType.SLOT);
     }
 
     public Item getItem() {

@@ -1,6 +1,6 @@
 package engine.texture;
 
-public enum GuiType {
+public enum ObjectType {
 
     INVENTORY("inventory"),
     INVENTORY_TITLE("invtitle"),
@@ -8,7 +8,11 @@ public enum GuiType {
     CHEST("chest"),
     SLOT("slot"),
     SLOT_HOVER("hoverslot"),
-    ICON("");
+    ICON(""),
+
+    ENTITY(""),
+    TERRAIN(""),
+    TEXT("");
 
 
     private final String textureName;
@@ -17,7 +21,7 @@ public enum GuiType {
         return textureName;
     }
 
-    GuiType(String textureName) {
+    ObjectType(String textureName) {
         this.textureName = textureName;
     }
 }

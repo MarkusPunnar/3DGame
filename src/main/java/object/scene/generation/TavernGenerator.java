@@ -33,9 +33,9 @@ public class TavernGenerator implements Generator {
     public List<Entity> generate() throws IOException, URISyntaxException {
         List<Entity> roomEntities = new ArrayList<>();
         //Generate room background
-        TexturedModel roomModel = getTexturedModel("room", false);
-        Entity room = new Entity(roomModel, new Vector3f(), new Vector3f(), new Vector3f(1));
-        ModelData roomBoxData = ObjectLoader.loadObjectModel("roombox");
+        TexturedModel tavernModel = getTexturedModel("tavern", false);
+        Entity room = new Entity(tavernModel, new Vector3f(), new Vector3f(), new Vector3f(1));
+        ModelData roomBoxData = ObjectLoader.loadObjectModel("hitbox/tavernbox");
         room.getModel().getRawModel().setTriangles(loader.createTriangles(roomBoxData.getVertices(), roomBoxData.getIndices()));
         room.getModel().getTexture().isTransparent(true);
         roomEntities.add(room);
@@ -92,6 +92,8 @@ public class TavernGenerator implements Generator {
     private List<Entity> generateBeds() throws IOException, URISyntaxException {
         List<Entity> beds = new ArrayList<>();
         TexturedModel bedModel = getTexturedModel("bed", false);
+        ModelData bedModelData = ObjectLoader.loadObjectModel("hitbox/bedbox");
+        bedModel.getRawModel().setTriangles(loader.createTriangles(bedModelData.getVertices(), bedModelData.getIndices()));
         for (int i = 0; i < 3; i++) {
             beds.add(new Entity(bedModel, new Vector3f(20, 34.5f, 31 - 46.5f * i), new Vector3f(), new Vector3f(1)));
         }

@@ -2,6 +2,7 @@ package object;
 
 import engine.model.TexturedModel;
 import engine.shader.Shader;
+import engine.texture.ObjectType;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import engine.render.RenderObject;
@@ -75,6 +76,10 @@ public class Entity implements RenderObject {
     public void prepareObject(Shader shader) {
         Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(getPosition(), getRotation(), getScaleVector());
         shader.doLoadMatrix(transformationMatrix, "transformationMatrix");
+    }
+
+    public ObjectType getType() {
+        return ObjectType.ENTITY;
     }
 
     @Override

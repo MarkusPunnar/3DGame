@@ -1,6 +1,6 @@
 package interraction;
 
-import engine.texture.GuiType;
+import engine.texture.ObjectType;
 import object.item.Slot;
 import org.joml.Vector2f;
 
@@ -29,7 +29,7 @@ public class Inventory {
         slot.setHoverTextureID(hoverID);
         slot.setPosition(position);
         slot.setScale(scale);
-        slot.setType(GuiType.SLOT);
+        slot.setType(ObjectType.SLOT);
         if (!slot.isFree()) {
             slot.getItem().getIcon().setPosition(position);
         }

@@ -4,6 +4,7 @@ import engine.render.RenderObject;
 import engine.model.RawModel;
 import engine.model.TexturedModel;
 import engine.shader.Shader;
+import engine.texture.ObjectType;
 import engine.texture.TerrainTexture;
 import engine.texture.TerrainTexturePack;
 import org.joml.Matrix4f;
@@ -127,5 +128,9 @@ public class Terrain implements RenderObject {
 
     public TerrainTexture getBlendMap() {
         return blendMap;
+    }
+
+    public ObjectType getType() {
+        return ObjectType.TERRAIN;
     }
 }

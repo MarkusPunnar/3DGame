@@ -5,7 +5,7 @@ import game.state.GameState;
 import game.state.HandlerState;
 import engine.render.RequestInfo;
 import engine.render.RequestType;
-import engine.texture.GuiType;
+import engine.texture.ObjectType;
 import interraction.Interactable;
 import engine.model.TexturedModel;
 import interraction.Lootable;
@@ -56,11 +56,11 @@ public class Chest extends Entity implements Interactable, Lootable {
         HandlerState handlerState = state.getHandlerState();
         handlerState.setLastLooted(this);
         if (isOpened) {
-            handlerState.registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(-0.5f, 0.2f), new Vector2f(0.4f, 0.6f), GuiType.INVENTORY)));
-            handlerState.registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0.5f, 0.2f), new Vector2f(0.4f, 0.6f), GuiType.CHEST)));
+            handlerState.registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(-0.5f, 0.2f), new Vector2f(0.4f, 0.6f), ObjectType.INVENTORY)));
+            handlerState.registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0.5f, 0.2f), new Vector2f(0.4f, 0.6f), ObjectType.CHEST)));
         } else {
-            handlerState.registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(GuiType.INVENTORY)));
-            handlerState.registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(GuiType.CHEST)));
+            handlerState.registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(ObjectType.INVENTORY)));
+            handlerState.registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(ObjectType.CHEST)));
         }
         return state;
     }
@@ -86,7 +86,7 @@ public class Chest extends Entity implements Interactable, Lootable {
         slot.setHoverTextureID(hoverID);
         slot.setPosition(position);
         slot.setScale(scale);
-        slot.setType(GuiType.SLOT);
+        slot.setType(ObjectType.SLOT);
         if (slot.getItem() != null) {
             Icon itemIcon = slot.getItem().getIcon();
             itemIcon.setPosition(new Vector2f(slot.getPosition().x, slot.getPosition().y));

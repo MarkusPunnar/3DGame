@@ -1,5 +1,6 @@
 package engine.texture;
 
+import engine.font.GUIText;
 import engine.model.TexturedModel;
 import engine.shader.Shader;
 import org.joml.Vector2f;
@@ -15,16 +16,17 @@ public class GuiTexture implements RenderObject {
     private int textureID;
     private Vector2f position;
     private Vector2f scale;
-    private GuiType type;
+    private ObjectType type;
     private int priority;
+    private GUIText guiText;
 
-    public GuiTexture(int textureID, Vector2f position, Vector2f scale, GuiType type) {
+    public GuiTexture(int textureID, Vector2f position, Vector2f scale, ObjectType type) {
         this.textureID = textureID;
         this.position = position;
         this.scale = scale;
         this.type = type;
         this.priority = INCREMENT;
-        if (type == GuiType.ICON) {
+        if (type == ObjectType.ICON) {
             this.priority += 1000;
         }
         INCREMENT++;
@@ -63,11 +65,11 @@ public class GuiTexture implements RenderObject {
 
     }
 
-    public GuiType getType() {
+    public ObjectType getType() {
         return type;
     }
 
-    public void setType(GuiType type) {
+    public void setType(ObjectType type) {
         this.type = type;
     }
 
@@ -102,5 +104,13 @@ public class GuiTexture implements RenderObject {
     @Override
     public int hashCode() {
         return Objects.hash(textureID, position, scale, type, priority);
+    }
+
+    public GUIText getGuiText() {
+        return guiText;
+    }
+
+    public void setGuiText(GUIText guiText) {
+        this.guiText = guiText;
     }
 }

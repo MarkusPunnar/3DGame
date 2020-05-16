@@ -5,6 +5,7 @@ import engine.model.Model;
 import engine.model.TextModel;
 import engine.render.RenderObject;
 import engine.shader.Shader;
+import engine.texture.ObjectType;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL20;
@@ -102,5 +103,19 @@ public class GUIText implements RenderObject {
 
     public boolean isCentered() {
         return centerText;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public ObjectType getType() {
+        return ObjectType.TEXT;
+    }
+
+    public GUIText copyWithValueChange(String newValue) {
+        GUIText copy = this;
+        copy.setText(newValue);
+        return copy;
     }
 }
