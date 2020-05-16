@@ -5,20 +5,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GuiShader extends Shader {
+public class FontShader extends Shader {
 
-    private static final String VERTEX_FILE = "shaders/guiVertexShader.glsl";
-    private static final String FRAGMENT_FILE = "shaders/guiFragmentShader.glsl";
+    private static final String VERTEX_FILE = "shaders/fontVertexShader.glsl";
+    private static final String FRAGMENT_FILE = "shaders/fontFragmentShader.glsl";
 
     private Map<String, List<Integer>> uniformLocations;
 
-    public GuiShader() throws IOException {
+    public FontShader() throws IOException {
         super(VERTEX_FILE, FRAGMENT_FILE);
     }
 
     @Override
     protected void bindAttributes() {
-        bindAttribute(0, "positionCoords");
+        bindAttribute(0, "aPosition");
+        bindAttribute(1, "aTextureCoords");
     }
 
     @Override
@@ -26,7 +27,8 @@ public class GuiShader extends Shader {
         if (uniformLocations == null) {
             uniformLocations = new HashMap<>();
         }
-        uniformLocations.put("transformationMatrix", List.of(getUniformLocation("transformationMatrix")));
+        uniformLocations.put("colour", List.of(getUniformLocation("colour")));
+        uniformLocations.put("translation", List.of(getUniformLocation("translation")));
     }
 
     @Override

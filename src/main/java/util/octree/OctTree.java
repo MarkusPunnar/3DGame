@@ -1,7 +1,6 @@
 package util.octree;
 
 import engine.render.RenderObject;
-import object.Entity;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -55,7 +54,7 @@ public class OctTree {
     public void initTree(List<RenderObject> objects) {
         for (RenderObject entity : objects) {
             Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(entity);
-            for (Triangle triangle : entity.getTexturedModel().getRawModel().getTriangles()) {
+            for (Triangle triangle : entity.getModel().getRawModel().getTriangles()) {
                 Vector3f[] worldVertices = new Vector3f[3];
                 for (int i = 0; i < triangle.getVertices().length; i++) {
                     worldVertices[i] =  MathUtil.getCoordinates(new Vector4f(triangle.getVertices()[i], 1.0f).mul(transformationMatrix));

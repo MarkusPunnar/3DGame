@@ -1,7 +1,6 @@
 package engine.render;
 
-import engine.model.RawModel;
-import engine.model.TexturedModel;
+import engine.model.Model;
 import engine.shader.Shader;
 import engine.shader.TerrainShader;
 import org.joml.Matrix4f;
@@ -26,9 +25,9 @@ public class TerrainRenderer implements Renderer {
 
     public void render(Collection<? extends RenderObject> terrains) {
         for (RenderObject terrain : terrains) {
-            bindModel(terrain.getTexturedModel());
+            bindModel(terrain.getModel());
             terrain.prepareObject(shader);
-            glDrawElements(GL_TRIANGLES, terrain.getTexturedModel().getRawModel().getVertexCount(), GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, terrain.getModel().getVertexCount(), GL_UNSIGNED_INT, 0);
             unbindModel();
         }
     }
@@ -38,9 +37,8 @@ public class TerrainRenderer implements Renderer {
     }
 
     @Override
-    public void bindModel(TexturedModel texturedModel) {
-        RawModel rawModel = texturedModel.getRawModel();
-        glBindVertexArray(rawModel.getVaoID());
+    public void bindModel(Model model) {
+        glBindVertexArray(model.getModelID());
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);

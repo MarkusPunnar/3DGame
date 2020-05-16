@@ -1,6 +1,8 @@
 package interraction.handle;
 
 import engine.DisplayManager;
+import engine.font.GUIText;
+import engine.font.structure.FontType;
 import engine.render.ParentRenderer;
 import engine.render.RenderObject;
 import engine.render.RenderRequest;
@@ -15,9 +17,12 @@ import object.Player;
 import object.item.Item;
 import object.item.Slot;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import util.math.MathUtil;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -25,10 +30,12 @@ import java.util.Queue;
 public class RenderRequestHandler implements Handler {
 
     private final ParentRenderer renderer;
+    private FontType font;
     private final Player player;
 
-    public RenderRequestHandler(ParentRenderer renderer, Player player) {
+    public RenderRequestHandler(ParentRenderer renderer, Player player, String fontName) throws IOException, URISyntaxException {
         this.renderer = renderer;
+        this.font = new FontType(renderer.getLoader().loadFontAtlas(fontName));
         this.player = player;
     }
 
@@ -116,7 +123,17 @@ public class RenderRequestHandler implements Handler {
         for (Slot slot : content) {
             Item slotItem = slot.getItem();
             if (slotItem != null) {
+                GUIText itemText = slotItem.getText();
+                if (itemText == null) {
+                    Vector3f iconPosition = slotItem.getIcon().getPosition();
+                    itemText = new GUIText(String.valueOf(slotItem.getAmount()), 0.6f,
+                            new Vector2f((1 + iconPosition.x) / 2f + slotItem.getPaddingX(), Math.abs(iconPosition.y - 1) / 2f + slotItem.getPaddingY()),
+                            1f, font, false);
+                    itemText.setColour(1, 1, 1);
+                    slotItem.setText(itemText);
+                }
                 renderer.processGui(slotItem.getIcon());
+                renderer.loadText(itemText);
             }
         }
     }

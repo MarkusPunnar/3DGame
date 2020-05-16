@@ -1,18 +1,17 @@
 package engine.shader;
 
-import object.env.Light;
-import org.joml.Matrix4f;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class TerrainShader extends ShaderProgram implements Shader {
+public class TerrainShader extends Shader {
 
     private static final String VERTEX_FILE = "shaders/terrainVertexShader.glsl";
     private static final String FRAGMENT_FILE = "shaders/terrainFragmentShader.glsl";
 
-    private Map<String, Integer> uniformLocations;
+    private Map<String, List<Integer>> uniformLocations;
 
     public TerrainShader() throws IOException {
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -26,43 +25,48 @@ public class TerrainShader extends ShaderProgram implements Shader {
     }
 
     @Override
-    protected void getAllUniformLocations() {
+    protected void initUniformLocations() {
         if (uniformLocations == null) {
             uniformLocations = new HashMap<>();
         }
-        uniformLocations.put("transformationMatrix", getUniformLocation("transformationMatrix"));
-        uniformLocations.put("projectionMatrix", getUniformLocation("projectionMatrix"));
-        uniformLocations.put("viewMatrix", getUniformLocation("viewMatrix"));
-        uniformLocations.put("lightPosition", getUniformLocation("lightPosition"));
-        uniformLocations.put("lightColour", getUniformLocation("lightColour"));
-        uniformLocations.put("reflectivity", getUniformLocation("reflectivity"));
-        uniformLocations.put("shineDamper", getUniformLocation("shineDamper"));
-        uniformLocations.put("backgroundSampler", getUniformLocation("backgroundSampler"));
-        uniformLocations.put("rSampler", getUniformLocation("rSampler"));
-        uniformLocations.put("gSampler", getUniformLocation("gSampler"));
-        uniformLocations.put("bSampler", getUniformLocation("bSampler"));
-        uniformLocations.put("blendMapSampler", getUniformLocation("blendMapSampler"));
+        uniformLocations.put("transformationMatrix", List.of(getUniformLocation("transformationMatrix")));
+        uniformLocations.put("projectionMatrix", List.of(getUniformLocation("projectionMatrix")));
+        uniformLocations.put("viewMatrix", List.of(getUniformLocation("viewMatrix")));
+        uniformLocations.put("reflectivity", List.of(getUniformLocation("viewMatrix")));
+        uniformLocations.put("shineDamper", List.of(getUniformLocation("shineDamper")));
+        uniformLocations.put("backgroundSampler", List.of(getUniformLocation("backgroundSampler")));
+        uniformLocations.put("rSampler", List.of(getUniformLocation("rSampler")));
+        uniformLocations.put("gSampler", List.of(getUniformLocation("gSampler")));
+        uniformLocations.put("bSampler", List.of(getUniformLocation("bSampler")));
+        uniformLocations.put("blendMapSampler", List.of(getUniformLocation("blendMapSampler")));
+        List<Integer> lightPositions = new ArrayList<>();
+        List<Integer> lightColours = new ArrayList<>();
+        List<Integer> attenuations = new ArrayList<>();
+        for (int i = 0; i < MAX_LIGHTS; i++) {
+            lightPositions.add(getUniformLocation("lightPosition[" + i + "]"));
+            lightColours.add(getUniformLocation("lightColour[" + i + "]"));
+            attenuations.add(getUniformLocation("attenuation[" + i + "]"));
+        }
+        uniformLocations.put("lightPosition", lightPositions);
+        uniformLocations.put("lightColour", lightColours);
+        uniformLocations.put("attenuation", attenuations);
     }
 
     public void connectTextureUnits() {
-        loadInt(uniformLocations.get("backgroundSampler"), 0);
-        loadInt(uniformLocations.get("rSampler"), 1);
-        loadInt(uniformLocations.get("gSampler"), 2);
-        loadInt(uniformLocations.get("bSampler"), 3);
-        loadInt(uniformLocations.get("blendMapSampler"), 4);
-    }
-
-    public void loadLight(Light light) {
-        loadVector(uniformLocations.get("lightPosition"), light.getPosition());
-        loadVector(uniformLocations.get("lightColour"), light.getColour());
+        loadInt(uniformLocations.get("backgroundSampler").get(0), 0);
+        loadInt(uniformLocations.get("rSampler").get(0), 1);
+        loadInt(uniformLocations.get("gSampler").get(0), 2);
+        loadInt(uniformLocations.get("bSampler").get(0), 3);
+        loadInt(uniformLocations.get("blendMapSampler").get(0), 4);
     }
 
     public void loadShineVariables(float reflectivity, float shineDamper) {
-        loadFloat(uniformLocations.get("reflectivity"), reflectivity);
-        loadFloat(uniformLocations.get("shineDamper"), shineDamper);
+        loadFloat(uniformLocations.get("reflectivity").get(0), reflectivity);
+        loadFloat(uniformLocations.get("shineDamper").get(0), shineDamper);
     }
 
-    public void doLoadMatrix(Matrix4f matrix, String uniformName) {
-        loadMatrix(uniformLocations.get(uniformName), matrix);
+    @Override
+    public Map<String, List<Integer>> getUniformLocations() {
+        return uniformLocations;
     }
 }

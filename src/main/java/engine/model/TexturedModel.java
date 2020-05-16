@@ -1,8 +1,15 @@
 package engine.model;
 
+import engine.shader.Shader;
 import engine.texture.ModelTexture;
+import util.OpenGLUtil;
 
-public class TexturedModel {
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+
+public class TexturedModel implements Model {
 
     private RawModel rawModel;
     private ModelTexture texture;
@@ -22,5 +29,22 @@ public class TexturedModel {
 
     public int getModelID() {
         return rawModel.getVaoID();
+    }
+
+    public int getVertexCount() {
+        return rawModel.getVertexCount();
+    }
+
+    @Override
+    public void prepareShader(Shader shader) {
+        shader.doLoadFloat(getTexture().getReflectivity(), "reflectivity");
+        shader.doLoadFloat(getTexture().getShineDamper(), "shineDamper");
+        float fakeLighting = getTexture().useFakeLighting() ? 1 : 0;
+        shader.doLoadFloat(fakeLighting, "fakeLighting");
+        if (getTexture().isTransparent()) {
+            OpenGLUtil.disableCulling();
+        }
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, getTexture().getTextureID());
     }
 }

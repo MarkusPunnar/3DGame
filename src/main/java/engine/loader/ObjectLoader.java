@@ -18,7 +18,7 @@ public class ObjectLoader {
     public static ModelData loadObjectModel(String fileName) throws URISyntaxException, IOException {
         URL location = ObjectLoader.class.getClassLoader().getResource("models/" + fileName + ".obj");
         if (location == null) {
-            throw new IllegalArgumentException("Object engine.model file not found");
+            throw new IllegalArgumentException("Object model file not found");
         }
         List<String> lines = Files.readAllLines(Paths.get(location.toURI()));
         List<VertexData> vertices = new ArrayList<>();

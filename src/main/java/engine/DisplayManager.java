@@ -1,6 +1,5 @@
 package engine;
 
-import com.sun.jdi.IntegerValue;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;

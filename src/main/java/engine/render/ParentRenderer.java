@@ -1,14 +1,19 @@
 package engine.render;
 
+import engine.font.GUIText;
+import engine.font.structure.FontType;
+import engine.font.structure.TextMeshData;
 import engine.loader.Loader;
+import engine.shader.FontShader;
+import engine.shader.Shader;
 import object.Entity;
 import object.Player;
 import object.env.Camera;
 import object.env.Light;
 import object.terrain.Terrain;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.system.MemoryStack;
-import engine.shader.Shader;
 import engine.shader.StaticShader;
 import engine.shader.TerrainShader;
 import engine.texture.GuiTexture;
@@ -19,10 +24,7 @@ import util.math.MathUtil;
 
 import java.io.IOException;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
@@ -42,10 +44,12 @@ public class ParentRenderer {
     private Renderer entityRenderer;
     private Renderer terrainRenderer;
     private Renderer guiRenderer;
+    private Renderer fontRenderer;
 
     private Collection<Entity> entityBatches;
     private Collection<Terrain> terrains;
     private Collection<GuiTexture> guis;
+    private Map<FontType, List<GUIText>> texts;
 
     private Matrix4f projectionMatrix;
     private Loader loader;
@@ -56,9 +60,11 @@ public class ParentRenderer {
         this.entityRenderer = new EntityRenderer(new StaticShader(), projectionMatrix);
         this.terrainRenderer = new TerrainRenderer(new TerrainShader(), projectionMatrix);
         this.guiRenderer = new GuiRenderer(loader);
+        this.fontRenderer = new FontRenderer(new FontShader());
         this.entityBatches = new TreeSet<>(new ObjectComparator());
         this.terrains = new ArrayList<>();
         this.guis = new TreeSet<>(new GuiComparator());
+        this.texts = new HashMap<>();
         this.loader = loader;
     }
 
@@ -77,7 +83,7 @@ public class ParentRenderer {
 
 
 
-    public void processEntity(Entity entity) {
+    private void processEntity(Entity entity) {
         entityBatches.add(entity);
     }
 
@@ -102,20 +108,25 @@ public class ParentRenderer {
         processEntity(player);
     }
 
-    public void renderObjects(Light sun, Camera camera) {
+    public void renderObjects(List<Light> lights, Camera camera) {
         prepare();
-        doRender(entityRenderer, entityBatches, sun, camera);
-        doRender(terrainRenderer, terrains, sun, camera);
+        doRender(entityRenderer, entityBatches, lights, camera);
+        doRender(terrainRenderer, terrains, lights, camera);
         doRender(guiRenderer, guis, null, null);
+        for (FontType fontType : texts.keySet()) {
+            GL13.glActiveTexture(GL13.GL_TEXTURE0);
+            GL13.glBindTexture(GL_TEXTURE_2D, fontType.getTextureAtlas());
+            doRender(fontRenderer, texts.get(fontType), null, null);
+        }
         entityBatches.clear();
         terrains.clear();
     }
 
-    private void doRender(Renderer renderer, Collection<? extends RenderObject> objects, Light sun, Camera camera) {
+    private void doRender(Renderer renderer, Collection<? extends RenderObject> objects, List<Light> lights, Camera camera) {
         Shader shader = renderer.getShader();
         shader.start();
-        if (sun != null && camera != null) {
-            shader.loadLight(sun);
+        if (lights != null && camera != null) {
+            shader.loadLights(lights, shader.getUniformLocations());
             shader.doLoadMatrix(MathUtil.createViewMatrix(camera), "viewMatrix");
         }
         renderer.render(objects);
@@ -133,6 +144,30 @@ public class ParentRenderer {
         entityRenderer.getShader().cleanUp();
         terrainRenderer.getShader().cleanUp();
         guiRenderer.getShader().cleanUp();
+        fontRenderer.getShader().cleanUp();
+    }
+
+    public void loadText(GUIText text) {
+        FontType fontType = text.getFont();
+        TextMeshData meshData = fontType.loadText(text);
+        int vaoID = loader.loadToVAO(meshData.getVertices(), meshData.getTextureCoords());
+        text.setMeshInfo(vaoID, meshData.getVertexCount());
+        if (texts.containsKey(fontType)) {
+            List<GUIText> fontTexts = texts.get(fontType);
+            fontTexts.add(text);
+        } else {
+            List<GUIText> fontTexts = new ArrayList<>();
+            fontTexts.add(text);
+            texts.put(fontType, fontTexts);
+        }
+    }
+
+    public void removeText(GUIText text) {
+        List<GUIText> fontTexts = texts.get(text.getFont());
+        fontTexts.remove(text);
+        if (fontTexts.isEmpty()) {
+            texts.remove(text.getFont());
+        }
     }
 
     public Matrix4f getProjectionMatrix() {

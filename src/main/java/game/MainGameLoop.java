@@ -1,6 +1,9 @@
 package game;
 
 import engine.DisplayManager;
+import engine.font.GUIText;
+import engine.font.structure.FontFile;
+import engine.font.structure.FontType;
 import engine.loader.Loader;
 import engine.render.ParentRenderer;
 import engine.render.RenderObject;
@@ -16,6 +19,7 @@ import object.env.Camera;
 import object.env.Light;
 import object.scene.generation.TavernGenerator;
 import object.terrain.Terrain;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import util.octree.BoundingBox;
@@ -40,7 +44,16 @@ public class MainGameLoop {
         Player player = tavernGenerator.generatePlayer(loader);
         List<Entity> roomEntities = tavernGenerator.generate();
         OctTree octTree =  new OctTree(new BoundingBox(new Vector3f(-400, -1, -400), new Vector3f(200, 100, 200)));
-        Light light = new Light(new Vector3f(3000, 5000, 10000), new Vector3f(1, 1, 1));
+
+
+        //temporary light code
+        Light sun = new Light(new Vector3f(3000, 5000, 10000), new Vector3f(1, 1, 1));
+        Light testLight = new Light(new Vector3f(-100, 15, -136), new Vector3f(0, 1, 0), new Vector3f(0.2f, 0.01f, 0.002f));
+        List<Light> lights = new ArrayList<>();
+        lights.add(sun);
+        lights.add(testLight);
+
+
         Camera camera = new Camera(player);
         MousePicker mousePicker = new MousePicker(renderer.getProjectionMatrix(), camera);
         camera.setMousePicker(mousePicker);
@@ -56,9 +69,11 @@ public class MainGameLoop {
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, redTexture, greenTexture, blueTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTerrainTexture("blendMap"));
         terrains.add(new Terrain(-1,-1, loader, texturePack, blendMap));
-//        terrains.add(new Terrain(0,0, loader, texturePack, blendMap));
-//        terrains.add(new Terrain(-1,0, loader, texturePack, blendMap));
-//        terrains.add(new Terrain(0,-1, loader, texturePack, blendMap));
+        terrains.add(new Terrain(0,0, loader, texturePack, blendMap));
+        terrains.add(new Terrain(-1,0, loader, texturePack, blendMap));
+        terrains.add(new Terrain(0,-1, loader, texturePack, blendMap));
+
+
         List<RenderObject> renderObjects = new ArrayList<>(roomEntities);
         renderObjects.addAll(terrains);
         octTree.initTree(renderObjects);
@@ -75,7 +90,7 @@ public class MainGameLoop {
             for (Handler handler : handlers) {
                 handler.handle(gameState);
             }
-            renderer.renderObjects(light, camera);
+            renderer.renderObjects(lights, camera);
             DisplayManager.updateDisplay();
         }
         renderer.cleanUp();
@@ -83,10 +98,10 @@ public class MainGameLoop {
         DisplayManager.closeDisplay();
     }
 
-    private static List<Handler> initHandlers(Player player, ParentRenderer renderer, MousePicker mousePicker) {
+    private static List<Handler> initHandlers(Player player, ParentRenderer renderer, MousePicker mousePicker) throws IOException, URISyntaxException {
         List<Handler> handlers = new ArrayList<>();
         handlers.add(new InteractionHandler(player));
-        handlers.add(new RenderRequestHandler(renderer, player));
+        handlers.add(new RenderRequestHandler(renderer, player, "gamefont"));
         handlers.add(new InventoryHandler(player, mousePicker));
         handlers.add(new LootingHandler(player, mousePicker));
         return handlers;

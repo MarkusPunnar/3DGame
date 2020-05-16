@@ -9,7 +9,6 @@ import engine.texture.TerrainTexturePack;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import engine.loader.Loader;
-import engine.texture.ModelTexture;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import util.math.MathUtil;
@@ -114,7 +113,7 @@ public class Terrain implements RenderObject {
         return new Vector3f(1);
     }
 
-    public TexturedModel getTexturedModel() {
+    public TexturedModel getModel() {
         return texturedModel;
     }
 

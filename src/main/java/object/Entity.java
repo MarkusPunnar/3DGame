@@ -35,7 +35,7 @@ public class Entity implements RenderObject {
         rotation.z += rz;
     }
 
-    public TexturedModel getTexturedModel() {
+    public TexturedModel getModel() {
         return texturedModel;
     }
 

@@ -1,6 +1,5 @@
 package object;
 
-import engine.loader.Loader;
 import engine.model.TexturedModel;
 import engine.render.RenderObject;
 import engine.render.RenderRequest;
@@ -34,9 +33,9 @@ public class Player extends Entity {
     private static final float UNITS_PER_METER = 50;
     private static final float INTERACT_DISTANCE = 20f;
 
-    public static final float PLAYER_HITBOX_X = 6f;
+    public static final float PLAYER_HITBOX_X = 4.5f;
     public static final float PLAYER_HITBOX_Y = 9f;
-    public static final float PLAYER_HITBOX_Z = 2.5f;
+    public static final float PLAYER_HITBOX_Z = 4.5f;
 
     private float currentForwardSpeed;
     private float currentSidewaysSpeed;
@@ -143,7 +142,7 @@ public class Player extends Entity {
         Set<Triangle> closeTriangles = state.getCurrentTree().getCloseTriangles(playerBox);
         for (RenderObject object : renderedObjects) {
             Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(object);
-            List<Triangle> objectTriangles = object.getTexturedModel().getRawModel().getTriangles();
+            List<Triangle> objectTriangles = object.getModel().getRawModel().getTriangles();
             for (Triangle triangle : objectTriangles) {
                 Triangle worldTriangle = new Triangle(CollisionUtil.convertToWorld(transformationMatrix, triangle));
                 if (closeTriangles.contains(worldTriangle)) {

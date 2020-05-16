@@ -31,7 +31,7 @@ public class HandlerUtil {
         return activeSlot;
     }
 
-    public static GameState moveItems(Slot[] source, Slot[] destination, GameState state, MousePicker mousePicker) {
+    public static void moveItems(Slot[] source, Slot[] destination, GameState state, MousePicker mousePicker) {
         Vector2f currentMousePosition = mousePicker.calculateDeviceCoords();
         Item bindedItem = state.getHandlerState().getBindedItem();
         int leftMouseButtonState = GLFW.glfwGetMouseButton(DisplayManager.getWindow(), GLFW.GLFW_MOUSE_BUTTON_LEFT);
@@ -54,11 +54,12 @@ public class HandlerUtil {
             if (leftMouseButtonPressed) {
                 //Move item
                 bindedItem.getIcon().setPosition(currentMousePosition);
+                bindedItem.getText().setPosition( new Vector2f((1 + currentMousePosition.x) / 2f + bindedItem.getPaddingX(),
+                        Math.abs(currentMousePosition.y - 1) / 2f + bindedItem.getPaddingY()));
             } else {
                 placeItem(source, destination, state, currentMousePosition, bindedItem);
             }
         }
-        return state;
     }
 
     private static void placeItem(Slot[] source, Slot[] destination, GameState state, Vector2f currentMousePosition, Item bindedItem) {
@@ -74,6 +75,8 @@ public class HandlerUtil {
         if (selectedSlot.getItem() == null) {
             selectedSlot.setItem(bindedItem);
             bindedItem.getIcon().setPosition(new Vector2f(selectedSlot.getPosition().x, selectedSlot.getPosition().y));
+            bindedItem.getText().setPosition( new Vector2f((1 + selectedSlot.getPosition().x) / 2f + bindedItem.getPaddingX(),
+                    Math.abs(selectedSlot.getPosition().y - 1) / 2f + bindedItem.getPaddingY()));
             lastInteracted.setItem(null);
         } else {
             if (!selectedSlot.equals(lastInteracted)) {

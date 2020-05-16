@@ -47,6 +47,15 @@ public class Loader {
         return new RawModel(vaoID, indices.length, modelBoundingBox);
     }
 
+    public int loadToVAO(float[] positions, float[] textureCoords) {
+        int vaoID = createVAO();
+        VAOs.add(vaoID);
+        storeDataInAttributeList(0, 2, positions);
+        storeDataInAttributeList(1, 2, textureCoords);
+        unbindVAO();
+        return vaoID;
+    }
+
     private BoundingBox createBoundingBox(float[] positions) {
         float minX = Float.MAX_VALUE;
         float maxX = Float.MIN_VALUE;
@@ -128,6 +137,10 @@ public class Loader {
 
     public int loadTerrainTexture(String fileName) {
         return loadTexture("terrains/" + fileName);
+    }
+
+    public int loadFontAtlas(String fileName) {
+        return loadTexture("fonts/" + fileName);
     }
 
     private int loadTexture(String fileName) {

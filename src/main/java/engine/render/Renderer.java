@@ -1,6 +1,6 @@
 package engine.render;
 
-import engine.model.TexturedModel;
+import engine.model.Model;
 import engine.shader.Shader;
 import util.OpenGLUtil;
 
@@ -15,7 +15,7 @@ public interface Renderer {
 
     Shader getShader();
 
-    void bindModel(TexturedModel model);
+    void bindModel(Model model);
 
     default void unbindModel() {
         glDisableVertexAttribArray(0);

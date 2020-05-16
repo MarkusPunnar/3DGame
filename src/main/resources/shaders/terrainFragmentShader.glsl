@@ -2,7 +2,7 @@
 
 in vec2 textureCoords;
 in vec3 normalCoords;
-in vec3 lightCoords;
+in vec3 lightCoords[4];
 in vec3 fragmentCoords;
 
 out vec4 outColour;
@@ -13,8 +13,9 @@ uniform sampler2D gSampler;
 uniform sampler2D bSampler;
 uniform sampler2D blendMapSampler;
 
-uniform vec3 lightColour;
+uniform vec3 lightColour[4];
 uniform vec3 cameraCoords;
+uniform vec3 attenuation[4];
 
 uniform float reflectivity;
 uniform float shineDamper;
@@ -37,19 +38,29 @@ void main (void) {
 
     vec4 totalColour = backgroundColour + rColour + gColour + bColour;
 
-    //Diffuse lighting calculations
-    vec3 normalizedNormal = normalize(normalCoords);
-    vec3 normalizedLight = normalize(lightCoords - fragmentCoords);
-    float lightDot = dot(normalizedNormal, normalizedLight);
-    vec3 diffuse = max(lightDot, 0.0) * lightColour;
-    //Ambient lighting calculations
-    vec3 ambient = ambientStrength * lightColour;
-    //Specular lighting calculations
-    vec3 normalizedView = normalize(-fragmentCoords);
-    vec3 reflectedLight = reflect(-normalizedLight, normalizedNormal);
-    float specularValue = pow(max(dot(normalizedView, reflectedLight), 0.0), 32);
-    vec3 specular = specularStrength * specularValue * lightColour;
-    //Set final colour
-    vec3 lighting = ambient + diffuse + specular;
+    vec3 totalDiffuse = vec3(0.0);
+    vec3 totalSpecular = vec3(0.0);
+    vec3 totalAmbient = vec3(0.0);
+    for(int i = 0; i < 4; i++) {
+        vec3 toLightVector = lightCoords[i] - fragmentCoords;
+        float distance = length(toLightVector);
+        float attFactor = attenuation[i].x + attenuation[i].y * distance + attenuation[i].z * distance * distance;
+        //Diffuse lighting calculations
+        vec3 normalizedNormal = normalize(normalCoords);
+        vec3 normalizedLight = normalize(toLightVector);
+        float lightDot = dot(normalizedNormal, normalizedLight);
+        vec3 diffuse = max(lightDot, 0.0) * lightColour[i];
+        //Specular lighting calculations
+        vec3 normalizedView = normalize(-fragmentCoords);
+        vec3 reflectedLight = reflect(-normalizedLight, normalizedNormal);
+        float specularValue = pow(max(dot(normalizedView, reflectedLight), 0.0), 32);
+        vec3 specular = specularStrength * specularValue * lightColour[i];
+        //Set final colour
+        totalDiffuse = totalDiffuse + diffuse / attFactor;
+        totalSpecular = totalSpecular + specular / attFactor;
+    }
+    totalDiffuse = max(totalDiffuse, ambientStrength);
+    vec3 lighting = totalDiffuse + totalSpecular;
+
     outColour = vec4(lighting, 1.0) * totalColour;
 }

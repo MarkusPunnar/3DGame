@@ -1,18 +1,17 @@
 package engine.shader;
 
-import object.env.Light;
-import org.joml.Matrix4f;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class StaticShader extends ShaderProgram implements Shader {
+public class StaticShader extends Shader {
 
     private static final String VERTEX_FILE = "shaders/vertexShader.glsl";
     private static final String FRAGMENT_FILE = "shaders/fragmentShader.glsl";
 
-    private Map<String, Integer> uniformLocations;
+    private Map<String, List<Integer>> uniformLocations;
 
     public StaticShader() throws IOException {
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -26,41 +25,31 @@ public class StaticShader extends ShaderProgram implements Shader {
     }
 
     @Override
-    protected void getAllUniformLocations() {
+    protected void initUniformLocations() {
         if (uniformLocations == null) {
             uniformLocations = new HashMap<>();
         }
-        uniformLocations.put("transformationMatrix", getUniformLocation("transformationMatrix"));
-        uniformLocations.put("projectionMatrix", getUniformLocation("projectionMatrix"));
-        uniformLocations.put("viewMatrix", getUniformLocation("viewMatrix"));
-        uniformLocations.put("lightPosition", getUniformLocation("lightPosition"));
-        uniformLocations.put("lightColour", getUniformLocation("lightColour"));
-        uniformLocations.put("reflectivity", getUniformLocation("reflectivity"));
-        uniformLocations.put("shineDamper", getUniformLocation("shineDamper"));
-        uniformLocations.put("fakeLighting", getUniformLocation("fakeLighting"));
+        uniformLocations.put("transformationMatrix", List.of(getUniformLocation("transformationMatrix")));
+        uniformLocations.put("projectionMatrix", List.of(getUniformLocation("projectionMatrix")));
+        uniformLocations.put("viewMatrix", List.of(getUniformLocation("viewMatrix")));
+        uniformLocations.put("reflectivity", List.of(getUniformLocation("reflectivity")));
+        uniformLocations.put("shineDamper", List.of(getUniformLocation("shineDamper")));
+        uniformLocations.put("fakeLighting", List.of(getUniformLocation("fakeLighting")));
+        List<Integer> lightPositions = new ArrayList<>();
+        List<Integer> lightColours = new ArrayList<>();
+        List<Integer> attenuations  = new ArrayList<>();
+        for (int i = 0; i < MAX_LIGHTS; i++) {
+            lightPositions.add(getUniformLocation("lightPosition[" + i + "]"));
+            lightColours.add(getUniformLocation("lightColour[" + i + "]"));
+            attenuations.add(getUniformLocation("attenuation[" + i + "]"));
+        }
+        uniformLocations.put("lightPosition", lightPositions);
+        uniformLocations.put("lightColour", lightColours);
+        uniformLocations.put("attenuation", attenuations);
     }
 
-    public void loadFakeLighting(boolean fakeLighting) {
-        Integer fakeLightingLocation = uniformLocations.get("fakeLighting");
-        loadBoolean(fakeLightingLocation, fakeLighting);
-    }
-
-    public void loadLight(Light light) {
-        Integer positionLocation = uniformLocations.get("lightPosition");
-        Integer colourLocation = uniformLocations.get("lightColour");
-        loadVector(positionLocation, light.getPosition());
-        loadVector(colourLocation, light.getColour());
-    }
-
-    public void loadShineVariables(float reflectivity, float shineDamper) {
-        Integer reflectivityPosition = uniformLocations.get("reflectivity");
-        Integer shineDamperLocation = uniformLocations.get("shineDamper");
-        loadFloat(reflectivityPosition, reflectivity);
-        loadFloat(shineDamperLocation, shineDamper);
-    }
-
-    public void doLoadMatrix(Matrix4f matrix, String uniformName) {
-        Integer location = uniformLocations.get(uniformName);
-        loadMatrix(location, matrix);
+    @Override
+    public Map<String, List<Integer>> getUniformLocations() {
+        return uniformLocations;
     }
 }

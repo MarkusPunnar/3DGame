@@ -36,8 +36,8 @@ public class TavernGenerator implements Generator {
         TexturedModel roomModel = getTexturedModel("room", false);
         Entity room = new Entity(roomModel, new Vector3f(), new Vector3f(), new Vector3f(1));
         ModelData roomBoxData = ObjectLoader.loadObjectModel("roombox");
-        room.getTexturedModel().getRawModel().setTriangles(loader.createTriangles(roomBoxData.getVertices(), roomBoxData.getIndices()));
-        room.getTexturedModel().getTexture().isTransparent(true);
+        room.getModel().getRawModel().setTriangles(loader.createTriangles(roomBoxData.getVertices(), roomBoxData.getIndices()));
+        room.getModel().getTexture().isTransparent(true);
         roomEntities.add(room);
         //Generate stools
         TexturedModel stoolModel = getTexturedModel("stool", false);

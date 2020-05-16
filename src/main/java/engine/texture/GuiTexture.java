@@ -40,7 +40,7 @@ public class GuiTexture implements RenderObject {
     }
 
     @Override
-    public TexturedModel getTexturedModel() {
+    public TexturedModel getModel() {
         return null;
     }
 
