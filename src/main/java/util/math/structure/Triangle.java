@@ -1,5 +1,6 @@
 package util.math.structure;
 
+import engine.render.RenderObject;
 import org.joml.Vector3f;
 import util.octree.BoundingBox;
 
@@ -9,6 +10,7 @@ public class Triangle {
 
     private Vector3f[] vertices;
     private BoundingBox boxAroundTriangle;
+    private RenderObject parentObject;
 
     public Triangle(Vector3f[] vertices) {
         if (vertices.length != 3) {
@@ -51,5 +53,13 @@ public class Triangle {
     @Override
     public int hashCode() {
         return Arrays.hashCode(vertices);
+    }
+
+    public RenderObject getParentObject() {
+        return parentObject;
+    }
+
+    public void setParentObject(RenderObject parentObject) {
+        this.parentObject = parentObject;
     }
 }

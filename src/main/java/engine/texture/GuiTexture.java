@@ -9,7 +9,7 @@ import engine.render.RenderObject;
 
 import java.util.Objects;
 
-public class GuiTexture implements RenderObject {
+public class GuiTexture extends RenderObject {
 
     private static int INCREMENT = 0;
 

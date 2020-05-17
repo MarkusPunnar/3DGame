@@ -1,5 +1,6 @@
 package object.scene.generation;
 
+import engine.render.RenderObject;
 import object.Entity;
 
 import java.io.IOException;
@@ -8,5 +9,5 @@ import java.util.List;
 
 public interface Generator {
 
-    List<Entity> generate() throws IOException, URISyntaxException;
+    List<? extends RenderObject> generate() throws IOException, URISyntaxException;
 }

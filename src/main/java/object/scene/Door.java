@@ -2,12 +2,12 @@ package object.scene;
 
 import engine.model.TexturedModel;
 import game.state.GameState;
-import object.Entity;
-import interraction.Interactable;
+import interraction.InteractableEntity;
 import util.FacingDirection;
 import org.joml.Vector3f;
+import util.octree.OctTree;
 
-public class Door extends Entity implements Interactable {
+public class Door extends InteractableEntity {
 
     private boolean isOpened;
     private float sinceLastInteraction;
@@ -57,8 +57,7 @@ public class Door extends Entity implements Interactable {
     }
 
     @Override
-    public GameState handleGui(GameState state) {
-        return state;
+    public void handleGui(GameState state) {
     }
 
     public float getInteractionTime() {

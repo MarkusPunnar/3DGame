@@ -7,7 +7,7 @@ import engine.render.RequestInfo;
 import engine.render.RequestType;
 import engine.texture.ObjectType;
 import game.state.GameState;
-import interraction.Interactable;
+import interraction.InteractableEntity;
 import interraction.Inventory;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -203,11 +203,12 @@ public class Player extends Entity {
     }
 
     public void interactWithObject(GameState state) {
-        Interactable closestObject = state.getHandlerState().getClosestObject();
+        InteractableEntity closestObject = state.getHandlerState().getClosestObject();
         float closestDistance = getPosition().distance(closestObject.getPosition());
         if (closestDistance < INTERACT_DISTANCE) {
             closestObject.interact();
-            state = closestObject.handleGui(state);
+            state.getCurrentTree().update(closestObject);
+            closestObject.handleGui(state);
         }
     }
 }

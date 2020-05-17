@@ -1,12 +1,10 @@
 package interraction.handle;
 
-import engine.DisplayManager;
 import game.state.GameState;
-import interraction.Lootable;
+import interraction.LootableEntity;
 import interraction.MousePicker;
 import object.Player;
 import object.item.Slot;
-import org.lwjgl.glfw.GLFW;
 import util.HandlerUtil;
 
 public class InventoryHandler implements Handler {
@@ -27,7 +25,7 @@ public class InventoryHandler implements Handler {
                 HandlerUtil.moveItems(inventorySlots, inventorySlots, state, mousePicker);
             case IN_CHEST:
                 inventorySlots = player.getInventory().getInventorySlots();
-                Lootable openLootable = state.getHandlerState().getLastLooted();
+                LootableEntity openLootable = state.getHandlerState().getLastLooted();
                 if (openLootable != null) {
                     HandlerUtil.moveItems(inventorySlots, openLootable.getContent(), state, mousePicker);
                 }

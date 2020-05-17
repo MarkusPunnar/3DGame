@@ -14,8 +14,6 @@ import java.util.Set;
 
 public class OctTree {
 
-    private static int test = 0;
-
     private BoundingBox dimensions;
     private List<Triangle> triangles;
     private OctTree[] children;
@@ -52,17 +50,22 @@ public class OctTree {
 
 
     public void initTree(List<RenderObject> objects) {
-        for (RenderObject entity : objects) {
-            Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(entity);
-            for (Triangle triangle : entity.getModel().getRawModel().getTriangles()) {
-                Vector3f[] worldVertices = new Vector3f[3];
-                for (int i = 0; i < triangle.getVertices().length; i++) {
-                    worldVertices[i] =  MathUtil.getCoordinates(new Vector4f(triangle.getVertices()[i], 1.0f).mul(transformationMatrix));
-                }
-                Triangle worldTriangle = new Triangle(worldVertices);
-                worldTriangle.setTriangleBox();
-                addTriangle(worldTriangle);
+        for (RenderObject object : objects) {
+            addObject(object);
+        }
+    }
+
+    private void addObject(RenderObject object) {
+        Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(object);
+        for (Triangle triangle : object.getModel().getRawModel().getTriangles()) {
+            Vector3f[] worldVertices = new Vector3f[3];
+            for (int i = 0; i < triangle.getVertices().length; i++) {
+                worldVertices[i] =  MathUtil.getCoordinates(new Vector4f(triangle.getVertices()[i], 1.0f).mul(transformationMatrix));
             }
+            Triangle worldTriangle = new Triangle(worldVertices);
+            worldTriangle.setParentObject(triangle.getParentObject());
+            worldTriangle.setTriangleBox();
+            addTriangle(worldTriangle);
         }
     }
 
@@ -89,15 +92,29 @@ public class OctTree {
         }
     }
 
-    public BoundingBox getDimensions() {
+    public void update(RenderObject object) {
+        removeObjectTriangles(object);
+        addObject(object);
+    }
+
+    private void removeObjectTriangles(RenderObject object) {
+        remove(object);
+        for (OctTree child : children) {
+            if (child != null) {
+                remove(object);
+            }
+        }
+    }
+
+    private void remove(RenderObject object) {
+        for (Triangle triangle : new ArrayList<>(triangles)) {
+            if (triangle.getParentObject().equals(object)) {
+                triangles.remove(triangle);
+            }
+        }
+    }
+
+    private BoundingBox getDimensions() {
         return dimensions;
-    }
-
-    public List<Triangle> getTriangles() {
-        return triangles;
-    }
-
-    public OctTree[] getChildren() {
-        return children;
     }
 }

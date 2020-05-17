@@ -1,5 +1,6 @@
 package engine.model;
 
+import engine.render.RenderObject;
 import org.joml.Vector3f;
 import util.math.structure.Triangle;
 import util.octree.BoundingBox;

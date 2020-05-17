@@ -34,11 +34,11 @@ public class TavernGenerator implements Generator {
         List<Entity> roomEntities = new ArrayList<>();
         //Generate room background
         TexturedModel tavernModel = getTexturedModel("tavern", false);
-        Entity room = new Entity(tavernModel, new Vector3f(), new Vector3f(), new Vector3f(1));
         ModelData roomBoxData = ObjectLoader.loadObjectModel("hitbox/tavernbox");
-        room.getModel().getRawModel().setTriangles(loader.createTriangles(roomBoxData.getVertices(), roomBoxData.getIndices()));
-        room.getModel().getTexture().isTransparent(true);
-        roomEntities.add(room);
+        tavernModel.getRawModel().setTriangles(loader.createTriangles(roomBoxData.getVertices(), roomBoxData.getIndices()));
+        tavernModel.getTexture().isTransparent(true);
+        Entity tavern = new Entity(tavernModel, new Vector3f(), new Vector3f(), new Vector3f(1));
+        roomEntities.add(tavern);
         //Generate stools
         TexturedModel stoolModel = getTexturedModel("stool", false);
         for (int i = 0; i < 3; i++) {
@@ -84,7 +84,7 @@ public class TavernGenerator implements Generator {
             Chest chest = new Chest(closedChestModel, new Vector3f(-5, 34.5f, 31 - 46.5f * i), new Vector3f(), new Vector3f(1), openChestModel, closedChestModel);
             chest.addItem(new Coin(loader, 10));
             chests.add(chest);
-            gameState.getHandlerState().registerInteractableObject(chest);
+            gameState.getHandlerState().registerInteractableEntity(chest);
         }
         return chests;
     }
@@ -104,11 +104,11 @@ public class TavernGenerator implements Generator {
         List<Entity> doors = new ArrayList<>();
         TexturedModel doorModel = getTexturedModel("door", false);
         Door door = new Door(doorModel, new Vector3f(-44, 0, -26.5f), new Vector3f(), new Vector3f(1), FacingDirection.WEST);
-        gameState.getHandlerState().registerInteractableObject(door);
+        gameState.getHandlerState().registerInteractableEntity(door);
         doors.add(door);
         for (int i = 0; i < 3; i++) {
             door = new Door(doorModel, new Vector3f(-13.7f, 34.5f, 54.3f - 46.5f * i), new Vector3f(), new Vector3f(1), FacingDirection.EAST);
-            gameState.getHandlerState().registerInteractableObject(door);
+            gameState.getHandlerState().registerInteractableEntity(door);
             doors.add(door);
         }
         return doors;

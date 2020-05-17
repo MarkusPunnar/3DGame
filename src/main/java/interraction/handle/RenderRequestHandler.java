@@ -12,14 +12,13 @@ import game.state.State;
 import engine.loader.Loader;
 import engine.texture.GuiTexture;
 import engine.texture.ObjectType;
-import interraction.Lootable;
+import interraction.LootableEntity;
 import object.Player;
 import object.item.Item;
 import object.item.Slot;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import util.HandlerUtil;
 import util.math.MathUtil;
 
 import java.io.IOException;
@@ -123,7 +122,7 @@ public class RenderRequestHandler implements Handler {
     }
 
     private void renderChestItems(GameState state) {
-        Lootable lastLootable = state.getHandlerState().getLastLooted();
+        LootableEntity lastLootable = state.getHandlerState().getLastLooted();
         if (lastLootable == null) {
             return;
         }
@@ -183,7 +182,7 @@ public class RenderRequestHandler implements Handler {
                     slot = player.getInventory().initSlot(slotTextureID, slotHoverTextureID, slotPosition, slotScale, i * (int) m + j);
                 }
                 else {
-                    Lootable currentLootable = state.getHandlerState().getLastLooted();
+                    LootableEntity currentLootable = state.getHandlerState().getLastLooted();
                     if (currentLootable == null) {
                         return;
                     }

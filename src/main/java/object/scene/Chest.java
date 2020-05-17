@@ -6,17 +6,15 @@ import game.state.HandlerState;
 import engine.render.RequestInfo;
 import engine.render.RequestType;
 import engine.texture.ObjectType;
-import interraction.Interactable;
 import engine.model.TexturedModel;
-import interraction.Lootable;
-import object.Entity;
+import interraction.LootableEntity;
 import object.item.Icon;
 import object.item.Item;
 import object.item.Slot;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class Chest extends Entity implements Interactable, Lootable {
+public class Chest extends LootableEntity {
 
     private boolean isOpened;
     private float sinceLastInteraction;
@@ -52,7 +50,7 @@ public class Chest extends Entity implements Interactable, Lootable {
     }
 
     @Override
-    public GameState handleGui(GameState state) {
+    public void handleGui(GameState state) {
         HandlerState handlerState = state.getHandlerState();
         handlerState.setLastLooted(this);
         if (isOpened) {
@@ -62,7 +60,6 @@ public class Chest extends Entity implements Interactable, Lootable {
             handlerState.registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(ObjectType.INVENTORY)));
             handlerState.registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(ObjectType.CHEST)));
         }
-        return state;
     }
 
     @Override

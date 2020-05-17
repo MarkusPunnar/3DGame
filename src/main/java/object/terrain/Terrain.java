@@ -12,12 +12,13 @@ import org.joml.Vector3f;
 import engine.loader.Loader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import util.GeneratorUtil;
 import util.math.MathUtil;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL13.*;
 
-public class Terrain implements RenderObject {
+public class Terrain extends RenderObject {
 
     private static final float SIZE = 200;
     private static final int VERTICES = 100;
@@ -34,6 +35,7 @@ public class Terrain implements RenderObject {
         this.texturedModel = new TexturedModel(generateTerrain(loader), null);
         this.texturePack = pack;
         this.blendMap = blendMap;
+        GeneratorUtil.setParentObject(this);
     }
 
     private RawModel generateTerrain(Loader loader) {

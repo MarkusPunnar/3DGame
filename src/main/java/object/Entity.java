@@ -6,11 +6,12 @@ import engine.texture.ObjectType;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import engine.render.RenderObject;
+import util.GeneratorUtil;
 import util.math.MathUtil;
 
 import java.util.Objects;
 
-public class Entity implements RenderObject {
+public class Entity extends RenderObject {
 
     private TexturedModel texturedModel;
     private Vector3f position;
@@ -22,6 +23,7 @@ public class Entity implements RenderObject {
         this.position = position;
         this.rotation = rotation;
         this.scaleVector = scaleVector;
+        GeneratorUtil.setParentObject(this);
     }
 
     public void increasePosition(float dx, float dy, float dz) {

@@ -18,6 +18,7 @@ import object.Player;
 import object.env.Camera;
 import object.env.Light;
 import object.scene.generation.TavernGenerator;
+import object.scene.generation.TerrainGenerator;
 import object.terrain.Terrain;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -41,8 +42,10 @@ public class MainGameLoop {
         ParentRenderer renderer = new ParentRenderer(loader);
         GameState gameState = new GameState();
         TavernGenerator tavernGenerator = new TavernGenerator(loader, gameState);
+        TerrainGenerator terrainGenerator = new TerrainGenerator(loader);
         Player player = tavernGenerator.generatePlayer(loader);
         List<Entity> roomEntities = tavernGenerator.generate();
+        List<Terrain> terrains = terrainGenerator.generate();
         OctTree octTree =  new OctTree(new BoundingBox(new Vector3f(-400, -1, -400), new Vector3f(200, 100, 200)));
 
 
@@ -60,24 +63,11 @@ public class MainGameLoop {
         initCallbacks(gameState, player);
         List<Handler> handlers = initHandlers(player, renderer, mousePicker);
 
-        //temporary terrain code
-        List<Terrain> terrains = new ArrayList<>();
-        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTerrainTexture("grass"));
-        TerrainTexture greenTexture = new TerrainTexture(loader.loadTerrainTexture("moss"));
-        TerrainTexture redTexture = new TerrainTexture(loader.loadTerrainTexture("mud"));
-        TerrainTexture blueTexture = new TerrainTexture(loader.loadTerrainTexture("path"));
-        TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, redTexture, greenTexture, blueTexture);
-        TerrainTexture blendMap = new TerrainTexture(loader.loadTerrainTexture("blendMap"));
-        terrains.add(new Terrain(-1,-1, loader, texturePack, blendMap));
-        terrains.add(new Terrain(0,0, loader, texturePack, blendMap));
-        terrains.add(new Terrain(-1,0, loader, texturePack, blendMap));
-        terrains.add(new Terrain(0,-1, loader, texturePack, blendMap));
-
-
         List<RenderObject> renderObjects = new ArrayList<>(roomEntities);
         renderObjects.addAll(terrains);
         octTree.initTree(renderObjects);
         gameState.setCurrentTree(octTree);
+
         while (!GLFW.glfwWindowShouldClose(DisplayManager.getWindow())) {
             camera.checkState(gameState);
             if (gameState.getCurrentState() == State.IN_GAME) {
