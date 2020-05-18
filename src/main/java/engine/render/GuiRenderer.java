@@ -4,6 +4,7 @@ import engine.loader.Loader;
 import engine.model.Model;
 import engine.model.RawModel;
 import engine.shader.Shader;
+import object.RenderObject;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;

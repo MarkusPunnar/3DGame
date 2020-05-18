@@ -1,14 +1,9 @@
 package game;
 
 import engine.DisplayManager;
-import engine.font.GUIText;
-import engine.font.structure.FontFile;
-import engine.font.structure.FontType;
 import engine.loader.Loader;
 import engine.render.ParentRenderer;
-import engine.render.RenderObject;
-import engine.texture.TerrainTexture;
-import engine.texture.TerrainTexturePack;
+import object.RenderObject;
 import game.state.GameState;
 import game.state.State;
 import interraction.MousePicker;
@@ -20,7 +15,6 @@ import object.env.Light;
 import object.scene.generation.TavernGenerator;
 import object.scene.generation.TerrainGenerator;
 import object.terrain.Terrain;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import util.octree.BoundingBox;
@@ -40,8 +34,7 @@ public class MainGameLoop {
         DisplayManager.createDisplay();
         Loader loader = new Loader();
         ParentRenderer renderer = new ParentRenderer(loader);
-        GameState gameState = new GameState();
-        TavernGenerator tavernGenerator = new TavernGenerator(loader, gameState);
+        TavernGenerator tavernGenerator = new TavernGenerator(loader);
         TerrainGenerator terrainGenerator = new TerrainGenerator(loader);
         Player player = tavernGenerator.generatePlayer(loader);
         List<Entity> roomEntities = tavernGenerator.generate();
@@ -60,25 +53,25 @@ public class MainGameLoop {
         Camera camera = new Camera(player);
         MousePicker mousePicker = new MousePicker(renderer.getProjectionMatrix(), camera);
         camera.setMousePicker(mousePicker);
-        initCallbacks(gameState, player);
+        initCallbacks(player);
         List<Handler> handlers = initHandlers(player, renderer, mousePicker);
 
         List<RenderObject> renderObjects = new ArrayList<>(roomEntities);
         renderObjects.addAll(terrains);
         octTree.initTree(renderObjects);
-        gameState.setCurrentTree(octTree);
+        GameState.getInstance().setCurrentTree(octTree);
 
         while (!GLFW.glfwWindowShouldClose(DisplayManager.getWindow())) {
-            camera.checkState(gameState);
-            if (gameState.getCurrentState() == State.IN_GAME) {
-                player.move(renderObjects, gameState);
+            camera.checkState();
+            if (GameState.getInstance().getCurrentState() == State.IN_GAME) {
+                player.move(renderObjects);
                 camera.move();
             }
             mousePicker.update();
             renderer.processTerrains(terrains);
             renderer.processEntities(roomEntities, player);
             for (Handler handler : handlers) {
-                handler.handle(gameState);
+                handler.handle();
             }
             renderer.renderObjects(lights, camera);
             DisplayManager.updateDisplay();
@@ -97,13 +90,14 @@ public class MainGameLoop {
         return handlers;
     }
 
-    private static void initCallbacks(GameState state, Player player) {
+    private static void initCallbacks(Player player) {
+        GameState state =  GameState.getInstance();
         GLFW.glfwSetKeyCallback(DisplayManager.getWindow(), ((window, key, scancode, action, mods) -> {
            if (key == GLFW.GLFW_KEY_I && action == GLFW.GLFW_PRESS && List.of(State.IN_GAME, State.IN_INVENTORY).contains(state.getCurrentState())) {
-               player.interactWithInventory(state);
+               player.interactWithInventory();
            }
            else if (key == GLFW.GLFW_KEY_F && action == GLFW.GLFW_PRESS && List.of(State.IN_GAME, State.IN_CHEST).contains(state.getCurrentState())) {
-               player.interactWithObject(state);
+               player.interactWithObject();
            }
            else if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE && state.getCurrentState().equals(State.IN_GAME)) {
                GLFW.glfwSetWindowShouldClose(window, true);

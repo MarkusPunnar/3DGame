@@ -1,6 +1,7 @@
 package object.scene.generation;
 
 import game.state.GameState;
+import game.state.HandlerState;
 import object.Entity;
 import object.item.Coin;
 import object.scene.Chest;
@@ -23,11 +24,9 @@ import java.util.List;
 public class TavernGenerator implements Generator {
 
     private Loader loader;
-    private GameState gameState;
 
-    public TavernGenerator(Loader loader, GameState state) {
+    public TavernGenerator(Loader loader) {
         this.loader = loader;
-        this.gameState = state;
     }
 
     public List<Entity> generate() throws IOException, URISyntaxException {
@@ -84,7 +83,7 @@ public class TavernGenerator implements Generator {
             Chest chest = new Chest(closedChestModel, new Vector3f(-5, 34.5f, 31 - 46.5f * i), new Vector3f(), new Vector3f(1), openChestModel, closedChestModel);
             chest.addItem(new Coin(loader, 10));
             chests.add(chest);
-            gameState.getHandlerState().registerInteractableEntity(chest);
+            HandlerState.getInstance().registerInteractableEntity(chest);
         }
         return chests;
     }
@@ -104,11 +103,11 @@ public class TavernGenerator implements Generator {
         List<Entity> doors = new ArrayList<>();
         TexturedModel doorModel = getTexturedModel("door", false);
         Door door = new Door(doorModel, new Vector3f(-44, 0, -26.5f), new Vector3f(), new Vector3f(1), FacingDirection.WEST);
-        gameState.getHandlerState().registerInteractableEntity(door);
+        HandlerState.getInstance().registerInteractableEntity(door);
         doors.add(door);
         for (int i = 0; i < 3; i++) {
             door = new Door(doorModel, new Vector3f(-13.7f, 34.5f, 54.3f - 46.5f * i), new Vector3f(), new Vector3f(1), FacingDirection.EAST);
-            gameState.getHandlerState().registerInteractableEntity(door);
+            HandlerState.getInstance().registerInteractableEntity(door);
             doors.add(door);
         }
         return doors;

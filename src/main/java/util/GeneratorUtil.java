@@ -1,6 +1,6 @@
 package util;
 
-import engine.render.RenderObject;
+import object.RenderObject;
 import util.math.structure.Triangle;
 
 public class GeneratorUtil {

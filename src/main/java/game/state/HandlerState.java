@@ -1,8 +1,8 @@
 package game.state;
 
 import engine.render.RenderRequest;
-import interraction.InteractableEntity;
-import interraction.LootableEntity;
+import interraction.Interactable;
+import interraction.Lootable;
 import object.item.Item;
 
 import java.util.ArrayList;
@@ -12,22 +12,28 @@ import java.util.Queue;
 
 public class HandlerState {
 
+    private static final HandlerState INSTANCE = new HandlerState();
+
     private Queue<RenderRequest> requests;
-    private List<InteractableEntity> interactableEntities;
-    private LootableEntity lastLooted;
+    private List<Interactable> interactableEntities;
+    private Lootable lastLooted;
     private Item bindedItem;
-    private InteractableEntity closestObject;
+    private Interactable closestObject;
 
     public HandlerState() {
         requests = new LinkedList<>();
         interactableEntities = new ArrayList<>();
     }
 
+    public static HandlerState getInstance() {
+        return INSTANCE;
+    }
+
     public void registerRequest(RenderRequest request) {
         requests.add(request);
     }
 
-    public void registerInteractableEntity(InteractableEntity object) {
+    public void registerInteractableEntity(Interactable object) {
         interactableEntities.add(object);
     }
 
@@ -35,15 +41,15 @@ public class HandlerState {
         return requests;
     }
 
-    public List<InteractableEntity> getInteractableEntities() {
+    public List<Interactable> getInteractableEntities() {
         return interactableEntities;
     }
 
-    public LootableEntity getLastLooted() {
+    public Lootable getLastLooted() {
         return lastLooted;
     }
 
-    public void setLastLooted(LootableEntity lastLooted) {
+    public void setLastLooted(Lootable lastLooted) {
         this.lastLooted = lastLooted;
     }
 
@@ -55,11 +61,11 @@ public class HandlerState {
         this.bindedItem = bindedItem;
     }
 
-    public InteractableEntity getClosestObject() {
+    public Interactable getClosestObject() {
         return closestObject;
     }
 
-    public void setClosestObject(InteractableEntity closestObject) {
+    public void setClosestObject(Interactable closestObject) {
         this.closestObject = closestObject;
     }
 }

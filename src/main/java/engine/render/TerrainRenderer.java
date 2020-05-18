@@ -3,6 +3,7 @@ package engine.render;
 import engine.model.Model;
 import engine.shader.Shader;
 import engine.shader.TerrainShader;
+import object.RenderObject;
 import org.joml.Matrix4f;
 
 import java.util.Collection;

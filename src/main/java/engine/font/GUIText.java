@@ -3,7 +3,7 @@ package engine.font;
 import engine.font.structure.FontType;
 import engine.model.Model;
 import engine.model.TextModel;
-import engine.render.RenderObject;
+import object.RenderObject;
 import engine.shader.Shader;
 import engine.texture.ObjectType;
 import org.joml.Vector2f;
@@ -11,7 +11,7 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-public class GUIText extends RenderObject {
+public class GUIText implements RenderObject {
 
     private String text;
     private float fontSize;
@@ -22,14 +22,54 @@ public class GUIText extends RenderObject {
     private FontType font;
     private boolean centerText;
 
-    public GUIText(String text, float fontSize, Vector2f position, float maxLineLength, FontType font, boolean centerText) {
-        this.text = text;
-        this.fontSize = fontSize;
+    public static class Builder {
+
+        private final String text;
+        private final FontType font;
+
+        private float fontSize = 0;
+        private Vector2f position = new Vector2f();
+        private float maxLineLength = 1;
+        private boolean centerText = false;
+
+        public Builder(String text, FontType font) {
+            this.text = text;
+            this.font = font;
+        }
+
+        public Builder fontSize(float fontSize) {
+            this.fontSize = fontSize;
+            return this;
+        }
+
+        public Builder position(Vector2f position) {
+            this.position = position;
+            return this;
+        }
+
+        public Builder lineLength(float maxLineLength) {
+            this.maxLineLength = maxLineLength;
+            return this;
+        }
+
+        public Builder centered(boolean centerText) {
+            this.centerText = centerText;
+            return this;
+        }
+
+        public GUIText build() {
+            return new GUIText(this);
+        }
+    }
+
+    private GUIText(Builder builder) {
+        this.text = builder.text;
+        this.fontSize = builder.fontSize;
         this.model = new TextModel();
-        this.position = position;
-        this.maxLineLength = maxLineLength;
-        this.font = font;
-        this.centerText = centerText;
+        this.position = builder.position;
+        this.maxLineLength = builder.maxLineLength;
+        this.font = builder.font;
+        this.centerText = builder.centerText;
     }
 
     public String getText() {

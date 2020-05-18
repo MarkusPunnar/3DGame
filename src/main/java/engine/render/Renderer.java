@@ -2,6 +2,7 @@ package engine.render;
 
 import engine.model.Model;
 import engine.shader.Shader;
+import object.RenderObject;
 import util.OpenGLUtil;
 
 import java.util.Collection;

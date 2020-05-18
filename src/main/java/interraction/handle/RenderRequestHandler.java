@@ -4,7 +4,8 @@ import engine.DisplayManager;
 import engine.font.GUIText;
 import engine.font.structure.FontType;
 import engine.render.ParentRenderer;
-import engine.render.RenderObject;
+import game.state.HandlerState;
+import object.RenderObject;
 import engine.render.RenderRequest;
 import engine.render.RequestInfo;
 import game.state.GameState;
@@ -12,7 +13,7 @@ import game.state.State;
 import engine.loader.Loader;
 import engine.texture.GuiTexture;
 import engine.texture.ObjectType;
-import interraction.LootableEntity;
+import interraction.Lootable;
 import object.Player;
 import object.item.Item;
 import object.item.Slot;
@@ -39,8 +40,10 @@ public class RenderRequestHandler implements Handler {
         this.player = player;
     }
 
-    public void handle(GameState state) {
-        Queue<RenderRequest> requests = state.getHandlerState().getRequests();
+    @Override
+    public void handle() {
+        Queue<RenderRequest> requests = HandlerState.getInstance().getRequests();
+        GameState state = GameState.getInstance();
         while (requests.peek() != null) {
             RenderRequest request = requests.poll();
             RequestInfo requestInfo = request.getRequestInfo();
@@ -49,12 +52,12 @@ public class RenderRequestHandler implements Handler {
                     switch (requestInfo.getGuiType()) {
                         case INVENTORY:
                             state.setCurrentState(State.IN_INVENTORY);
-                            renderInventory(state, requestInfo);
+                            renderInventory(requestInfo);
                             player.getInventory().setOpen(true);
                             break;
                         case CHEST:
                             state.setCurrentState(State.IN_CHEST);
-                            renderChestInterface(state, requestInfo);
+                            renderChestInterface(requestInfo);
                             break;
                         default:
                     }
@@ -70,7 +73,7 @@ public class RenderRequestHandler implements Handler {
                         case CHEST:
                             removeGui(List.of(ObjectType.CHEST_TITLE, ObjectType.SLOT, ObjectType.SLOT_HOVER, ObjectType.ICON));
                             state.setCurrentState(State.IN_GAME);
-                            state.getHandlerState().setLastLooted(null);
+                            HandlerState.getInstance().setLastLooted(null);
                             GLFW.glfwSetCursorPos(DisplayManager.getWindow(), DisplayManager.getWidth() / 2f, DisplayManager.getHeight() / 2f);
                             break;
                         default:
@@ -105,24 +108,24 @@ public class RenderRequestHandler implements Handler {
         }
     }
 
-    private void renderInventory(GameState state, RequestInfo requestInfo) {
+    private void renderInventory(RequestInfo requestInfo) {
         float n = 4;
         float m = 5;
         renderTitle(n, requestInfo, ObjectType.INVENTORY_TITLE);
-        renderGrid(n, m, requestInfo, state);
+        renderGrid(n, m, requestInfo);
         renderItems(player.getInventory().getInventorySlots());
     }
 
-    private void renderChestInterface(GameState state, RequestInfo requestInfo) {
+    private void renderChestInterface(RequestInfo requestInfo) {
         float n = 4;
         float m = 5;
         renderTitle(n, requestInfo, ObjectType.CHEST_TITLE);
-        renderGrid(n, m, requestInfo, state);
-        renderChestItems(state);
+        renderGrid(n, m, requestInfo);
+        renderChestItems();
     }
 
-    private void renderChestItems(GameState state) {
-        LootableEntity lastLootable = state.getHandlerState().getLastLooted();
+    private void renderChestItems() {
+        Lootable lastLootable = HandlerState.getInstance().getLastLooted();
         if (lastLootable == null) {
             return;
         }
@@ -137,9 +140,8 @@ public class RenderRequestHandler implements Handler {
                 GUIText itemText = slot.getGuiText();
                 Vector3f iconPosition = slotItem.getIcon().getPosition();
                 if (itemText == null) {
-                    itemText = new GUIText(String.valueOf(slotItem.getAmount()), 0.6f,
-                            new Vector2f((1 + iconPosition.x) / 2f + slotItem.getPaddingX(), Math.abs(iconPosition.y - 1) / 2f + slotItem.getPaddingY()),
-                            1f, font, false);
+                    Vector2f textPosition = new Vector2f((1 + iconPosition.x) / 2f + slotItem.getPaddingX(), Math.abs(iconPosition.y - 1) / 2f + slotItem.getPaddingY());
+                    itemText = new GUIText.Builder(String.valueOf(slotItem.getAmount()), font).position(textPosition).fontSize(0.6f).build();
                     itemText.setColour(1, 1, 1);
                     slot.setGuiText(itemText);
                 } else {
@@ -163,7 +165,7 @@ public class RenderRequestHandler implements Handler {
         renderer.processGui(new GuiTexture(titleTextureID, titlePosition, titleScale, ObjectType.INVENTORY_TITLE));
     }
 
-    private void renderGrid(float n, float m, RequestInfo requestInfo, GameState state) {
+    private void renderGrid(float n, float m, RequestInfo requestInfo) {
         Vector2f scale = requestInfo.getTextureScale();
         Vector2f position = requestInfo.getTexturePosition();
         Loader loader = renderer.getLoader();
@@ -182,7 +184,7 @@ public class RenderRequestHandler implements Handler {
                     slot = player.getInventory().initSlot(slotTextureID, slotHoverTextureID, slotPosition, slotScale, i * (int) m + j);
                 }
                 else {
-                    LootableEntity currentLootable = state.getHandlerState().getLastLooted();
+                    Lootable currentLootable = HandlerState.getInstance().getLastLooted();
                     if (currentLootable == null) {
                         return;
                     }

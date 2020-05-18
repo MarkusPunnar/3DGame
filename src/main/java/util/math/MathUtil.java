@@ -1,7 +1,6 @@
 package util.math;
 
-import engine.render.RenderObject;
-import object.Entity;
+import object.RenderObject;
 import object.Player;
 import object.env.Camera;
 import org.joml.*;

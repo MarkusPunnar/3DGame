@@ -5,13 +5,12 @@ import engine.shader.Shader;
 import engine.texture.ObjectType;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import engine.render.RenderObject;
 import util.GeneratorUtil;
 import util.math.MathUtil;
 
 import java.util.Objects;
 
-public class Entity extends RenderObject {
+public class Entity implements RenderObject {
 
     private TexturedModel texturedModel;
     private Vector3f position;

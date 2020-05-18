@@ -2,12 +2,11 @@ package util;
 
 import engine.DisplayManager;
 import engine.font.GUIText;
-import engine.render.ParentRenderer;
 import engine.render.RenderRequest;
 import engine.render.RequestInfo;
 import engine.render.RequestType;
 import engine.texture.GuiTexture;
-import game.state.GameState;
+import game.state.HandlerState;
 import interraction.MousePicker;
 import object.item.Item;
 import object.item.Slot;
@@ -35,9 +34,9 @@ public class HandlerUtil {
         return activeSlot;
     }
 
-    public static void moveItems(Slot[] source, Slot[] destination, GameState state, MousePicker mousePicker) {
+    public static void moveItems(Slot[] source, Slot[] destination, MousePicker mousePicker) {
         Vector2f currentMousePosition = mousePicker.calculateDeviceCoords();
-        Item bindedItem = state.getHandlerState().getBindedItem();
+        Item bindedItem = HandlerState.getInstance().getBindedItem();
         int leftMouseButtonState = GLFW.glfwGetMouseButton(DisplayManager.getWindow(), GLFW.GLFW_MOUSE_BUTTON_LEFT);
         if (leftMouseButtonState == GLFW.GLFW_PRESS) {
             leftMouseButtonPressed = true;
@@ -48,7 +47,7 @@ public class HandlerUtil {
             Slot activeSlot = HandlerUtil.calculateActiveSlot(source, currentMousePosition);
             if (activeSlot != null) {
                 if (leftMouseButtonPressed) {
-                    state.getHandlerState().setBindedItem(activeSlot.getItem());
+                    HandlerState.getInstance().setBindedItem(activeSlot.getItem());
                     lastInteracted = activeSlot;
                     activeSlot.resetTexture();
                 }
@@ -60,19 +59,19 @@ public class HandlerUtil {
                 bindedItem.getIcon().setPosition(currentMousePosition);
                 setItemText(lastInteracted, bindedItem, new Vector3f(currentMousePosition.x, currentMousePosition.y, 0));
             } else {
-                placeItem(source, destination, state, currentMousePosition, bindedItem);
+                placeItem(source, destination, currentMousePosition, bindedItem);
             }
         }
     }
 
-    private static void placeItem(Slot[] source, Slot[] destination, GameState state, Vector2f currentMousePosition, Item bindedItem) {
+    private static void placeItem(Slot[] source, Slot[] destination, Vector2f currentMousePosition, Item bindedItem) {
         Slot activeSlot = HandlerUtil.calculateActiveSlot(destination, currentMousePosition);
         Slot otherSlot = HandlerUtil.calculateActiveSlot(source, currentMousePosition);
         if (activeSlot == null && otherSlot == null) {
             //Misplaced item
             bindedItem.getIcon().setPosition(new Vector2f(lastInteracted.getPosition().x, lastInteracted.getPosition().y));
             setItemText(lastInteracted, bindedItem, lastInteracted.getPosition());
-            state.getHandlerState().setBindedItem(null);
+            HandlerState.getInstance().setBindedItem(null);
             return;
         }
         Slot selectedSlot = activeSlot == null ? otherSlot : activeSlot;
@@ -84,21 +83,22 @@ public class HandlerUtil {
             lastInteracted.setItem(null);
             lastInteracted.setGuiText(null);
         } else {
-            stackItems(state, bindedItem, selectedSlot);
+            stackItems(bindedItem, selectedSlot);
         }
-        state.getHandlerState().setBindedItem(null);
+        HandlerState.getInstance().setBindedItem(null);
     }
 
-    private static void stackItems(GameState state, Item bindedItem, Slot selectedSlot) {
+    private static void stackItems(Item bindedItem, Slot selectedSlot) {
         if (!selectedSlot.equals(lastInteracted)) {
+            HandlerState handlerState = HandlerState.getInstance();
             Item existingItem = selectedSlot.getItem();
             existingItem.stack(lastInteracted.getItem());
             GUIText newText = lastInteracted.getGuiText().copyWithValueChange(String.valueOf(existingItem.getAmount()));
-            state.getHandlerState().registerRequest(new RenderRequest(RequestType.REMOVE_TEXT, new RequestInfo(selectedSlot.getItem().getIcon(), selectedSlot.getGuiText())));
+            handlerState.registerRequest(new RenderRequest(RequestType.REMOVE_TEXT, new RequestInfo(selectedSlot.getItem().getIcon(), selectedSlot.getGuiText())));
             selectedSlot.setGuiText(newText);
             setItemText(selectedSlot, existingItem, selectedSlot.getPosition());
-            state.getHandlerState().registerRequest(new RenderRequest(RequestType.REMOVE_ITEM, new RequestInfo(lastInteracted.getItem().getIcon(), lastInteracted.getGuiText())));
-            state.getHandlerState().registerRequest(new RenderRequest(RequestType.REFRESH_TEXT,  new RequestInfo(selectedSlot.getItem().getIcon(), selectedSlot.getGuiText())));
+            handlerState.registerRequest(new RenderRequest(RequestType.REMOVE_ITEM, new RequestInfo(lastInteracted.getItem().getIcon(), lastInteracted.getGuiText())));
+            handlerState.registerRequest(new RenderRequest(RequestType.REFRESH_TEXT,  new RequestInfo(selectedSlot.getItem().getIcon(), selectedSlot.getGuiText())));
             lastInteracted.setItem(null);
             lastInteracted.setGuiText(null);
         }

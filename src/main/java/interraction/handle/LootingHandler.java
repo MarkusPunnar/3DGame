@@ -1,8 +1,9 @@
 package interraction.handle;
 
 import game.state.GameState;
+import game.state.HandlerState;
 import game.state.State;
-import interraction.LootableEntity;
+import interraction.Lootable;
 import interraction.MousePicker;
 import object.Player;
 import util.HandlerUtil;
@@ -18,13 +19,13 @@ public class LootingHandler implements Handler {
     }
 
     @Override
-    public void handle(GameState state) {
-        if (state.getCurrentState() != State.IN_CHEST) {
+    public void handle() {
+        if (GameState.getInstance().getCurrentState() != State.IN_CHEST) {
             return;
         }
-        LootableEntity currentLootable = state.getHandlerState().getLastLooted();
+        Lootable currentLootable = HandlerState.getInstance().getLastLooted();
         if (currentLootable != null) {
-            HandlerUtil.moveItems(currentLootable.getContent(), player.getInventory().getInventorySlots(), state, mousePicker);
+            HandlerUtil.moveItems(currentLootable.getContent(), player.getInventory().getInventorySlots(), mousePicker);
         }
     }
 }

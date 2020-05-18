@@ -1,6 +1,7 @@
 package engine.render;
 
 import engine.model.Model;
+import object.RenderObject;
 import org.joml.Matrix4f;
 import engine.shader.StaticShader;
 

@@ -5,11 +5,11 @@ import engine.model.TexturedModel;
 import engine.shader.Shader;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import engine.render.RenderObject;
+import object.RenderObject;
 
 import java.util.Objects;
 
-public class GuiTexture extends RenderObject {
+public class GuiTexture implements RenderObject {
 
     private static int INCREMENT = 0;
 

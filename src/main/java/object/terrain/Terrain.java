@@ -1,6 +1,6 @@
 package object.terrain;
 
-import engine.render.RenderObject;
+import object.RenderObject;
 import engine.model.RawModel;
 import engine.model.TexturedModel;
 import engine.shader.Shader;
@@ -18,7 +18,7 @@ import util.math.MathUtil;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL13.*;
 
-public class Terrain extends RenderObject {
+public class Terrain implements RenderObject {
 
     private static final float SIZE = 200;
     private static final int VERTICES = 100;

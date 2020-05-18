@@ -1,13 +1,13 @@
 package object;
 
 import engine.model.TexturedModel;
-import engine.render.RenderObject;
 import engine.render.RenderRequest;
 import engine.render.RequestInfo;
 import engine.render.RequestType;
 import engine.texture.ObjectType;
 import game.state.GameState;
-import interraction.InteractableEntity;
+import game.state.HandlerState;
+import interraction.Interactable;
 import interraction.Inventory;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -51,7 +51,7 @@ public class Player extends Entity {
         inventory = new Inventory();
     }
 
-    public void move(List<RenderObject> renderedObjects, GameState state) {
+    public void move(List<RenderObject> renderedObjects) {
         checkInputs();
         float distanceMovedForward = currentForwardSpeed * DisplayManager.getFrameTime();
         float dx = (float) (Math.sin(Math.toRadians(getRotation().y)) * distanceMovedForward);
@@ -61,7 +61,7 @@ public class Player extends Entity {
         dz -= (float) (Math.cos(Math.toRadians(getRotation().y - 90))) * distanceMovedSideways;
         Vector3f velocityR3 = new Vector3f(dx, upwardsSpeed * DisplayManager.getFrameTime() * 2f, dz);
         renderedObjects.remove(this);
-        checkCollisionsAndSlide(renderedObjects, state, velocityR3);
+        checkCollisionsAndSlide(renderedObjects, velocityR3);
         renderedObjects.add(this);
         currentForwardSpeed = 0;
         currentSidewaysSpeed = 0;
@@ -72,28 +72,28 @@ public class Player extends Entity {
         }
     }
 
-    private void checkCollisionsAndSlide(List<RenderObject> renderedObjects, GameState state, Vector3f velocityR3) {
+    private void checkCollisionsAndSlide(List<RenderObject> renderedObjects, Vector3f velocityR3) {
         CollisionPacket playerPacket = new CollisionPacket(velocityR3, new Vector3f(getPosition().x, getPosition().y + PLAYER_HITBOX_Y, getPosition().z));
-        Vector3f playerPosition = velocityR3.equals(new Vector3f()) ? playerPacket.getBasePoint() : collideWithWorld(playerPacket, renderedObjects, state,  0);
+        Vector3f playerPosition = velocityR3.equals(new Vector3f()) ? playerPacket.getBasePoint() : collideWithWorld(playerPacket, renderedObjects,  0);
         Matrix3f ellipticInverse = MathUtil.getEllipticInverseMatrix();
         playerPacket.setBasePoint(playerPosition);
         Vector3f ellipticVelocity = new Vector3f(0, -0.08f, 0);
         playerPacket.setEllipticVelocity(ellipticVelocity);
         Vector3f normalizedVelocity = new Vector3f();
         playerPacket.setNormalizedEllipticVelocity(ellipticVelocity.normalize(normalizedVelocity));
-        Vector3f finalPosition = collideWithWorld(playerPacket, renderedObjects, state, 0);
+        Vector3f finalPosition = collideWithWorld(playerPacket, renderedObjects, 0);
         finalPosition.mul(ellipticInverse);
         isInAir = !finalPosition.equals(playerPosition.mul(ellipticInverse), 0.01f);
         setPosition(new Vector3f(finalPosition.x, finalPosition.y - PLAYER_HITBOX_Y, finalPosition.z));
     }
 
-    private Vector3f collideWithWorld(CollisionPacket packet, List<RenderObject> renderedObjects, GameState state, int recursionDepth) {
+    private Vector3f collideWithWorld(CollisionPacket packet, List<RenderObject> renderedObjects, int recursionDepth) {
         float unitScale = UNITS_PER_METER / 500.0f;
         float veryCloseDistance = 0.5f * unitScale;
         if (recursionDepth > 5) {
             return packet.getBasePoint();
         }
-        checkCollision(renderedObjects, state, packet);
+        checkCollision(renderedObjects, packet);
         if (!packet.hasFoundCollision()) {
             Vector3f finalPos = new Vector3f();
             packet.getBasePoint().add(packet.getEllipticVelocity(), finalPos);
@@ -132,14 +132,14 @@ public class Player extends Entity {
         packet.setNormalizedEllipticVelocity(new Vector3f(newVelocityVector).normalize());
         packet.setBasePoint(newBasePoint);
         packet.setFoundCollision(false);
-        return collideWithWorld(packet, renderedObjects, state, recursionDepth + 1);
+        return collideWithWorld(packet, renderedObjects, recursionDepth + 1);
     }
 
-    private void checkCollision(List<RenderObject> renderedObjects, GameState state, CollisionPacket packet) {
+    private void checkCollision(List<RenderObject> renderedObjects, CollisionPacket packet) {
         Matrix3f ellipticMatrix = MathUtil.getEllipticMatrix();
         BoundingBox playerBox = new BoundingBox(new Vector3f(getPosition().x - PLAYER_HITBOX_X - 2, getPosition().y - PLAYER_HITBOX_Y - 2, getPosition().z - PLAYER_HITBOX_Z - 2),
                 new Vector3f(getPosition().x + PLAYER_HITBOX_X + 2, getPosition().y + PLAYER_HITBOX_Y + 2, getPosition().z + PLAYER_HITBOX_Z + 2));
-        Set<Triangle> closeTriangles = state.getCurrentTree().getCloseTriangles(playerBox);
+        Set<Triangle> closeTriangles = GameState.getInstance().getCurrentTree().getCloseTriangles(playerBox);
         for (RenderObject object : renderedObjects) {
             Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(object);
             List<Triangle> objectTriangles = object.getModel().getRawModel().getTriangles();
@@ -193,17 +193,18 @@ public class Player extends Entity {
         return inventory;
     }
 
-    public void interactWithInventory(GameState state) {
+    public void interactWithInventory() {
         if (!inventory.isOpen()) {
-            state.getHandlerState().registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0, 0.15f), new Vector2f(0.6f, 0.6f), ObjectType.INVENTORY)));
+            HandlerState.getInstance().registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0, 0.15f), new Vector2f(0.6f, 0.6f), ObjectType.INVENTORY)));
         }
         else {
-            state.getHandlerState().registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(ObjectType.INVENTORY)));
+            HandlerState.getInstance().registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(ObjectType.INVENTORY)));
         }
     }
 
-    public void interactWithObject(GameState state) {
-        InteractableEntity closestObject = state.getHandlerState().getClosestObject();
+    public void interactWithObject() {
+        GameState state = GameState.getInstance();
+        Interactable closestObject = HandlerState.getInstance().getClosestObject();
         float closestDistance = getPosition().distance(closestObject.getPosition());
         if (closestDistance < INTERACT_DISTANCE) {
             closestObject.interact();

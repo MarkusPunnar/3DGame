@@ -8,6 +8,7 @@ import engine.shader.FontShader;
 import engine.shader.Shader;
 import object.Entity;
 import object.Player;
+import object.RenderObject;
 import object.env.Camera;
 import object.env.Light;
 import object.terrain.Terrain;
