@@ -3,6 +3,7 @@ package object.scene.generation;
 import engine.loader.Loader;
 import engine.texture.TerrainTexture;
 import engine.texture.TerrainTexturePack;
+import object.env.Light;
 import object.terrain.Terrain;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class TerrainGenerator implements Generator {
     }
 
     @Override
-    public List<Terrain> generate() {
+    public List<Terrain> generate(List<Light> lights) {
         List<Terrain> terrains = new ArrayList<>();
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTerrainTexture("grass"));
         TerrainTexture greenTexture = new TerrainTexture(loader.loadTerrainTexture("moss"));

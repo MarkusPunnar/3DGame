@@ -1,8 +1,8 @@
 package game.state;
 
 import engine.render.RenderRequest;
-import interraction.Interactable;
-import interraction.Lootable;
+import interraction.InteractableEntity;
+import interraction.LootableEntity;
 import object.item.Item;
 
 import java.util.ArrayList;
@@ -15,10 +15,10 @@ public class HandlerState {
     private static final HandlerState INSTANCE = new HandlerState();
 
     private Queue<RenderRequest> requests;
-    private List<Interactable> interactableEntities;
-    private Lootable lastLooted;
+    private List<InteractableEntity> interactableEntities;
+    private LootableEntity lastLooted;
     private Item bindedItem;
-    private Interactable closestObject;
+    private InteractableEntity closestObject;
 
     public HandlerState() {
         requests = new LinkedList<>();
@@ -33,7 +33,7 @@ public class HandlerState {
         requests.add(request);
     }
 
-    public void registerInteractableEntity(Interactable object) {
+    public void registerInteractableEntity(InteractableEntity object) {
         interactableEntities.add(object);
     }
 
@@ -41,15 +41,15 @@ public class HandlerState {
         return requests;
     }
 
-    public List<Interactable> getInteractableEntities() {
+    public List<InteractableEntity> getInteractableEntities() {
         return interactableEntities;
     }
 
-    public Lootable getLastLooted() {
+    public LootableEntity getLastLooted() {
         return lastLooted;
     }
 
-    public void setLastLooted(Lootable lastLooted) {
+    public void setLastLooted(LootableEntity lastLooted) {
         this.lastLooted = lastLooted;
     }
 
@@ -61,11 +61,11 @@ public class HandlerState {
         this.bindedItem = bindedItem;
     }
 
-    public Interactable getClosestObject() {
+    public InteractableEntity getClosestObject() {
         return closestObject;
     }
 
-    public void setClosestObject(Interactable closestObject) {
+    public void setClosestObject(InteractableEntity closestObject) {
         this.closestObject = closestObject;
     }
 }

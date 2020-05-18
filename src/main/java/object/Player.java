@@ -7,7 +7,7 @@ import engine.render.RequestType;
 import engine.texture.ObjectType;
 import game.state.GameState;
 import game.state.HandlerState;
-import interraction.Interactable;
+import interraction.InteractableEntity;
 import interraction.Inventory;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -43,12 +43,33 @@ public class Player extends Entity {
     private boolean isInAir;
     private Inventory inventory;
 
-    public Player(TexturedModel texturedModel, Vector3f position, Vector3f rotation, Vector3f scaleVector) {
-        super(texturedModel, position, rotation, scaleVector);
-        currentForwardSpeed = 0;
-        currentSidewaysSpeed = 0;
-        isInAir = false;
-        inventory = new Inventory();
+    private Player(Builder builder) {
+        super(builder);
+        this.currentForwardSpeed = builder.currentForwardSpeed;
+        this.currentSidewaysSpeed = builder.currentSidewaysSpeed;
+        this.isInAir = builder.isInAir;
+        this.inventory = builder.inventory;
+    }
+
+    public static class Builder extends Entity.Builder {
+
+        private float currentForwardSpeed = 0;
+        private float currentSidewaysSpeed = 0;
+        private boolean isInAir = false;
+        private Inventory inventory = new Inventory();
+
+        public Builder(TexturedModel texturedModel, Vector3f position) {
+            super(texturedModel, position);
+        }
+
+        public Builder scale(Vector3f scale) {
+            super.scale(scale);
+            return this;
+        }
+
+        public Player build() {
+            return new Player(this);
+        }
     }
 
     public void move(List<RenderObject> renderedObjects) {
@@ -174,7 +195,7 @@ public class Player extends Entity {
         long window = DisplayManager.getWindow();
         int spaceState = glfwGetKey(window, GLFW_KEY_SPACE);
         if (spaceState == GLFW_PRESS && !isInAir) {
-            upwardsSpeed += JUMP_POWER;
+            upwardsSpeed = JUMP_POWER;
         }
     }
 
@@ -204,7 +225,7 @@ public class Player extends Entity {
 
     public void interactWithObject() {
         GameState state = GameState.getInstance();
-        Interactable closestObject = HandlerState.getInstance().getClosestObject();
+        InteractableEntity closestObject = HandlerState.getInstance().getClosestObject();
         float closestDistance = getPosition().distance(closestObject.getPosition());
         if (closestDistance < INTERACT_DISTANCE) {
             closestObject.interact();

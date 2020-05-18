@@ -23,8 +23,10 @@ const float specularStrength = 0.5;
 void main (void) {
     vec3 totalDiffuse = vec3(0.0);
     vec3 totalSpecular = vec3(0.0);
-    vec3 totalAmbient = vec3(0.0);
     for(int i = 0; i < 4; i++) {
+        if (lightColour[i].x == 0 && lightColour[i].y == 0 && lightColour[i].z == 0) {
+            continue;
+        }
         //Diffuse lighting calculations
         vec3 toLightVector = lightCoords[i] - fragmentCoords;
         float distance = length(toLightVector);
@@ -36,7 +38,7 @@ void main (void) {
         //Specular lighting calculations
         vec3 normalizedView = normalize(-fragmentCoords);
         vec3 reflectedLight = reflect(-normalizedLight, normalizedNormal);
-        float specularValue = pow(max(dot(normalizedView, reflectedLight), 0.0), 32);
+        float specularValue = pow(max(dot(normalizedView, reflectedLight), 0.0), 32) * reflectivity;
         vec3 specular = specularStrength * specularValue * lightColour[i] / attFactor;
         //Set final colour
         totalDiffuse = totalDiffuse + diffuse;

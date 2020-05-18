@@ -2,7 +2,7 @@ package interraction.handle;
 
 import game.state.GameState;
 import game.state.HandlerState;
-import interraction.Lootable;
+import interraction.LootableEntity;
 import interraction.MousePicker;
 import object.Player;
 import object.item.Slot;
@@ -26,7 +26,7 @@ public class InventoryHandler implements Handler {
                 HandlerUtil.moveItems(inventorySlots, inventorySlots, mousePicker);
             case IN_CHEST:
                 inventorySlots = player.getInventory().getInventorySlots();
-                Lootable openLootable = HandlerState.getInstance().getLastLooted();
+                LootableEntity openLootable = HandlerState.getInstance().getLastLooted();
                 if (openLootable != null) {
                     HandlerUtil.moveItems(inventorySlots, openLootable.getContent(), mousePicker);
                 }

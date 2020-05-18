@@ -1,8 +1,9 @@
 package object.scene.generation;
 
-import game.state.GameState;
 import game.state.HandlerState;
 import object.Entity;
+import object.env.Light;
+import object.env.LightEntity;
 import object.item.Coin;
 import object.scene.Chest;
 import object.scene.Door;
@@ -29,28 +30,28 @@ public class TavernGenerator implements Generator {
         this.loader = loader;
     }
 
-    public List<Entity> generate() throws IOException, URISyntaxException {
+    public List<Entity> generate(List<Light> lights) throws IOException, URISyntaxException {
         List<Entity> roomEntities = new ArrayList<>();
         //Generate room background
         TexturedModel tavernModel = getTexturedModel("tavern", false);
         ModelData roomBoxData = ObjectLoader.loadObjectModel("hitbox/tavernbox");
         tavernModel.getRawModel().setTriangles(loader.createTriangles(roomBoxData.getVertices(), roomBoxData.getIndices()));
         tavernModel.getTexture().isTransparent(true);
-        Entity tavern = new Entity(tavernModel, new Vector3f(), new Vector3f(), new Vector3f(1));
+        Entity tavern = new Entity.Builder(tavernModel, new Vector3f()).build();
         roomEntities.add(tavern);
         //Generate stools
         TexturedModel stoolModel = getTexturedModel("stool", false);
         for (int i = 0; i < 3; i++) {
-            roomEntities.add(new Entity(stoolModel, new Vector3f(3 + 12 * i, 0, 25), new Vector3f(), new Vector3f(1)));
+            roomEntities.add(new Entity.Builder(stoolModel, new Vector3f(3 + 12 * i, 0, 25)).build());
         }
         for (int i = 0; i < 4; i++) {
-            roomEntities.add(new Entity(stoolModel, new Vector3f(-13, 0,8 - 15 * i), new Vector3f(), new Vector3f(1)));
+            roomEntities.add(new Entity.Builder(stoolModel, new Vector3f(-13, 0, 8 - 15 * i)).build());
         }
         //Generate barrels
         TexturedModel barrelModel = getTexturedModel("barrel", false);
-        roomEntities.add(new Entity(barrelModel, new Vector3f(3,0,10), new Vector3f(), new Vector3f(5)));
-        roomEntities.add(new Entity(barrelModel, new Vector3f(28,0,-62),new Vector3f(), new Vector3f(5)));
-        roomEntities.add(new Entity(barrelModel, new Vector3f(30,0,-33),new Vector3f(), new Vector3f(5)));
+        roomEntities.add(new Entity.Builder(barrelModel, new Vector3f(3, 0, 10)).scale(new Vector3f(5)).build());
+        roomEntities.add(new Entity.Builder(barrelModel, new Vector3f(28, 0, -62)).scale(new Vector3f(5)).build());
+        roomEntities.add(new Entity.Builder(barrelModel, new Vector3f(30, 0, -33)).scale(new Vector3f(5)).build());
         //Generate tables and chairs
         TexturedModel tableModel = getTexturedModel("table", false);
         roomEntities.addAll(generateTableWithChairs(tableModel, stoolModel, new Vector3f(-27, 1.5f, 100)));
@@ -63,14 +64,29 @@ public class TavernGenerator implements Generator {
         roomEntities.addAll(generateChests());
         //Generate nightstands
         roomEntities.addAll(generateNightstands());
+        //Generate lanterns
+        roomEntities.addAll(generateLanterns(lights));
         return roomEntities;
+    }
+
+    private List<Entity> generateLanterns(List<Light> lights) throws IOException, URISyntaxException {
+        List<Entity> lanterns = new ArrayList<>();
+        TexturedModel lanternModel = getTexturedModel("lantern", new ModelTexture(loader.loadObjectTexture("purple")));
+        for (int i = 0; i < 3; i++) {
+            LightEntity lantern = new LightEntity.Builder(lanternModel, new Vector3f(31, 48.3f, 50 - 46.5f * i)).colour(new Vector3f(1, 1, 160f/255f))
+                    .attenuation(new Vector3f(1f, 0.01f, 0.002f)).offsetX(-5).offsetY(5).build();
+            lights.add(lantern.getLight());
+            lanterns.add(lantern);
+        }
+
+        return lanterns;
     }
 
     private List<Entity> generateNightstands() throws IOException, URISyntaxException {
         List<Entity> nightstands = new ArrayList<>();
         TexturedModel nightstandModel = getTexturedModel("nightstand", false);
         for (int i = 0; i < 3; i++) {
-            nightstands.add(new Entity(nightstandModel, new Vector3f(31, 34.5f, 50 - 46.5f * i), new Vector3f(0, -90, 0), new Vector3f(20)));
+            nightstands.add(new Entity.Builder(nightstandModel, new Vector3f(31, 34.5f, 50 - 46.5f * i)).rotationY(-90).scale(new Vector3f(20)).build());
         }
         return nightstands;
     }
@@ -80,7 +96,7 @@ public class TavernGenerator implements Generator {
         TexturedModel openChestModel = getTexturedModel("openchest", false);
         TexturedModel closedChestModel = getTexturedModel("closedchest", false);
         for (int i = 0; i < 3; i++) {
-            Chest chest = new Chest(closedChestModel, new Vector3f(-5, 34.5f, 31 - 46.5f * i), new Vector3f(), new Vector3f(1), openChestModel, closedChestModel);
+            Chest chest = new Chest.Builder(closedChestModel, new Vector3f(-5, 34.5f, 31 - 46.5f * i), openChestModel).capacity(20).build();
             chest.addItem(new Coin(loader, 10));
             chests.add(chest);
             HandlerState.getInstance().registerInteractableEntity(chest);
@@ -94,7 +110,7 @@ public class TavernGenerator implements Generator {
         ModelData bedModelData = ObjectLoader.loadObjectModel("hitbox/bedbox");
         bedModel.getRawModel().setTriangles(loader.createTriangles(bedModelData.getVertices(), bedModelData.getIndices()));
         for (int i = 0; i < 3; i++) {
-            beds.add(new Entity(bedModel, new Vector3f(20, 34.5f, 31 - 46.5f * i), new Vector3f(), new Vector3f(1)));
+            beds.add(new Entity.Builder(bedModel, new Vector3f(20, 34.5f, 31 - 46.5f * i)).build());
         }
         return beds;
     }
@@ -102,11 +118,11 @@ public class TavernGenerator implements Generator {
     private List<Entity> generateDoors() throws IOException, URISyntaxException {
         List<Entity> doors = new ArrayList<>();
         TexturedModel doorModel = getTexturedModel("door", false);
-        Door door = new Door(doorModel, new Vector3f(-44, 0, -26.5f), new Vector3f(), new Vector3f(1), FacingDirection.WEST);
+        Door door = new Door.Builder(doorModel, new Vector3f(-44, 0, -26.5f)).facing(FacingDirection.WEST).build();
         HandlerState.getInstance().registerInteractableEntity(door);
         doors.add(door);
         for (int i = 0; i < 3; i++) {
-            door = new Door(doorModel, new Vector3f(-13.7f, 34.5f, 54.3f - 46.5f * i), new Vector3f(), new Vector3f(1), FacingDirection.EAST);
+            door = new Door.Builder(doorModel, new Vector3f(-13.7f, 34.5f, 54.3f - 46.5f * i)).facing(FacingDirection.EAST).build();
             HandlerState.getInstance().registerInteractableEntity(door);
             doors.add(door);
         }
@@ -115,18 +131,18 @@ public class TavernGenerator implements Generator {
 
     private List<Entity> generateTableWithChairs(TexturedModel tableModel, TexturedModel stoolModel, Vector3f tablePosition) {
         List<Entity> tables = new ArrayList<>();
-        tables.add(new Entity(tableModel, tablePosition, new Vector3f(), new Vector3f(0.75f)));
-        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x + 12, 1, tablePosition.z - 13), new Vector3f(), new Vector3f(1, 0.8f, 1)));
-        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x - 10, 1, tablePosition.z - 13), new Vector3f(), new Vector3f(1, 0.8f, 1)));
-        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x - 10, 1, tablePosition.z + 9), new Vector3f(), new Vector3f(1, 0.8f, 1)));
-        tables.add(new Entity(stoolModel, new Vector3f(tablePosition.x + 12, 1, tablePosition.z + 9), new Vector3f(), new Vector3f(1, 0.8f, 1)));
+        tables.add(new Entity.Builder(tableModel, tablePosition).scale(new Vector3f(0.75f)).build());
+        tables.add(new Entity.Builder(stoolModel, new Vector3f(tablePosition.x + 12, 1, tablePosition.z - 13)).scaleY(0.8f).build());
+        tables.add(new Entity.Builder(stoolModel, new Vector3f(tablePosition.x - 10, 1, tablePosition.z - 13)).scaleY(0.8f).build());
+        tables.add(new Entity.Builder(stoolModel, new Vector3f(tablePosition.x - 10, 1, tablePosition.z + 9)).scaleY(0.8f).build());
+        tables.add(new Entity.Builder(stoolModel, new Vector3f(tablePosition.x + 12, 1, tablePosition.z + 9)).scaleY(0.8f).build());
         return tables;
     }
 
     public Player generatePlayer(Loader loader) throws IOException, URISyntaxException {
         ModelTexture purpleTexture = new ModelTexture(loader.loadObjectTexture("purple"));
         TexturedModel playerModel = getTexturedModel("player", purpleTexture);
-        return new Player(playerModel, new Vector3f(-30,34.5f,-25),new Vector3f(), new Vector3f(3));
+        return new Player.Builder(playerModel, new Vector3f(-30, 34.5f, -25)).scale(new Vector3f(3)).build();
     }
 
     private TexturedModel getTexturedModel(String objName, ModelTexture texture) throws IOException, URISyntaxException {
@@ -138,7 +154,7 @@ public class TavernGenerator implements Generator {
     private TexturedModel getTexturedModel(String fileName, boolean setTransparent) throws URISyntaxException, IOException {
         ModelData modelData = ObjectLoader.loadObjectModel(fileName);
         RawModel rawModel = loader.loadToVAO(modelData.getVertices(), modelData.getIndices(), modelData.getNormals(), modelData.getTextureCoords());
-        ModelTexture texture =  new ModelTexture(loader.loadObjectTexture(fileName));
+        ModelTexture texture = new ModelTexture(loader.loadObjectTexture(fileName));
         texture.isTransparent(setTransparent);
         return new TexturedModel(rawModel, texture);
     }

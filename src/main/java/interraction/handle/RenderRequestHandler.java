@@ -5,6 +5,7 @@ import engine.font.GUIText;
 import engine.font.structure.FontType;
 import engine.render.ParentRenderer;
 import game.state.HandlerState;
+import interraction.LootableEntity;
 import object.RenderObject;
 import engine.render.RenderRequest;
 import engine.render.RequestInfo;
@@ -13,7 +14,6 @@ import game.state.State;
 import engine.loader.Loader;
 import engine.texture.GuiTexture;
 import engine.texture.ObjectType;
-import interraction.Lootable;
 import object.Player;
 import object.item.Item;
 import object.item.Slot;
@@ -125,7 +125,7 @@ public class RenderRequestHandler implements Handler {
     }
 
     private void renderChestItems() {
-        Lootable lastLootable = HandlerState.getInstance().getLastLooted();
+        LootableEntity lastLootable = HandlerState.getInstance().getLastLooted();
         if (lastLootable == null) {
             return;
         }
@@ -184,7 +184,7 @@ public class RenderRequestHandler implements Handler {
                     slot = player.getInventory().initSlot(slotTextureID, slotHoverTextureID, slotPosition, slotScale, i * (int) m + j);
                 }
                 else {
-                    Lootable currentLootable = HandlerState.getInstance().getLastLooted();
+                    LootableEntity currentLootable = HandlerState.getInstance().getLastLooted();
                     if (currentLootable == null) {
                         return;
                     }

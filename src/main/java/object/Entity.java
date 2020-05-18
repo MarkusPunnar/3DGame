@@ -10,19 +10,62 @@ import util.math.MathUtil;
 
 import java.util.Objects;
 
-public class Entity implements RenderObject {
+public class Entity extends RenderObject {
 
     private TexturedModel texturedModel;
     private Vector3f position;
     private Vector3f rotation;
     private Vector3f scaleVector;
 
-    public Entity(TexturedModel texturedModel, Vector3f position, Vector3f rotation, Vector3f scaleVector) {
-        this.texturedModel = texturedModel;
-        this.position = position;
-        this.rotation = rotation;
-        this.scaleVector = scaleVector;
+    protected Entity(Builder builder) {
+        this.texturedModel = builder.texturedModel;
+        this.position = builder.position;
+        this.rotation = builder.rotation;
+        this.scaleVector = builder.scaleVector;
         GeneratorUtil.setParentObject(this);
+    }
+
+    public static class Builder extends RenderObject.Builder {
+
+        private final TexturedModel texturedModel;
+        private final Vector3f position;
+
+        private Vector3f rotation = new Vector3f();
+        private Vector3f scaleVector = new Vector3f(1);
+
+        public Builder(TexturedModel texturedModel, Vector3f position) {
+            this.texturedModel = texturedModel;
+            this.position = position;
+        }
+
+        public Builder rotation(Vector3f rotation) {
+            this.rotation = rotation;
+            return self();
+        }
+
+        public Builder rotationY(float rotationY) {
+            this.rotation.y = rotationY;
+            return self();
+        }
+
+        public Builder scale(Vector3f scale) {
+            this.scaleVector = scale;
+            return self();
+        }
+
+        public Builder scaleY(float scaleY) {
+            this.scaleVector.y = scaleY;
+            return self();
+        }
+
+        public Entity build() {
+            return new Entity(this);
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
     }
 
     public void increasePosition(float dx, float dy, float dz) {

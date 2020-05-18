@@ -3,7 +3,7 @@ package interraction.handle;
 import game.state.GameState;
 import game.state.HandlerState;
 import game.state.State;
-import interraction.Lootable;
+import interraction.LootableEntity;
 import interraction.MousePicker;
 import object.Player;
 import util.HandlerUtil;
@@ -23,7 +23,7 @@ public class LootingHandler implements Handler {
         if (GameState.getInstance().getCurrentState() != State.IN_CHEST) {
             return;
         }
-        Lootable currentLootable = HandlerState.getInstance().getLastLooted();
+        LootableEntity currentLootable = HandlerState.getInstance().getLastLooted();
         if (currentLootable != null) {
             HandlerUtil.moveItems(currentLootable.getContent(), player.getInventory().getInventorySlots(), mousePicker);
         }

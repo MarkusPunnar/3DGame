@@ -1,7 +1,7 @@
 package interraction.handle;
 
 import game.state.HandlerState;
-import interraction.Interactable;
+import interraction.InteractableEntity;
 import object.Player;
 import org.joml.Vector3f;
 import engine.DisplayManager;
@@ -18,7 +18,7 @@ public class InteractionHandler implements Handler {
     public void handle() {
         Vector3f playerPosition = player.getPosition();
         float closestDistance = Float.MAX_VALUE;
-        for (Interactable object : HandlerState.getInstance().getInteractableEntities()) {
+        for (InteractableEntity object : HandlerState.getInstance().getInteractableEntities()) {
             object.setInteractionTime(object.getInteractionTime() + DisplayManager.getFrameTime());
             Vector3f objectPosition = object.getPosition();
             float distance = objectPosition.distance(playerPosition);

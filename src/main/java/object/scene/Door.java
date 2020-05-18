@@ -2,22 +2,39 @@ package object.scene;
 
 import engine.model.TexturedModel;
 import game.state.GameState;
-import interraction.Interactable;
-import object.Entity;
-import util.FacingDirection;
+import interraction.InteractableEntity;
 import org.joml.Vector3f;
+import util.FacingDirection;
 
-public class Door extends Entity implements Interactable {
+public class Door extends InteractableEntity {
 
-    private boolean isOpened;
-    private float sinceLastInteraction;
     private FacingDirection facingDirection;
 
-    public Door(TexturedModel texturedModel, Vector3f position, Vector3f rotation, Vector3f scaleVector, FacingDirection direction) {
-        super(texturedModel, position, rotation, scaleVector);
-        this.isOpened = false;
-        this.sinceLastInteraction = Float.MAX_VALUE;
-        this.facingDirection = direction;
+    private Door(Builder builder) {
+        super(builder);
+        this.facingDirection = builder.facingDirection;
+    }
+
+    public static class Builder extends InteractableEntity.Builder {
+
+        private FacingDirection facingDirection = FacingDirection.WEST;
+
+        public Builder(TexturedModel texturedModel, Vector3f position) {
+            super(texturedModel, position);
+        }
+
+        public Builder facing(FacingDirection direction) {
+            this.facingDirection = direction;
+            return this;
+        }
+
+        public Door build() {
+            return new Door(this);
+        }
+
+        public Builder self() {
+            return this;
+        }
     }
 
     @Override
@@ -58,13 +75,5 @@ public class Door extends Entity implements Interactable {
 
     @Override
     public void handleGui(GameState state) {
-    }
-
-    public float getInteractionTime() {
-        return sinceLastInteraction;
-    }
-
-    public void setInteractionTime(float time) {
-        this.sinceLastInteraction = time;
     }
 }

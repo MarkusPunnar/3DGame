@@ -7,31 +7,48 @@ import engine.render.RequestInfo;
 import engine.render.RequestType;
 import engine.texture.ObjectType;
 import engine.model.TexturedModel;
-import interraction.Lootable;
-import object.Entity;
+import interraction.LootableEntity;
 import object.item.Icon;
 import object.item.Item;
 import object.item.Slot;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class Chest extends Entity implements Lootable {
+public class Chest extends LootableEntity {
 
-    private boolean isOpened;
-    private float sinceLastInteraction;
     private TexturedModel openModel;
     private TexturedModel closedModel;
-    private Slot[] content;
 
-    public Chest(TexturedModel texturedModel, Vector3f position, Vector3f rotation, Vector3f scaleVector, TexturedModel openModel, TexturedModel closedModel) {
-        super(texturedModel, position, rotation, scaleVector);
-        this.isOpened = false;
-        this.openModel = openModel;
-        this.closedModel = closedModel;
-        this.sinceLastInteraction = Float.MAX_VALUE;
-        this.content = new Slot[20];
-        for (int i = 0; i < content.length; i++) {
-            content[i] = new Slot();
+    public Chest(Builder builder) {
+        super(builder);
+        this.openModel = builder.openModel;
+        this.closedModel = builder.closedModel;
+    }
+
+    public static class Builder extends LootableEntity.Builder {
+
+        private final TexturedModel openModel;
+        private final TexturedModel closedModel;
+
+        public Builder(TexturedModel closedModel, Vector3f position, TexturedModel openModel) {
+            super(closedModel, position);
+            this.openModel = openModel;
+            this.closedModel = closedModel;
+        }
+
+        @Override
+        public Builder capacity(int capacity) {
+            super.capacity(capacity);
+            return this;
+        }
+
+        public Chest build() {
+            return new Chest(this);
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
         }
     }
 
@@ -63,19 +80,6 @@ public class Chest extends Entity implements Lootable {
         }
     }
 
-    @Override
-    public float getInteractionTime() {
-        return sinceLastInteraction;
-    }
-
-    @Override
-    public void setInteractionTime(float time) {
-        this.sinceLastInteraction = time;
-    }
-
-    public Slot[] getContent() {
-        return content;
-    }
 
     public Slot initSlot(int textureID, int hoverID, Vector2f position, Vector2f scale, int index) {
         Slot slot = content[index];

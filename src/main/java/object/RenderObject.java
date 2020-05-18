@@ -7,27 +7,34 @@ import engine.shader.Shader;
 import engine.texture.ObjectType;
 import org.joml.Vector3f;
 
-public interface RenderObject {
+public abstract class RenderObject {
 
-    int getID();
+    public abstract int getID();
 
-    Model getModel();
+    public abstract Model getModel();
 
-    Vector3f getPosition();
+    public abstract Vector3f getPosition();
 
-    Vector3f getRotation();
+    public abstract Vector3f getRotation();
 
-    Vector3f getScaleVector();
+    public abstract Vector3f getScaleVector();
 
-    default int getPriority() {
+    public int getPriority() {
         return 0;
     }
 
-    default GUIText getGuiText() {
+    public GUIText getGuiText() {
         return null;
     }
 
-    ObjectType getType();
+    public abstract ObjectType getType();
 
-    void prepareObject(Shader shader);
+    public abstract void prepareObject(Shader shader);
+
+    abstract static class Builder {
+
+        public abstract RenderObject build();
+
+        protected abstract Builder self();
+    }
 }

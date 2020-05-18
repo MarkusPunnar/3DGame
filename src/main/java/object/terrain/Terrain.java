@@ -18,7 +18,7 @@ import util.math.MathUtil;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL13.*;
 
-public class Terrain implements RenderObject {
+public class Terrain extends RenderObject {
 
     private static final float SIZE = 200;
     private static final int VERTICES = 100;
@@ -122,14 +122,6 @@ public class Terrain implements RenderObject {
 
     public int getID() {
         return texturedModel.getModelID();
-    }
-
-    public TerrainTexturePack getTexturePack() {
-        return texturePack;
-    }
-
-    public TerrainTexture getBlendMap() {
-        return blendMap;
     }
 
     public ObjectType getType() {
