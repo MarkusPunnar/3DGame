@@ -52,6 +52,12 @@ public class LightEntity extends Entity {
             return this;
         }
 
+        @Override
+        public Builder rotationY(float rotationY) {
+            super.rotationY(rotationY);
+            return this;
+        }
+
         public Builder offsetZ(float offsetZ) {
             this.offsetZ = offsetZ;
             return this;

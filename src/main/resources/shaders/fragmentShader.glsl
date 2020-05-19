@@ -2,20 +2,20 @@
 
 in vec2 textureCoords;
 in vec3 normalCoords;
-in vec3 lightCoords[4];
+in vec3 lightCoords[10];
 in vec3 fragmentCoords;
 
 out vec4 outColour;
 
 uniform sampler2D textureSampler;
-uniform vec3 lightColour[4];
+uniform vec3 lightColour[10];
 uniform vec3 cameraCoords;
 
 uniform float reflectivity;
 uniform float shineDamper;
 uniform float fakeLighting;
 uniform vec3 skyColour;
-uniform vec3 attenuation[4];
+uniform vec3 attenuation[10];
 
 const float ambientStrength = 0.2;
 const float specularStrength = 0.5;
@@ -23,7 +23,7 @@ const float specularStrength = 0.5;
 void main (void) {
     vec3 totalDiffuse = vec3(0.0);
     vec3 totalSpecular = vec3(0.0);
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < 10; i++) {
         if (lightColour[i].x == 0 && lightColour[i].y == 0 && lightColour[i].z == 0) {
             continue;
         }

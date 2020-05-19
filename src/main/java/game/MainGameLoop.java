@@ -38,14 +38,11 @@ public class MainGameLoop {
         TerrainGenerator terrainGenerator = new TerrainGenerator(loader);
         Player player = tavernGenerator.generatePlayer(loader);
         List<Light> lights = new ArrayList<>();
+        Light sun = new Light(new Vector3f(3000, 5000, 10000), new Vector3f(0.3f));
+        lights.add(sun);
         List<Entity> roomEntities = tavernGenerator.generate(lights);
         List<Terrain> terrains = terrainGenerator.generate(lights);
         OctTree octTree =  new OctTree(new BoundingBox(new Vector3f(-400, -1, -400), new Vector3f(200, 100, 200)));
-
-
-        //temporary light code
-        Light sun = new Light(new Vector3f(3000, 5000, 10000), new Vector3f(0.3f));
-        lights.add(sun);
 
         Camera camera = new Camera(player);
         MousePicker mousePicker = new MousePicker(renderer.getProjectionMatrix(), camera);

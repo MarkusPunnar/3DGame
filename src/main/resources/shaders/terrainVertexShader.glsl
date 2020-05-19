@@ -7,13 +7,13 @@ in vec3 aNormalCoords;
 out vec3 fragmentCoords;
 out vec2 textureCoords;
 out vec3 normalCoords;
-out vec3 lightCoords[4];
+out vec3 lightCoords[1];
 
 //Uniform variables
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
-uniform vec3 lightPosition[4];
+uniform vec3 lightPosition[1];
 
 void main(void) {
     //Calculate vertex and light positions in world space
@@ -22,7 +22,7 @@ void main(void) {
     //Pass information to fragment shader
     textureCoords = aTextureCoords;
     normalCoords = aNormalCoords;
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < 1; i++) {
         lightCoords[i] = lightPosition[i];
     }
     fragmentCoords = vertexWorldSpacePosition.xyz;

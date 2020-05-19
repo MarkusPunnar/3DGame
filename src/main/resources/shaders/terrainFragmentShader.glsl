@@ -2,7 +2,7 @@
 
 in vec2 textureCoords;
 in vec3 normalCoords;
-in vec3 lightCoords[4];
+in vec3 lightCoords[1];
 in vec3 fragmentCoords;
 
 out vec4 outColour;
@@ -13,9 +13,9 @@ uniform sampler2D gSampler;
 uniform sampler2D bSampler;
 uniform sampler2D blendMapSampler;
 
-uniform vec3 lightColour[4];
+uniform vec3 lightColour[1];
 uniform vec3 cameraCoords;
-uniform vec3 attenuation[4];
+uniform vec3 attenuation[1];
 
 uniform float reflectivity;
 uniform float shineDamper;
@@ -41,7 +41,7 @@ void main (void) {
     vec3 totalDiffuse = vec3(0.0);
     vec3 totalSpecular = vec3(0.0);
     vec3 totalAmbient = vec3(0.0);
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < 1; i++) {
         if (lightColour[i].x == 0 && lightColour[i].y == 0 && lightColour[i].z == 0) {
             continue;
         }

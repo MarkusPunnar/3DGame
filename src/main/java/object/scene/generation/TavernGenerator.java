@@ -71,15 +71,24 @@ public class TavernGenerator implements Generator {
 
     private List<Entity> generateLanterns(List<Light> lights) throws IOException, URISyntaxException {
         List<Entity> lanterns = new ArrayList<>();
-        TexturedModel lanternModel = getTexturedModel("lantern", new ModelTexture(loader.loadObjectTexture("purple")));
+        TexturedModel lanternModel = getTexturedModel("lantern", false);
         for (int i = 0; i < 3; i++) {
-            LightEntity lantern = new LightEntity.Builder(lanternModel, new Vector3f(31, 48.3f, 50 - 46.5f * i)).colour(new Vector3f(1, 1, 160f/255f))
-                    .attenuation(new Vector3f(1f, 0.01f, 0.002f)).offsetX(-5).offsetY(5).build();
-            lights.add(lantern.getLight());
-            lanterns.add(lantern);
+            lanterns.add(generateLantern(lanternModel, new Vector3f(31, 48.5f, 50 - 46.5f * i), lights));
         }
-
+        lanterns.add(generateLantern(lanternModel, new Vector3f(0, 55, 120), lights));
+        lanterns.add(generateLantern(lanternModel, new Vector3f(-42, 55, 0), lights));
+        lanterns.add(generateLantern(lanternModel, new Vector3f(15, 14, 103), lights));
+        lanterns.add(generateLantern(lanternModel, new Vector3f(-27, 14, 100), lights));
+        lanterns.add(generateLantern(lanternModel, new Vector3f(-5, 14.5f, 0), lights));
         return lanterns;
+    }
+
+    private LightEntity generateLantern(TexturedModel lanternModel, Vector3f position, List<Light> lights) {
+        Vector3f lanternAttenuation = new Vector3f(1, 0.0005f, 0.0003f);
+        Vector3f lanternLightColour = new Vector3f(189f / 255f, 183f / 255f, 107f / 255f);
+        LightEntity lantern = new LightEntity.Builder(lanternModel, position).colour(lanternLightColour).attenuation(lanternAttenuation).build();
+        lights.add(lantern.getLight());
+        return lantern;
     }
 
     private List<Entity> generateNightstands() throws IOException, URISyntaxException {

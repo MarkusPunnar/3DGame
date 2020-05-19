@@ -17,7 +17,7 @@ import java.util.Map;
 
 public abstract class Shader {
 
-    protected final int MAX_LIGHTS = 4;
+    protected final int MAX_LIGHTS = 10;
 
     private int programID;
     private int vertexShaderID;
