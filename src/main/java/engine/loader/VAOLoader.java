@@ -23,13 +23,13 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
-public class Loader {
+public class VAOLoader {
 
     private List<Integer> VAOs;
     private List<Integer> VBOs;
     private List<Integer> textures;
 
-    public Loader() {
+    public VAOLoader() {
         this.VAOs = new ArrayList<>();
         this.VBOs = new ArrayList<>();
         this.textures = new ArrayList<>();

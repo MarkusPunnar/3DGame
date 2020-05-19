@@ -1,6 +1,6 @@
 package engine.render;
 
-import engine.loader.Loader;
+import engine.loader.VAOLoader;
 import engine.model.Model;
 import engine.model.RawModel;
 import engine.shader.Shader;
@@ -21,7 +21,7 @@ public class GuiRenderer implements Renderer {
     private final RawModel quadModel;
     private GuiShader shader;
 
-    public GuiRenderer(Loader loader) throws IOException {
+    public GuiRenderer(VAOLoader loader) throws IOException {
         float[] positions = new float[]{-1, 1, -1, -1, 1, 1, 1, -1};
         this.quadModel = loader.loadToVAO(positions);
         this.shader = new GuiShader();

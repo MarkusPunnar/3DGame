@@ -1,7 +1,7 @@
 package game;
 
 import engine.DisplayManager;
-import engine.loader.Loader;
+import engine.loader.VAOLoader;
 import engine.render.ParentRenderer;
 import object.RenderObject;
 import game.state.GameState;
@@ -32,16 +32,17 @@ public class MainGameLoop {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         DisplayManager.createDisplay();
-        Loader loader = new Loader();
+        VAOLoader loader = new VAOLoader();
         ParentRenderer renderer = new ParentRenderer(loader);
         TavernGenerator tavernGenerator = new TavernGenerator(loader);
         TerrainGenerator terrainGenerator = new TerrainGenerator(loader);
         Player player = tavernGenerator.generatePlayer(loader);
-        List<Light> lights = new ArrayList<>();
-        Light sun = new Light(new Vector3f(3000, 5000, 10000), new Vector3f(0.3f));
-        lights.add(sun);
-        List<Entity> roomEntities = tavernGenerator.generate(lights);
-        List<Terrain> terrains = terrainGenerator.generate(lights);
+        List<Light> roomLights = new ArrayList<>();
+        List<Light> terrainLights = new ArrayList<>();
+        Light sun = new Light(new Vector3f(3000, 5000, 10000), new Vector3f(0.8f));
+        terrainLights.add(sun);
+        List<Entity> roomEntities = tavernGenerator.generate(roomLights);
+        List<Terrain> terrains = terrainGenerator.generate(roomLights);
         OctTree octTree =  new OctTree(new BoundingBox(new Vector3f(-400, -1, -400), new Vector3f(200, 100, 200)));
 
         Camera camera = new Camera(player);
@@ -66,7 +67,7 @@ public class MainGameLoop {
             for (Handler handler : handlers) {
                 handler.handle();
             }
-            renderer.renderObjects(lights, camera);
+            renderer.renderObjects(roomLights, terrainLights, camera);
             DisplayManager.updateDisplay();
         }
         renderer.cleanUp();

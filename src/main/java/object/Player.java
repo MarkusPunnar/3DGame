@@ -34,7 +34,7 @@ public class Player extends Entity {
     private static final float INTERACT_DISTANCE = 20f;
 
     public static final float PLAYER_HITBOX_X = 4.5f;
-    public static final float PLAYER_HITBOX_Y = 9f;
+    public static final float PLAYER_HITBOX_Y = 9.4f;
     public static final float PLAYER_HITBOX_Z = 4.5f;
 
     private float currentForwardSpeed;
@@ -99,6 +99,7 @@ public class Player extends Entity {
         Matrix3f ellipticInverse = MathUtil.getEllipticInverseMatrix();
         playerPacket.setBasePoint(playerPosition);
         Vector3f ellipticVelocity = new Vector3f(0, -0.08f, 0);
+        playerPacket.setMovementVelocity(new Vector3f(playerPacket.getEllipticVelocity()));
         playerPacket.setEllipticVelocity(ellipticVelocity);
         Vector3f normalizedVelocity = new Vector3f();
         playerPacket.setNormalizedEllipticVelocity(ellipticVelocity.normalize(normalizedVelocity));
@@ -110,7 +111,6 @@ public class Player extends Entity {
 
     private Vector3f collideWithWorld(CollisionPacket packet, List<RenderObject> renderedObjects, int recursionDepth) {
         float unitScale = UNITS_PER_METER / 500.0f;
-        float veryCloseDistance = 0.5f * unitScale;
         if (recursionDepth > 5) {
             return packet.getBasePoint();
         }
@@ -123,20 +123,25 @@ public class Player extends Entity {
         Vector3f newBasePoint = new Vector3f(packet.getBasePoint());
         Vector3f destinationPoint = new Vector3f();
         packet.getBasePoint().add(packet.getEllipticVelocity(), destinationPoint);
-        if (packet.getNearestDistance() >= veryCloseDistance) {
+        if (packet.getNearestDistance() >= unitScale) {
             packet.getBasePoint().add(packet.getEllipticVelocity(), destinationPoint);
             Vector3f v = new Vector3f(packet.getEllipticVelocity());
-            v.normalize(packet.getNearestDistance() - veryCloseDistance);
+            v.normalize(packet.getNearestDistance() - unitScale);
             packet.getBasePoint().add(v, newBasePoint);
             v.normalize();
-            Vector3f scaledDistance = v.mul(veryCloseDistance);
+            Vector3f scaledDistance = v.mul(unitScale);
             packet.getIntersectionPoint().sub(scaledDistance);
         }
         Vector3f slidePlaneOrigin = new Vector3f(packet.getIntersectionPoint());
         Vector3f slidePlaneNormal = new Vector3f();
         newBasePoint.sub(packet.getIntersectionPoint(), slidePlaneNormal);
-        if (packet.getNearestDistance() == 0.0f && packet.hasFoundCollision()) {
-            newBasePoint.add(slidePlaneNormal.normalize(0.01f));
+        if (packet.getNearestDistance() == 0.0f) {
+            Vector3f newVelocityVector = slidePlaneNormal.normalize(0.012f);
+            if (packet.getBasePoint().y < packet.getIntersectionPoint().y) {
+                newVelocityVector.mul(8);
+                upwardsSpeed = 0;
+            }
+            newBasePoint.add(newVelocityVector);
             return newBasePoint;
         }
         slidePlaneNormal.normalize();
@@ -146,7 +151,7 @@ public class Player extends Entity {
         destinationPoint.sub(new Vector3f(slidePlaneNormal).mul(signedDistanceToDest), newDestinationPoint);
         Vector3f newVelocityVector = new Vector3f();
         newDestinationPoint.sub(packet.getIntersectionPoint(), newVelocityVector);
-        if (newVelocityVector.length() < veryCloseDistance) {
+        if (newVelocityVector.length() < unitScale) {
             return newBasePoint;
         }
         packet.setEllipticVelocity(newVelocityVector);

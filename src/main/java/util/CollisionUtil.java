@@ -60,7 +60,7 @@ public class CollisionUtil {
                 Vector3f subtracted = new Vector3f();
                 Vector3f timeVelocity = new Vector3f();
                 Vector3f planeIntersectionPoint = new Vector3f();
-                        packet.getBasePoint().sub(trianglePlane.getNormalizedNormal(), subtracted);
+                packet.getBasePoint().sub(trianglePlane.getNormalizedNormal(), subtracted);
                 packet.getEllipticVelocity().mul(t0, timeVelocity);
                 subtracted.add(timeVelocity, planeIntersectionPoint);
                 if (isPointInTriangle(planeIntersectionPoint, p1, p2, p3)) {

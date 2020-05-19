@@ -11,7 +11,7 @@ import engine.render.RenderRequest;
 import engine.render.RequestInfo;
 import game.state.GameState;
 import game.state.State;
-import engine.loader.Loader;
+import engine.loader.VAOLoader;
 import engine.texture.GuiTexture;
 import engine.texture.ObjectType;
 import object.Player;
@@ -154,7 +154,7 @@ public class RenderRequestHandler implements Handler {
     }
 
     private void renderTitle(float n, RequestInfo requestInfo, ObjectType titleType) {
-        Loader loader = renderer.getLoader();
+        VAOLoader loader = renderer.getLoader();
         int titleTextureID = loader.loadGuiTexture(titleType.getTextureName());
         Vector2f position = requestInfo.getTexturePosition();
         Vector2f scale = requestInfo.getTextureScale();
@@ -168,7 +168,7 @@ public class RenderRequestHandler implements Handler {
     private void renderGrid(float n, float m, RequestInfo requestInfo) {
         Vector2f scale = requestInfo.getTextureScale();
         Vector2f position = requestInfo.getTexturePosition();
-        Loader loader = renderer.getLoader();
+        VAOLoader loader = renderer.getLoader();
         int slotTextureID = loader.loadGuiTexture(ObjectType.SLOT.getTextureName());
         int slotHoverTextureID = loader.loadGuiTexture(ObjectType.SLOT_HOVER.getTextureName());
         float slotWidth = (2 * scale.x) / m;

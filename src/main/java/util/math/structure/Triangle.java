@@ -27,6 +27,10 @@ public class Triangle {
         return vertices;
     }
 
+    public void setVertices(Vector3f[] vertices) {
+        this.vertices = vertices;
+    }
+
     public BoundingBox getBoxAroundTriangle() {
         return boxAroundTriangle;
     }
@@ -61,5 +65,9 @@ public class Triangle {
 
     public void setParentObject(RenderObject parentObject) {
         this.parentObject = parentObject;
+    }
+
+    public void setBoxAroundTriangle(BoundingBox boxAroundTriangle) {
+        this.boxAroundTriangle = boxAroundTriangle;
     }
 }

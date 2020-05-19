@@ -1,5 +1,6 @@
 package object.terrain;
 
+import engine.model.data.TerrainData;
 import object.RenderObject;
 import engine.model.RawModel;
 import engine.model.TexturedModel;
@@ -9,7 +10,7 @@ import engine.texture.TerrainTexture;
 import engine.texture.TerrainTexturePack;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import engine.loader.Loader;
+import engine.loader.VAOLoader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import util.GeneratorUtil;
@@ -20,25 +21,25 @@ import static org.lwjgl.opengl.GL13.*;
 
 public class Terrain extends RenderObject {
 
-    private static final float SIZE = 200;
-    private static final int VERTICES = 100;
+    private static final float SIZE = 400;
+    private static final int VERTICES = 129;
 
-    private float x;
-    private float z;
-    private TexturedModel texturedModel;
-    private TerrainTexturePack texturePack;
-    private TerrainTexture blendMap;
+    private final float x;
+    private final float z;
+    private final TexturedModel texturedModel;
+    private final TerrainTexturePack texturePack;
+    private final TerrainTexture blendMap;
 
-    public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack pack, TerrainTexture blendMap) {
+    public Terrain(int gridX, int gridZ, VAOLoader loader, TerrainData data, TerrainTexturePack pack, TerrainTexture blendMap) {
         this.x = gridX * SIZE;
         this.z = gridZ * SIZE;
-        this.texturedModel = new TexturedModel(generateTerrain(loader), null);
+        this.texturedModel = new TexturedModel(generateTerrain(loader, data), null);
         this.texturePack = pack;
         this.blendMap = blendMap;
         GeneratorUtil.setParentObject(this);
     }
 
-    private RawModel generateTerrain(Loader loader) {
+    private RawModel generateTerrain(VAOLoader loader, TerrainData data) {
         int count = VERTICES * VERTICES;
         float[] vertices = new float[count * 3];
         float[] normals = new float[count * 3];
@@ -48,7 +49,7 @@ public class Terrain extends RenderObject {
         for (int i = 0; i < VERTICES; i++) {
             for (int j = 0; j < VERTICES; j++) {
                 vertices[vertexPointer * 3] = (float) j / ((float) VERTICES - 1) * SIZE;
-                vertices[vertexPointer * 3 + 1] = 0;
+                vertices[vertexPointer * 3 + 1] = data.getHeights()[i][j];
                 vertices[vertexPointer * 3 + 2] = (float) i / ((float) VERTICES - 1) * SIZE;
                 normals[vertexPointer * 3] = 0;
                 normals[vertexPointer * 3 + 1] = 1;
@@ -73,7 +74,9 @@ public class Terrain extends RenderObject {
                 indices[pointer++] = bottomRight;
             }
         }
-        return loader.loadToVAO(vertices, indices, normals, textureCoords);
+        RawModel rawModel = loader.loadToVAO(vertices, indices, normals, textureCoords);
+        rawModel.setTriangles(loader.createTriangles(vertices, indices));
+        return rawModel;
     }
 
 

@@ -3,7 +3,7 @@ package engine.render;
 import engine.font.GUIText;
 import engine.font.structure.FontType;
 import engine.font.structure.TextMeshData;
-import engine.loader.Loader;
+import engine.loader.VAOLoader;
 import engine.shader.FontShader;
 import engine.shader.Shader;
 import object.Entity;
@@ -53,9 +53,9 @@ public class ParentRenderer {
     private Map<FontType, List<GUIText>> texts;
 
     private Matrix4f projectionMatrix;
-    private Loader loader;
+    private VAOLoader loader;
 
-    public ParentRenderer(Loader loader) throws IOException {
+    public ParentRenderer(VAOLoader loader) throws IOException {
         OpenGLUtil.enableCulling();
         createProjectionMatrix();
         this.entityRenderer = new EntityRenderer(new StaticShader(), projectionMatrix);
@@ -109,10 +109,10 @@ public class ParentRenderer {
         processEntity(player);
     }
 
-    public void renderObjects(List<Light> lights, Camera camera) {
+    public void renderObjects(List<Light> roomLights, List<Light> terrainLights, Camera camera) {
         prepare();
-        doRender(entityRenderer, entityBatches, lights, camera);
-        doRender(terrainRenderer, terrains, lights, camera);
+        doRender(entityRenderer, entityBatches, roomLights, camera);
+        doRender(terrainRenderer, terrains, terrainLights, camera);
         doRender(guiRenderer, guis, null, null);
         for (FontType fontType : texts.keySet()) {
             GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -175,7 +175,7 @@ public class ParentRenderer {
         return projectionMatrix;
     }
 
-    public Loader getLoader() {
+    public VAOLoader getLoader() {
         return loader;
     }
 

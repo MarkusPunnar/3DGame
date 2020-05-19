@@ -1,6 +1,6 @@
 package object.item;
 
-import engine.loader.Loader;
+import engine.loader.VAOLoader;
 import engine.texture.GuiTexture;
 import engine.texture.ObjectType;
 import org.joml.Vector2f;
@@ -11,7 +11,7 @@ public class Icon extends GuiTexture {
         super(textureID, position, scale, ObjectType.ICON);
     }
 
-    public Icon(Loader loader, String textureName) {
+    public Icon(VAOLoader loader, String textureName) {
         super(loader.loadIconTexture(textureName), null, null, ObjectType.ICON);
     }
 }

@@ -9,6 +9,7 @@ public class CollisionPacket {
     private Vector3f velocityR3;
     private Vector3f positionR3;
 
+    private Vector3f movementVelocity;
     private Vector3f ellipticVelocity;
     private Vector3f normalizedEllipticVelocity;
     private Vector3f basePoint;
@@ -30,6 +31,7 @@ public class CollisionPacket {
         foundCollision = false;
         nearestDistance = Float.MAX_VALUE;
         intersectionPoint = new Vector3f();
+        movementVelocity = new Vector3f();
     }
 
     public Vector3f getVelocityR3() {
@@ -94,5 +96,13 @@ public class CollisionPacket {
 
     public void setNormalizedEllipticVelocity(Vector3f normalizedEllipticVelocity) {
         this.normalizedEllipticVelocity = normalizedEllipticVelocity;
+    }
+
+    public Vector3f getMovementVelocity() {
+        return movementVelocity;
+    }
+
+    public void setMovementVelocity(Vector3f movementVelocity) {
+        this.movementVelocity = movementVelocity;
     }
 }

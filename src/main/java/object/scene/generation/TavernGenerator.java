@@ -14,7 +14,7 @@ import engine.model.RawModel;
 import engine.model.TexturedModel;
 import engine.model.data.ModelData;
 import org.joml.Vector3f;
-import engine.loader.Loader;
+import engine.loader.VAOLoader;
 import engine.texture.ModelTexture;
 
 import java.io.IOException;
@@ -24,9 +24,9 @@ import java.util.List;
 
 public class TavernGenerator implements Generator {
 
-    private Loader loader;
+    private VAOLoader loader;
 
-    public TavernGenerator(Loader loader) {
+    public TavernGenerator(VAOLoader loader) {
         this.loader = loader;
     }
 
@@ -75,7 +75,7 @@ public class TavernGenerator implements Generator {
         for (int i = 0; i < 3; i++) {
             lanterns.add(generateLantern(lanternModel, new Vector3f(31, 48.5f, 50 - 46.5f * i), lights));
         }
-        lanterns.add(generateLantern(lanternModel, new Vector3f(0, 55, 120), lights));
+        lanterns.add(generateLantern(lanternModel, new Vector3f(0, 55, 124), lights));
         lanterns.add(generateLantern(lanternModel, new Vector3f(-42, 55, 0), lights));
         lanterns.add(generateLantern(lanternModel, new Vector3f(15, 14, 103), lights));
         lanterns.add(generateLantern(lanternModel, new Vector3f(-27, 14, 100), lights));
@@ -148,7 +148,7 @@ public class TavernGenerator implements Generator {
         return tables;
     }
 
-    public Player generatePlayer(Loader loader) throws IOException, URISyntaxException {
+    public Player generatePlayer(VAOLoader loader) throws IOException, URISyntaxException {
         ModelTexture purpleTexture = new ModelTexture(loader.loadObjectTexture("purple"));
         TexturedModel playerModel = getTexturedModel("player", purpleTexture);
         return new Player.Builder(playerModel, new Vector3f(-30, 34.5f, -25)).scale(new Vector3f(3)).build();

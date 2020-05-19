@@ -43,7 +43,7 @@ public class Camera {
 
     public void checkState() {
         if (GameState.getInstance().getCurrentState().equals(State.IN_GAME)) {
-            glfwSetInputMode(DisplayManager.getWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+            glfwSetInputMode(DisplayManager.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         } else {
             glfwSetInputMode(DisplayManager.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
