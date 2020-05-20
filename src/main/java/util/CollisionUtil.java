@@ -22,7 +22,7 @@ public class CollisionUtil {
             float t0, t1;
             boolean embeddedInPlane = false;
             float signedDistanceToPlane = signedDistance(packet.getBasePoint(), trianglePlane);
-            float normalDotVelocity = trianglePlane.getNormalizedNormal().dot(packet.getNormalizedEllipticVelocity());
+            float normalDotVelocity = trianglePlane.getNormalizedNormal().dot(packet.getEllipticVelocity());
             if (MathUtil.floatEquals(normalDotVelocity, 0.0f)) {
                 //Velocity is parallel to plane
                 if (Math.abs(signedDistanceToPlane) >= 1.0f) {
@@ -35,8 +35,8 @@ public class CollisionUtil {
                     t1 = 1.0f;
                 }
             } else {
-                t0 = (-1.0f - signedDistanceToPlane) / (normalDotVelocity * DisplayManager.getFrameTime());
-                t1 = (1.0f - signedDistanceToPlane) / (normalDotVelocity * DisplayManager.getFrameTime());
+                t0 = (-1.0f - signedDistanceToPlane) / (normalDotVelocity);
+                t1 = (1.0f - signedDistanceToPlane) / (normalDotVelocity);
             }
             if (t0 > t1) {
                 float temp = t1;

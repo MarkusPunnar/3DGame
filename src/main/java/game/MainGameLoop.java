@@ -36,7 +36,7 @@ public class MainGameLoop {
         ParentRenderer renderer = new ParentRenderer(loader);
         TavernGenerator tavernGenerator = new TavernGenerator(loader);
         TerrainGenerator terrainGenerator = new TerrainGenerator(loader);
-        Player player = tavernGenerator.generatePlayer(loader);
+        Player player = tavernGenerator.generatePlayer();
         List<Light> roomLights = new ArrayList<>();
         List<Light> terrainLights = new ArrayList<>();
         Light sun = new Light(new Vector3f(3000, 5000, 10000), new Vector3f(0.8f));

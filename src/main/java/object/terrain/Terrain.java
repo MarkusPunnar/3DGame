@@ -50,6 +50,7 @@ public class Terrain extends RenderObject {
             for (int j = 0; j < VERTICES; j++) {
                 vertices[vertexPointer * 3] = (float) j / ((float) VERTICES - 1) * SIZE;
                 vertices[vertexPointer * 3 + 1] = data.getHeights()[i][j];
+//                vertices[vertexPointer * 3 + 1] = 0;
                 vertices[vertexPointer * 3 + 2] = (float) i / ((float) VERTICES - 1) * SIZE;
                 normals[vertexPointer * 3] = 0;
                 normals[vertexPointer * 3 + 1] = 1;
