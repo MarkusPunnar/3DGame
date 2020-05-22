@@ -19,7 +19,7 @@ import java.util.Collection;
 public class GuiRenderer implements Renderer {
 
     private final RawModel quadModel;
-    private GuiShader shader;
+    private Shader shader;
 
     public GuiRenderer(VAOLoader loader) throws IOException {
         float[] positions = new float[]{-1, 1, -1, -1, 1, 1, 1, -1};
@@ -31,10 +31,7 @@ public class GuiRenderer implements Renderer {
     public void render(Collection<? extends RenderObject> objects) {
         prepare();
         for (RenderObject object : objects) {
-            GL13.glActiveTexture(GL13.GL_TEXTURE0);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, object.getID());
-            Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(object.getPosition(), object.getScaleVector());
-            shader.doLoadMatrix(transformationMatrix, "transformationMatrix");
+            object.prepareObject(shader);
             GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quadModel.getVertexCount());
         }
         endRender();

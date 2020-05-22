@@ -37,12 +37,11 @@ public class MainGameLoop {
         TavernGenerator tavernGenerator = new TavernGenerator(loader);
         TerrainGenerator terrainGenerator = new TerrainGenerator(loader);
         Player player = tavernGenerator.generatePlayer();
-        List<Light> roomLights = new ArrayList<>();
-        List<Light> terrainLights = new ArrayList<>();
+        List<Light> lights = new ArrayList<>();
         Light sun = new Light(new Vector3f(3000, 5000, 10000), new Vector3f(0.8f));
-        terrainLights.add(sun);
-        List<Entity> roomEntities = tavernGenerator.generate(roomLights);
-        List<Terrain> terrains = terrainGenerator.generate(roomLights);
+        lights.add(sun);
+        List<Entity> roomEntities = tavernGenerator.generate(lights);
+        List<Terrain> terrains = terrainGenerator.generate(lights);
         OctTree octTree =  new OctTree(new BoundingBox(new Vector3f(-400, -1, -400), new Vector3f(200, 100, 200)));
 
         Camera camera = new Camera(player);
@@ -67,7 +66,8 @@ public class MainGameLoop {
             for (Handler handler : handlers) {
                 handler.handle();
             }
-            renderer.renderObjects(roomLights, terrainLights, camera);
+            renderer.renderToDepthTexture(sun, camera);
+            renderer.renderObjects(lights, camera);
             DisplayManager.updateDisplay();
         }
         renderer.cleanUp();

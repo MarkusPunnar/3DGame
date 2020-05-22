@@ -1,5 +1,9 @@
 package engine.shader;
 
+import object.env.Camera;
+import object.env.Light;
+import util.math.MathUtil;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +21,14 @@ public class TerrainShader extends Shader {
         super(VERTEX_FILE, FRAGMENT_FILE);
     }
 
+
+    @Override
+    public void loadUniforms(List<Light> lights, Camera camera) {
+        loadLights(lights, uniformLocations);
+        doLoadMatrix(MathUtil.createViewMatrix(camera), "viewMatrix");
+        doLoadMatrix(MathUtil.getLightSpaceMatrix(lights.get(0), camera), "lightSpaceMatrix");
+    }
+
     @Override
     protected void bindAttributes() {
         bindAttribute(0, "aPosition");
@@ -32,13 +44,15 @@ public class TerrainShader extends Shader {
         uniformLocations.put("transformationMatrix", List.of(getUniformLocation("transformationMatrix")));
         uniformLocations.put("projectionMatrix", List.of(getUniformLocation("projectionMatrix")));
         uniformLocations.put("viewMatrix", List.of(getUniformLocation("viewMatrix")));
-        uniformLocations.put("reflectivity", List.of(getUniformLocation("viewMatrix")));
+        uniformLocations.put("lightSpaceMatrix", List.of(getUniformLocation("lightSpaceMatrix")));
+        uniformLocations.put("reflectivity", List.of(getUniformLocation("reflectivity")));
         uniformLocations.put("shineDamper", List.of(getUniformLocation("shineDamper")));
         uniformLocations.put("backgroundSampler", List.of(getUniformLocation("backgroundSampler")));
         uniformLocations.put("rSampler", List.of(getUniformLocation("rSampler")));
         uniformLocations.put("gSampler", List.of(getUniformLocation("gSampler")));
         uniformLocations.put("bSampler", List.of(getUniformLocation("bSampler")));
         uniformLocations.put("blendMapSampler", List.of(getUniformLocation("blendMapSampler")));
+        uniformLocations.put("shadowMap", List.of(getUniformLocation("shadowMap")));
         List<Integer> lightPositions = new ArrayList<>();
         List<Integer> lightColours = new ArrayList<>();
         List<Integer> attenuations = new ArrayList<>();
@@ -58,15 +72,12 @@ public class TerrainShader extends Shader {
         loadInt(uniformLocations.get("gSampler").get(0), 2);
         loadInt(uniformLocations.get("bSampler").get(0), 3);
         loadInt(uniformLocations.get("blendMapSampler").get(0), 4);
-    }
-
-    public void loadShineVariables(float reflectivity, float shineDamper) {
-        loadFloat(uniformLocations.get("reflectivity").get(0), reflectivity);
-        loadFloat(uniformLocations.get("shineDamper").get(0), shineDamper);
+        loadInt(uniformLocations.get("shadowMap").get(0), 5);
     }
 
     @Override
     public Map<String, List<Integer>> getUniformLocations() {
         return uniformLocations;
     }
+
 }

@@ -5,15 +5,18 @@ import engine.shader.FontShader;
 import engine.shader.Shader;
 import object.RenderObject;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 
+import java.io.IOException;
 import java.util.Collection;
 
 public class FontRenderer implements Renderer {
 
-    private FontShader shader;
+    private Shader shader;
 
-    public FontRenderer(FontShader shader) {
-        this.shader = shader;
+    public FontRenderer() throws IOException {
+        this.shader = new FontShader();
     }
 
     @Override
@@ -45,6 +48,9 @@ public class FontRenderer implements Renderer {
 
     @Override
     public void bindModel(Model model) {
+        GL30.glBindVertexArray(model.getModelID());
+        GL20.glEnableVertexAttribArray(0);
+        GL20.glEnableVertexAttribArray(1);
         model.prepareShader(shader);
     }
 }

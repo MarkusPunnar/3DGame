@@ -8,11 +8,13 @@ out vec3 fragmentCoords;
 out vec2 textureCoords;
 out vec3 normalCoords;
 out vec3 lightCoords[1];
+out vec4 shadowCoords;
 
 //Uniform variables
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
+uniform mat4 lightSpaceMatrix;
 uniform vec3 lightPosition[1];
 
 void main(void) {
@@ -26,5 +28,6 @@ void main(void) {
         lightCoords[i] = lightPosition[i];
     }
     fragmentCoords = vertexWorldSpacePosition.xyz;
+    shadowCoords = lightSpaceMatrix * vertexWorldSpacePosition;
     gl_Position = projectionMatrix * viewMatrix * vertexWorldSpacePosition;
 }

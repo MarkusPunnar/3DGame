@@ -3,9 +3,13 @@ package engine.texture;
 import engine.font.GUIText;
 import engine.model.TexturedModel;
 import engine.shader.Shader;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import object.RenderObject;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import util.math.MathUtil;
 
 import java.util.Objects;
 
@@ -62,7 +66,9 @@ public class GuiTexture extends RenderObject {
 
     @Override
     public void prepareObject(Shader shader) {
-
+        GL13.glActiveTexture(GL13.GL_TEXTURE0);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+        shader.doLoadMatrix(MathUtil.createTransformationMatrix(getPosition(), getScaleVector()), "transformationMatrix");
     }
 
     public ObjectType getType() {

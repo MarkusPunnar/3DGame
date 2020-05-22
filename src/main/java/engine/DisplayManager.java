@@ -61,7 +61,6 @@ public class DisplayManager {
             width = widthBuffer.get();
             height = heightBuffer.get();
         }
-        GL11.glViewport(0, 0, width, height);
         double currentFrameTime = GLFW.glfwGetTime();
         delta = ((float) (currentFrameTime - lastFrameTime));
         lastFrameTime = currentFrameTime;

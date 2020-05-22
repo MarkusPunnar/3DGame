@@ -23,10 +23,6 @@ public class TexturedModel implements Model {
         return rawModel;
     }
 
-    public ModelTexture getTexture() {
-        return texture;
-    }
-
     public int getModelID() {
         return rawModel.getVaoID();
     }
@@ -35,13 +31,17 @@ public class TexturedModel implements Model {
         return rawModel.getVertexCount();
     }
 
+    public ModelTexture getTexture() {
+        return texture;
+    }
+
     @Override
     public void prepareShader(Shader shader) {
-        shader.doLoadFloat(getTexture().getReflectivity(), "reflectivity");
-        shader.doLoadFloat(getTexture().getShineDamper(), "shineDamper");
-        float fakeLighting = getTexture().useFakeLighting() ? 1 : 0;
+        shader.doLoadFloat(texture.getReflectivity(), "reflectivity");
+        shader.doLoadFloat(texture.getShineDamper(), "shineDamper");
+        float fakeLighting = texture.useFakeLighting() ? 1 : 0;
         shader.doLoadFloat(fakeLighting, "fakeLighting");
-        if (getTexture().isTransparent()) {
+        if (texture.isTransparent()) {
             OpenGLUtil.disableCulling();
         }
         glActiveTexture(GL_TEXTURE0);

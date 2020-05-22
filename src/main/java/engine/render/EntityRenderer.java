@@ -1,10 +1,12 @@
 package engine.render;
 
 import engine.model.Model;
+import engine.shader.Shader;
 import object.RenderObject;
 import org.joml.Matrix4f;
 import engine.shader.StaticShader;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import static org.lwjgl.opengl.GL13.*;
@@ -14,21 +16,23 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 public class EntityRenderer implements Renderer {
 
-    private StaticShader shader;
+    private Shader shader;
     private Model currentTexture;
 
-    public EntityRenderer(StaticShader shader, Matrix4f projectionMatrix) {
-        this.shader = shader;
+    public EntityRenderer(Matrix4f projectionMatrix) throws IOException {
+        this.shader = new StaticShader();
         shader.start();
         shader.doLoadMatrix(projectionMatrix, "projectionMatrix");
         shader.stop();
     }
 
+    @Override
     public void render(Collection<? extends RenderObject> entities) {
         for (RenderObject entity : entities) {
             Model model = entity.getModel();
             checkCurrentBind(model);
-            entity.prepareObject(shader);
+            //load entity-specific data to shaders
+            entity.prepareObject(getShader());
             glDrawElements(GL_TRIANGLES, model.getVertexCount(), GL_UNSIGNED_INT, 0);
         }
         unbindModel();
@@ -43,15 +47,17 @@ public class EntityRenderer implements Renderer {
         }
     }
 
+    @Override
     public void bindModel(Model model) {
         glBindVertexArray(model.getModelID());
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
-        model.prepareShader(shader);
+        //load entity-specific data to shaders
+        model.prepareShader(getShader());
     }
 
-    public StaticShader getShader() {
+    public Shader getShader() {
         return shader;
     }
 }

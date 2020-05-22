@@ -32,9 +32,9 @@ public class TerrainGenerator implements Generator {
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, redTexture, greenTexture, blueTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTerrainTexture("blendMap"));
         terrains.add(new Terrain(-1, -1, loader, test, texturePack, blendMap));
-//        terrains.add(new Terrain(0,0, loader, test, texturePack, blendMap));
-//        terrains.add(new Terrain(-1,0, loader, texturePack, blendMap));
-//        terrains.add(new Terrain(0,-1, loader, texturePack, blendMap));
+        terrains.add(new Terrain(0,0, loader, test, texturePack, blendMap));
+        terrains.add(new Terrain(-1,0, loader, test, texturePack, blendMap));
+        terrains.add(new Terrain(0,-1, loader, test ,texturePack, blendMap));
         return terrains;
     }
 }

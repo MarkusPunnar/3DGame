@@ -1,5 +1,6 @@
 package object.terrain;
 
+import engine.model.TerrainModel;
 import engine.model.data.TerrainData;
 import object.RenderObject;
 import engine.model.RawModel;
@@ -33,7 +34,7 @@ public class Terrain extends RenderObject {
     public Terrain(int gridX, int gridZ, VAOLoader loader, TerrainData data, TerrainTexturePack pack, TerrainTexture blendMap) {
         this.x = gridX * SIZE;
         this.z = gridZ * SIZE;
-        this.texturedModel = new TexturedModel(generateTerrain(loader, data), null);
+        this.texturedModel = new TerrainModel(generateTerrain(loader, data), null);
         this.texturePack = pack;
         this.blendMap = blendMap;
         GeneratorUtil.setParentObject(this);
@@ -49,8 +50,8 @@ public class Terrain extends RenderObject {
         for (int i = 0; i < VERTICES; i++) {
             for (int j = 0; j < VERTICES; j++) {
                 vertices[vertexPointer * 3] = (float) j / ((float) VERTICES - 1) * SIZE;
-                vertices[vertexPointer * 3 + 1] = data.getHeights()[i][j];
-//                vertices[vertexPointer * 3 + 1] = 0;
+//                vertices[vertexPointer * 3 + 1] = data.getHeights()[i][j];
+                vertices[vertexPointer * 3 + 1] = 0;
                 vertices[vertexPointer * 3 + 2] = (float) i / ((float) VERTICES - 1) * SIZE;
                 normals[vertexPointer * 3] = 0;
                 normals[vertexPointer * 3 + 1] = 1;
@@ -76,7 +77,7 @@ public class Terrain extends RenderObject {
             }
         }
         RawModel rawModel = loader.loadToVAO(vertices, indices, normals, textureCoords);
-        rawModel.setTriangles(loader.createTriangles(vertices, indices));
+//        rawModel.setTriangles(loader.createTriangles(vertices, indices));
         return rawModel;
     }
 

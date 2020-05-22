@@ -1,5 +1,8 @@
 package engine.shader;
 
+import object.env.Camera;
+import object.env.Light;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -34,5 +37,10 @@ public class FontShader extends Shader {
     @Override
     public Map<String, List<Integer>> getUniformLocations() {
         return uniformLocations;
+    }
+
+    @Override
+    public void loadUniforms(List<Light> lights, Camera camera) {
+
     }
 }

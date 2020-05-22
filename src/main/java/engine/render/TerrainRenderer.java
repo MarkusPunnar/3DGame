@@ -6,6 +6,7 @@ import engine.shader.TerrainShader;
 import object.RenderObject;
 import org.joml.Matrix4f;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -16,8 +17,8 @@ public class TerrainRenderer implements Renderer {
 
     private TerrainShader shader;
 
-    public TerrainRenderer(TerrainShader shader, Matrix4f projectionMatrix) {
-        this.shader = shader;
+    public TerrainRenderer(Matrix4f projectionMatrix) throws IOException {
+        this.shader = new TerrainShader();
         shader.start();
         shader.doLoadMatrix(projectionMatrix, "projectionMatrix");
         shader.connectTextureUnits();
@@ -27,6 +28,7 @@ public class TerrainRenderer implements Renderer {
     public void render(Collection<? extends RenderObject> terrains) {
         for (RenderObject terrain : terrains) {
             bindModel(terrain.getModel());
+            //load entity-specific data to shaders
             terrain.prepareObject(shader);
             glDrawElements(GL_TRIANGLES, terrain.getModel().getVertexCount(), GL_UNSIGNED_INT, 0);
             unbindModel();
@@ -43,6 +45,7 @@ public class TerrainRenderer implements Renderer {
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
-        shader.loadShineVariables(1, 0);
+        //load model-specific data to shaders
+        model.prepareShader(shader);
     }
 }

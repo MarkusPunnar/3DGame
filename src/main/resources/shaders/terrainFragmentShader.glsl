@@ -4,6 +4,7 @@ in vec2 textureCoords;
 in vec3 normalCoords;
 in vec3 lightCoords[1];
 in vec3 fragmentCoords;
+in vec4 shadowCoords;
 
 out vec4 outColour;
 
@@ -12,6 +13,7 @@ uniform sampler2D rSampler;
 uniform sampler2D gSampler;
 uniform sampler2D bSampler;
 uniform sampler2D blendMapSampler;
+uniform sampler2D shadowMap;
 
 uniform vec3 lightColour[1];
 uniform vec3 cameraCoords;
@@ -23,6 +25,15 @@ uniform float fakeLighting;
 
 const float ambientStrength = 0.2;
 const float specularStrength = 0.5;
+
+float shadowCalculation(vec4 shadowCoords) {
+    vec3 projectedCoords = shadowCoords.xyz / shadowCoords.w;
+    projectedCoords = projectedCoords * 0.5 + 0.5;
+    float closestDepth = texture(shadowMap, projectedCoords.xy).r;
+    float currentDepth = projectedCoords.z;
+    return closestDepth < currentDepth ? 1.0 : 0.0;
+}
+
 
 void main (void) {
 
@@ -62,8 +73,7 @@ void main (void) {
         totalDiffuse = totalDiffuse + diffuse / attFactor;
         totalSpecular = totalSpecular + specular / attFactor;
     }
-    totalDiffuse = max(totalDiffuse, ambientStrength);
-    vec3 lighting = totalDiffuse + totalSpecular;
-
+    vec3 lighting = (1 - shadowCalculation(shadowCoords)) * (totalDiffuse + totalSpecular);
+    lighting = max(lighting, ambientStrength);
     outColour = vec4(lighting, 1.0) * totalColour;
 }

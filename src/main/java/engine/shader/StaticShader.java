@@ -1,5 +1,10 @@
 package engine.shader;
 
+import engine.model.Model;
+import object.env.Camera;
+import object.env.Light;
+import util.math.MathUtil;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +20,12 @@ public class StaticShader extends Shader {
 
     public StaticShader() throws IOException {
         super(VERTEX_FILE, FRAGMENT_FILE);
+    }
+
+    @Override
+    public void loadUniforms(List<Light> lights, Camera camera) {
+        loadLights(lights, uniformLocations);
+        doLoadMatrix(MathUtil.createViewMatrix(camera), "viewMatrix");
     }
 
     @Override
@@ -52,4 +63,5 @@ public class StaticShader extends Shader {
     public Map<String, List<Integer>> getUniformLocations() {
         return uniformLocations;
     }
+
 }

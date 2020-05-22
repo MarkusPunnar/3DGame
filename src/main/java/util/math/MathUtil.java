@@ -3,6 +3,7 @@ package util.math;
 import object.RenderObject;
 import object.Player;
 import object.env.Camera;
+import object.env.Light;
 import org.joml.*;
 
 import java.lang.Math;
@@ -51,6 +52,12 @@ public class MathUtil {
         matrix.m11 = Player.PLAYER_HITBOX_Y;
         matrix.m22 = Player.PLAYER_HITBOX_Z;
         return matrix;
+    }
+
+    public static Matrix4f getLightSpaceMatrix(Light sun, Camera camera) {
+        Matrix4f orthoProjectionMatrix = new Matrix4f().orthoSymmetric(500, 500, 1, 15000);
+        Matrix4f lightViewMatrix = new Matrix4f().lookAt(sun.getPosition(),camera.getPosition(), new Vector3f(0, 1, 0));
+        return orthoProjectionMatrix.mul(lightViewMatrix, new Matrix4f());
     }
 
     public static Vector3f getCoordinates(Vector4f vector) {

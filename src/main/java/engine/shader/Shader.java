@@ -1,5 +1,7 @@
 package engine.shader;
 
+import engine.model.Model;
+import object.env.Camera;
 import object.env.Light;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -57,6 +59,8 @@ public abstract class Shader {
     protected abstract void initUniformLocations();
 
     public abstract Map<String, List<Integer>> getUniformLocations();
+
+    public abstract void loadUniforms(List<Light> lights, Camera camera);
 
 
     public void doLoadMatrix(Matrix4f matrix, String uniformName) {

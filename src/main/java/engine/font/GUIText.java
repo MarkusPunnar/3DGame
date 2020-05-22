@@ -119,9 +119,6 @@ public class GUIText extends RenderObject {
 
     @Override
     public void prepareObject(Shader shader) {
-        GL30.glBindVertexArray(model.getModelID());
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glEnableVertexAttribArray(1);
         shader.doLoad2DVector(position, "translation");
     }
 
