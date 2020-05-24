@@ -15,9 +15,7 @@ import object.env.Camera;
 import object.env.Light;
 import object.terrain.Terrain;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 import util.GuiComparator;
 import util.ObjectComparator;
@@ -30,6 +28,7 @@ import java.util.*;
 import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE5;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
@@ -47,14 +46,13 @@ public class ParentRenderer {
     private Renderer terrainRenderer;
     private Renderer guiRenderer;
     private Renderer fontRenderer;
-    private Renderer shadowRenderer;
+    private Renderer directionalShadowRenderer;
+    private Renderer pointShadowRenderer;
 
     private Collection<Entity> entityBatches;
     private Collection<Terrain> terrains;
     private Collection<GuiTexture> guis;
     private Map<FontType, List<GUIText>> texts;
-
-    private ShadowFrameBuffer shadowFrameBuffer;
 
     private Matrix4f projectionMatrix;
     private VAOLoader loader;
@@ -68,7 +66,6 @@ public class ParentRenderer {
         this.guis = new TreeSet<>(new GuiComparator());
         this.texts = new HashMap<>();
         this.loader = loader;
-        this.shadowFrameBuffer = new ShadowFrameBuffer();
     }
 
     private void initRenderers(VAOLoader loader) throws IOException {
@@ -76,7 +73,8 @@ public class ParentRenderer {
         this.terrainRenderer = new TerrainRenderer(projectionMatrix);
         this.guiRenderer = new GuiRenderer(loader);
         this.fontRenderer = new FontRenderer();
-        this.shadowRenderer = new ShadowRenderer(projectionMatrix);
+        this.directionalShadowRenderer = new DirectionalShadowRenderer(projectionMatrix);
+        this.pointShadowRenderer = new PointShadowRenderer(projectionMatrix);
     }
 
 
@@ -126,18 +124,36 @@ public class ParentRenderer {
         terrains.clear();
     }
 
-    public void renderToDepthTexture(Light sun, Camera camera) {
+    public void renderDepthMaps(List<Light> lights, Camera camera) {
         glViewport(0, 0, ShadowFrameBuffer.SHADOW_WIDTH, ShadowFrameBuffer.SHADOW_HEIGHT);
         glCullFace(GL_FRONT);
-        GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, shadowFrameBuffer.getFboID());
-        glClear(GL_DEPTH_BUFFER_BIT);
-        doRender(shadowRenderer, entityBatches, List.of(sun), camera);
-        GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+        for (Light light : lights) {
+            if (light.isPointLight()) {
+                renderPointDepthMap(light, camera);
+            } else {
+                renderDirectionalDepthMap(light, camera);
+            }
+        }
         glCullFace(GL_BACK);
+    }
+
+    private void renderDirectionalDepthMap(Light sun, Camera camera) {
+        glBindFramebuffer(GL_FRAMEBUFFER, sun.getFbo().getFboID());
+        glClear(GL_DEPTH_BUFFER_BIT);
+        doRender(directionalShadowRenderer, entityBatches, List.of(sun), camera);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    private void renderPointDepthMap(Light pointLight, Camera camera) {
+        glBindFramebuffer(GL_FRAMEBUFFER, pointLight.getFbo().getFboID());
+        glClear(GL_DEPTH_BUFFER_BIT);
+        doRender(pointShadowRenderer, entityBatches, List.of(pointLight), camera);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     private void doRenderScene(List<Light> lights, Camera camera) {
         prepare();
+        bindDepthMaps(lights);
         doRender(entityRenderer, entityBatches, lights, camera);
         doRender(terrainRenderer, terrains, lights, camera);
         doRender(guiRenderer, guis, lights, camera);
@@ -145,6 +161,18 @@ public class ParentRenderer {
             GL13.glActiveTexture(GL13.GL_TEXTURE0);
             GL13.glBindTexture(GL_TEXTURE_2D, fontType.getTextureAtlas());
             doRender(fontRenderer, texts.get(fontType), lights, camera);
+        }
+    }
+
+    private void bindDepthMaps(List<Light> lights) {
+        for (int i = 0; i < lights.size(); i++) {
+            GL13.glActiveTexture(GL_TEXTURE5 + i);
+            int depthMapTextureID = lights.get(i).getFbo().getDepthMapTextureID();
+            if (lights.get(i).isPointLight()) {
+                glBindTexture(GL_TEXTURE_CUBE_MAP, depthMapTextureID);
+            } else {
+                glBindTexture(GL_TEXTURE_2D, depthMapTextureID);
+            }
         }
     }
 
@@ -161,8 +189,7 @@ public class ParentRenderer {
         glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(RED, GREEN, BLUE, 1.0f);
-        GL13.glActiveTexture(GL_TEXTURE5);
-        GL11.glBindTexture(GL_TEXTURE_2D, shadowFrameBuffer.getDepthMapTextureID());
+
     }
 
     public void cleanUp() {
@@ -170,7 +197,7 @@ public class ParentRenderer {
         terrainRenderer.getShader().cleanUp();
         guiRenderer.getShader().cleanUp();
         fontRenderer.getShader().cleanUp();
-        shadowRenderer.getShader().cleanUp();
+        directionalShadowRenderer.getShader().cleanUp();
     }
 
     public void loadText(GUIText text) {

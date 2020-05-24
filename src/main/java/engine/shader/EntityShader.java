@@ -1,6 +1,5 @@
 package engine.shader;
 
-import engine.model.Model;
 import object.env.Camera;
 import object.env.Light;
 import util.math.MathUtil;
@@ -11,21 +10,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StaticShader extends Shader {
+public class EntityShader extends Shader {
 
-    private static final String VERTEX_FILE = "shaders/vertexShader.glsl";
-    private static final String FRAGMENT_FILE = "shaders/fragmentShader.glsl";
+    private static final String PREFIX = "shaders/entity/";
+
+    private static final String VERTEX_FILE = PREFIX + "vertexShader.glsl";
+    private static final String FRAGMENT_FILE = PREFIX + "fragmentShader.glsl";
 
     private Map<String, List<Integer>> uniformLocations;
 
-    public StaticShader() throws IOException {
-        super(VERTEX_FILE, FRAGMENT_FILE);
+    public EntityShader() throws IOException {
+        super(VERTEX_FILE, FRAGMENT_FILE, null);
     }
 
     @Override
     public void loadUniforms(List<Light> lights, Camera camera) {
         loadLights(lights, uniformLocations);
         doLoadMatrix(MathUtil.createViewMatrix(camera), "viewMatrix");
+        doLoadMatrix(MathUtil.getLightSpaceMatrix(lights.get(0), camera), "lightSpaceMatrix");
+        doLoadFloat(PointShadowShader.FAR_PLANE, "farPlane");
+        List<Integer> shadowCubes = uniformLocations.get("shadowCube");
+        for (int i = 0; i < shadowCubes.size(); i++) {
+            loadInt(uniformLocations.get("shadowCube").get(i), 6 + i);
+        }
     }
 
     @Override
@@ -43,20 +50,28 @@ public class StaticShader extends Shader {
         uniformLocations.put("transformationMatrix", List.of(getUniformLocation("transformationMatrix")));
         uniformLocations.put("projectionMatrix", List.of(getUniformLocation("projectionMatrix")));
         uniformLocations.put("viewMatrix", List.of(getUniformLocation("viewMatrix")));
+        uniformLocations.put("lightSpaceMatrix", List.of(getUniformLocation("lightSpaceMatrix")));
         uniformLocations.put("reflectivity", List.of(getUniformLocation("reflectivity")));
         uniformLocations.put("shineDamper", List.of(getUniformLocation("shineDamper")));
         uniformLocations.put("fakeLighting", List.of(getUniformLocation("fakeLighting")));
+        uniformLocations.put("shadowMap", List.of(getUniformLocation("shadowMap")));
+        uniformLocations.put("farPlane", List.of(getUniformLocation("farPlane")));
         List<Integer> lightPositions = new ArrayList<>();
         List<Integer> lightColours = new ArrayList<>();
         List<Integer> attenuations  = new ArrayList<>();
+        List<Integer> shadowCubes = new ArrayList<>();
         for (int i = 0; i < MAX_LIGHTS; i++) {
             lightPositions.add(getUniformLocation("lightPosition[" + i + "]"));
             lightColours.add(getUniformLocation("lightColour[" + i + "]"));
             attenuations.add(getUniformLocation("attenuation[" + i + "]"));
         }
+        for (int i = 0; i < MAX_LIGHTS - 1; i++) {
+            shadowCubes.add(getUniformLocation("shadowCube[" + i + "]"));
+        }
         uniformLocations.put("lightPosition", lightPositions);
         uniformLocations.put("lightColour", lightColours);
         uniformLocations.put("attenuation", attenuations);
+        uniformLocations.put("shadowCube", shadowCubes);
     }
 
     @Override

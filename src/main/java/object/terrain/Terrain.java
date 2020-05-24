@@ -76,9 +76,7 @@ public class Terrain extends RenderObject {
                 indices[pointer++] = bottomRight;
             }
         }
-        RawModel rawModel = loader.loadToVAO(vertices, indices, normals, textureCoords);
-//        rawModel.setTriangles(loader.createTriangles(vertices, indices));
-        return rawModel;
+        return loader.loadToVAO(vertices, indices, normals, textureCoords);
     }
 
 

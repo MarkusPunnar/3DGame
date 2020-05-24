@@ -12,6 +12,8 @@ public class BoundingBox {
         this.second = second;
     }
 
+    public BoundingBox() {}
+
     public boolean isEmbeddedIn(BoundingBox other) {
         boolean xMatch = this.first.x >= other.first.x && this.second.x <= other.second.x;
         if (xMatch) {
@@ -40,6 +42,14 @@ public class BoundingBox {
 
     public Vector3f getSecond() {
         return second;
+    }
+
+    public void setFirst(Vector3f first) {
+        this.first = first;
+    }
+
+    public void setSecond(Vector3f second) {
+        this.second = second;
     }
 
     public float getXDistance() {

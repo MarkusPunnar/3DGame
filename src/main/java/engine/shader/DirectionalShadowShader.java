@@ -1,6 +1,5 @@
 package engine.shader;
 
-import engine.model.Model;
 import object.env.Camera;
 import object.env.Light;
 import util.math.MathUtil;
@@ -10,15 +9,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ShadowShader extends Shader {
+public class DirectionalShadowShader extends Shader {
 
-    private static final String VERTEX_FILE = "shaders/shadowVertexShader.glsl";
-    private static final String FRAGMENT_FILE = "shaders/shadowFragmentShader.glsl";
+    private static final String PREFIX = "shaders/shadow/directional/";
+
+    private static final String VERTEX_FILE = PREFIX + "directionalShadowVertexShader.glsl";
+    private static final String FRAGMENT_FILE = PREFIX + "directionalShadowFragmentShader.glsl";
 
     private Map<String, List<Integer>> uniformLocations;
 
-    public ShadowShader() throws IOException {
-        super(VERTEX_FILE, FRAGMENT_FILE);
+    public DirectionalShadowShader() throws IOException {
+        super(VERTEX_FILE, FRAGMENT_FILE, null);
     }
 
     @Override

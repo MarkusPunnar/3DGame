@@ -2,7 +2,7 @@ package engine.render;
 
 import engine.model.Model;
 import engine.shader.Shader;
-import engine.shader.ShadowShader;
+import engine.shader.DirectionalShadowShader;
 import org.joml.Matrix4f;
 
 import java.io.IOException;
@@ -10,13 +10,13 @@ import java.io.IOException;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
-public class ShadowRenderer extends EntityRenderer {
+public class DirectionalShadowRenderer extends EntityRenderer {
 
     private Shader shadowShader;
 
-    public ShadowRenderer(Matrix4f projectionMatrix) throws IOException {
+    public DirectionalShadowRenderer(Matrix4f projectionMatrix) throws IOException {
         super(projectionMatrix);
-        shadowShader = new ShadowShader();
+        shadowShader = new DirectionalShadowShader();
     }
 
     @Override

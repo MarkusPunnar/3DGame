@@ -3,6 +3,7 @@ package object.env;
 import engine.model.TexturedModel;
 import object.Entity;
 import org.joml.Vector3f;
+import util.octree.BoundingBox;
 
 public class LightEntity extends Entity {
 
@@ -14,7 +15,7 @@ public class LightEntity extends Entity {
         lightPosition.x += builder.offsetX;
         lightPosition.y += builder.offsetY;
         lightPosition.z += builder.offsetZ;
-        this.light = new Light(lightPosition, builder.colour, builder.attenuation);
+        this.light = new Light(lightPosition, builder.colour, builder.attenuation, builder.isPointLight, builder.boundingBox);
     }
 
     public static class Builder extends Entity.Builder {
@@ -26,6 +27,8 @@ public class LightEntity extends Entity {
         private float offsetX = 0;
         private float offsetY = 0;
         private float offsetZ = 0;
+        private boolean isPointLight = false;
+        private BoundingBox boundingBox = new BoundingBox();
 
         public Builder(TexturedModel texturedModel, Vector3f position) {
             super(texturedModel, position);
@@ -40,6 +43,13 @@ public class LightEntity extends Entity {
         public Builder attenuation(Vector3f attenuation) {
             this.attenuation = attenuation;
             return self();
+        }
+
+        public Builder offset(Vector3f offset) {
+            this.offsetX = offset.x;
+            this.offsetY = offset.y;
+            this.offsetZ = offset.z;
+            return this;
         }
 
         public Builder offsetX(float offsetX) {
@@ -60,6 +70,21 @@ public class LightEntity extends Entity {
 
         public Builder offsetZ(float offsetZ) {
             this.offsetZ = offsetZ;
+            return this;
+        }
+
+        public Builder pointLight(boolean isPointLight) {
+            this.isPointLight = isPointLight;
+            return this;
+        }
+
+        public Builder regionMin(Vector3f min) {
+            boundingBox.setFirst(min);
+            return this;
+        }
+
+        public Builder regionMax(Vector3f max) {
+            boundingBox.setSecond(max);
             return this;
         }
 

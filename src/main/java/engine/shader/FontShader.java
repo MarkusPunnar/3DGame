@@ -10,13 +10,15 @@ import java.util.Map;
 
 public class FontShader extends Shader {
 
-    private static final String VERTEX_FILE = "shaders/fontVertexShader.glsl";
-    private static final String FRAGMENT_FILE = "shaders/fontFragmentShader.glsl";
+    private static final String PREFIX = "shaders/font/";
+
+    private static final String VERTEX_FILE = PREFIX + "fontVertexShader.glsl";
+    private static final String FRAGMENT_FILE = PREFIX + "fontFragmentShader.glsl";
 
     private Map<String, List<Integer>> uniformLocations;
 
     public FontShader() throws IOException {
-        super(VERTEX_FILE, FRAGMENT_FILE);
+        super(VERTEX_FILE, FRAGMENT_FILE, null);
     }
 
     @Override

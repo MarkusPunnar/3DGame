@@ -10,13 +10,15 @@ import java.util.Map;
 
 public class GuiShader extends Shader {
 
-    private static final String VERTEX_FILE = "shaders/guiVertexShader.glsl";
-    private static final String FRAGMENT_FILE = "shaders/guiFragmentShader.glsl";
+    private static final String PREFIX = "shaders/gui/";
+
+    private static final String VERTEX_FILE = PREFIX + "guiVertexShader.glsl";
+    private static final String FRAGMENT_FILE = PREFIX + "guiFragmentShader.glsl";
 
     private Map<String, List<Integer>> uniformLocations;
 
     public GuiShader() throws IOException {
-        super(VERTEX_FILE, FRAGMENT_FILE);
+        super(VERTEX_FILE, FRAGMENT_FILE, null);
     }
 
     @Override

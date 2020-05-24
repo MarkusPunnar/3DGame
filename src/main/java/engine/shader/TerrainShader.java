@@ -12,13 +12,15 @@ import java.util.Map;
 
 public class TerrainShader extends Shader {
 
-    private static final String VERTEX_FILE = "shaders/terrainVertexShader.glsl";
-    private static final String FRAGMENT_FILE = "shaders/terrainFragmentShader.glsl";
+    private static final String PREFIX = "shaders/terrain/";
+
+    private static final String VERTEX_FILE = PREFIX + "terrainVertexShader.glsl";
+    private static final String FRAGMENT_FILE = PREFIX + "terrainFragmentShader.glsl";
 
     private Map<String, List<Integer>> uniformLocations;
 
     public TerrainShader() throws IOException {
-        super(VERTEX_FILE, FRAGMENT_FILE);
+        super(VERTEX_FILE, FRAGMENT_FILE, null);
     }
 
 

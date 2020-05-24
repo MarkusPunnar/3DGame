@@ -4,7 +4,7 @@ import engine.model.Model;
 import engine.shader.Shader;
 import object.RenderObject;
 import org.joml.Matrix4f;
-import engine.shader.StaticShader;
+import engine.shader.EntityShader;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -20,9 +20,10 @@ public class EntityRenderer implements Renderer {
     private Model currentTexture;
 
     public EntityRenderer(Matrix4f projectionMatrix) throws IOException {
-        this.shader = new StaticShader();
+        this.shader = new EntityShader();
         shader.start();
         shader.doLoadMatrix(projectionMatrix, "projectionMatrix");
+        shader.doLoadInt(5, "shadowMap");
         shader.stop();
     }
 
@@ -53,7 +54,7 @@ public class EntityRenderer implements Renderer {
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
-        //load entity-specific data to shaders
+        //load model-specific data to shaders
         model.prepareShader(getShader());
     }
 

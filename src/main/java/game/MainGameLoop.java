@@ -38,7 +38,7 @@ public class MainGameLoop {
         TerrainGenerator terrainGenerator = new TerrainGenerator(loader);
         Player player = tavernGenerator.generatePlayer();
         List<Light> lights = new ArrayList<>();
-        Light sun = new Light(new Vector3f(3000, 5000, 10000), new Vector3f(0.8f));
+        Light sun = new Light(new Vector3f(3000, 5000, 3000), new Vector3f(1), false, null);
         lights.add(sun);
         List<Entity> roomEntities = tavernGenerator.generate(lights);
         List<Terrain> terrains = terrainGenerator.generate(lights);
@@ -55,6 +55,7 @@ public class MainGameLoop {
         GameState.getInstance().setCurrentTree(octTree);
 
         while (!GLFW.glfwWindowShouldClose(DisplayManager.getWindow())) {
+            System.out.println(DisplayManager.getFrameTime());
             camera.checkState();
             if (GameState.getInstance().getCurrentState() == State.IN_GAME) {
                 player.move(renderObjects);
@@ -66,7 +67,7 @@ public class MainGameLoop {
             for (Handler handler : handlers) {
                 handler.handle();
             }
-            renderer.renderToDepthTexture(sun, camera);
+            renderer.renderDepthMaps(lights, camera);
             renderer.renderObjects(lights, camera);
             DisplayManager.updateDisplay();
         }

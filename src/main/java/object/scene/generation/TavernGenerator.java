@@ -33,14 +33,14 @@ public class TavernGenerator implements Generator {
     public List<Entity> generate(List<Light> lights) throws IOException, URISyntaxException {
         List<Entity> roomEntities = new ArrayList<>();
         //Generate room background
-        TexturedModel tavernModel = GeneratorUtil.getTexturedModel(loader,"tavern");
+        TexturedModel tavernModel = GeneratorUtil.getTexturedModel(loader, "tavern");
         ModelData roomBoxData = ObjectLoader.loadObjectModel("hitbox/tavernbox");
         tavernModel.getRawModel().setTriangles(loader.createTriangles(roomBoxData.getVertices(), roomBoxData.getIndices()));
         tavernModel.getTexture().isTransparent(true);
         Entity tavern = new Entity.Builder(tavernModel, new Vector3f()).build();
         roomEntities.add(tavern);
         //Generate stools
-        TexturedModel stoolModel = GeneratorUtil.getTexturedModel(loader,"stool");
+        TexturedModel stoolModel = GeneratorUtil.getTexturedModel(loader, "stool");
         for (int i = 0; i < 3; i++) {
             roomEntities.add(new Entity.Builder(stoolModel, new Vector3f(3 + 12 * i, 0, 25)).build());
         }
@@ -48,7 +48,7 @@ public class TavernGenerator implements Generator {
             roomEntities.add(new Entity.Builder(stoolModel, new Vector3f(-13, 0, 8 - 15 * i)).build());
         }
         //Generate barrels
-        TexturedModel barrelModel = GeneratorUtil.getTexturedModel(loader,"barrel");
+        TexturedModel barrelModel = GeneratorUtil.getTexturedModel(loader, "barrel");
         roomEntities.add(new Entity.Builder(barrelModel, new Vector3f(3, 0, 10)).scale(new Vector3f(5)).build());
         roomEntities.add(new Entity.Builder(barrelModel, new Vector3f(28, 0, -62)).scale(new Vector3f(5)).build());
         roomEntities.add(new Entity.Builder(barrelModel, new Vector3f(30, 0, -33)).scale(new Vector3f(5)).build());
@@ -92,29 +92,46 @@ public class TavernGenerator implements Generator {
 
     private List<Entity> generateLanterns(List<Light> lights) throws IOException, URISyntaxException {
         List<Entity> lanterns = new ArrayList<>();
-        TexturedModel lanternModel = GeneratorUtil.getTexturedModel(loader,"lantern");
-        for (int i = 0; i < 3; i++) {
-            lanterns.add(generateLantern(lanternModel, new Vector3f(31, 48.5f, 50 - 46.5f * i), lights));
-        }
-        lanterns.add(generateLantern(lanternModel, new Vector3f(0, 55, 124), lights));
-        lanterns.add(generateLantern(lanternModel, new Vector3f(-42, 55, 0), lights));
-        lanterns.add(generateLantern(lanternModel, new Vector3f(15, 14, 103), lights));
-        lanterns.add(generateLantern(lanternModel, new Vector3f(-27, 14, 100), lights));
-        lanterns.add(generateLantern(lanternModel, new Vector3f(-5, 14.5f, 0), lights));
-        return lanterns;
-    }
-
-    private LightEntity generateLantern(TexturedModel lanternModel, Vector3f position, List<Light> lights) {
-        Vector3f lanternAttenuation = new Vector3f(1, 0.0005f, 0.0003f);
+        TexturedModel lanternModel = GeneratorUtil.getTexturedModel(loader, "lantern");
+        Vector3f lanternAttenuation = new Vector3f(0.6f, 0, 0);
         Vector3f lanternLightColour = new Vector3f(189f / 255f, 183f / 255f, 107f / 255f);
-        LightEntity lantern = new LightEntity.Builder(lanternModel, position).colour(lanternLightColour).attenuation(lanternAttenuation).build();
+        //Room lanterns
+        LightEntity lantern = new LightEntity.Builder(lanternModel, new Vector3f(31, 48.5f, 50)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .offset(new Vector3f(-5, 7, 0)).pointLight(true).build();
         lights.add(lantern.getLight());
-        return lantern;
+        lanterns.add(lantern);
+        lantern = new LightEntity.Builder(lanternModel, new Vector3f(31, 48.5f, 3.5f)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .offset(new Vector3f(-5, 7, 0)).pointLight(true).build();
+        lights.add(lantern.getLight());
+        lanterns.add(lantern);
+        lantern = new LightEntity.Builder(lanternModel, new Vector3f(31, 48.5f, -43)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .offset(new Vector3f(-5, 7, 0)).pointLight(true).build();
+        lights.add(lantern.getLight());
+        lanterns.add(lantern);
+        //Second floor lanterns
+        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-42.5f, 55, 95)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .offsetX(7).pointLight(true).build();
+        lights.add(lantern.getLight());
+        lanterns.add(lantern);
+        lantern = new LightEntity.Builder(lanternModel, new Vector3f(93, 55, 95)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .offsetX(-7).pointLight(true).build();
+        lights.add(lantern.getLight());
+        lanterns.add(lantern);
+        //First floor lanterns
+        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-7, 24, 123.5f)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .offsetZ(-5).pointLight(true).build();
+        lights.add(lantern.getLight());
+        lanterns.add(lantern);
+        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-42, 24, -5)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .offsetX(5).pointLight(true).build();
+        lights.add(lantern.getLight());
+        lanterns.add(lantern);
+        return lanterns;
     }
 
     private List<Entity> generateNightstands() throws IOException, URISyntaxException {
         List<Entity> nightstands = new ArrayList<>();
-        TexturedModel nightstandModel = GeneratorUtil.getTexturedModel(loader,"nightstand");
+        TexturedModel nightstandModel = GeneratorUtil.getTexturedModel(loader, "nightstand");
         for (int i = 0; i < 3; i++) {
             nightstands.add(new Entity.Builder(nightstandModel, new Vector3f(31, 34.5f, 50 - 46.5f * i)).rotationY(-90).scale(new Vector3f(20)).build());
         }
@@ -123,8 +140,8 @@ public class TavernGenerator implements Generator {
 
     private List<Entity> generateChests() throws IOException, URISyntaxException {
         List<Entity> chests = new ArrayList<>();
-        TexturedModel openChestModel = GeneratorUtil.getTexturedModel(loader,"openchest");
-        TexturedModel closedChestModel = GeneratorUtil.getTexturedModel(loader,"closedchest");
+        TexturedModel openChestModel = GeneratorUtil.getTexturedModel(loader, "openchest");
+        TexturedModel closedChestModel = GeneratorUtil.getTexturedModel(loader, "closedchest");
         for (int i = 0; i < 3; i++) {
             Chest chest = new Chest.Builder(closedChestModel, new Vector3f(-5, 34.5f, 31 - 46.5f * i), openChestModel).capacity(20).build();
             chest.addItem(new Coin(loader, 10));
@@ -136,7 +153,7 @@ public class TavernGenerator implements Generator {
 
     private List<Entity> generateBeds() throws IOException, URISyntaxException {
         List<Entity> beds = new ArrayList<>();
-        TexturedModel bedModel = GeneratorUtil.getTexturedModel(loader,"bed");
+        TexturedModel bedModel = GeneratorUtil.getTexturedModel(loader, "bed");
         ModelData bedModelData = ObjectLoader.loadObjectModel("hitbox/bedbox");
         bedModel.getRawModel().setTriangles(loader.createTriangles(bedModelData.getVertices(), bedModelData.getIndices()));
         for (int i = 0; i < 3; i++) {
@@ -152,7 +169,7 @@ public class TavernGenerator implements Generator {
         HandlerState.getInstance().registerInteractableEntity(door);
         doors.add(door);
         for (int i = 0; i < 3; i++) {
-            door = new Door.Builder(doorModel, new Vector3f(-13.7f, 34.5f, 54.3f - 46.5f * i)).facing(FacingDirection.EAST).build();
+            door = new Door.Builder(doorModel, new Vector3f(-13.7f, 34.5f, 54.3f - 46.2f * i)).facing(FacingDirection.EAST).build();
             HandlerState.getInstance().registerInteractableEntity(door);
             doors.add(door);
         }

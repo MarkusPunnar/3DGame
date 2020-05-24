@@ -1,11 +1,11 @@
 package engine.shader;
 
-import engine.model.Model;
 import object.env.Camera;
 import object.env.Light;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL32;
 import org.lwjgl.system.MemoryStack;
 
 import static org.lwjgl.opengl.GL20.*;
@@ -23,14 +23,19 @@ public abstract class Shader {
 
     private int programID;
     private int vertexShaderID;
+    private int geometryShaderID;
     private int fragmentShaderID;
 
-    public Shader(String vertexFile, String fragmentFile) throws IOException {
+    public Shader(String vertexFile, String fragmentFile, String geometryFile) throws IOException {
         vertexShaderID = loadShader(vertexFile, GL_VERTEX_SHADER);
         fragmentShaderID = loadShader(fragmentFile, GL_FRAGMENT_SHADER);
+        geometryShaderID = loadShader(geometryFile, GL32.GL_GEOMETRY_SHADER);
         programID = glCreateProgram();
         glAttachShader(programID, vertexShaderID);
         glAttachShader(programID, fragmentShaderID);
+        if (geometryShaderID != 0) {
+            glAttachShader(programID, geometryShaderID);
+        }
         bindAttributes();
         glLinkProgram(programID);
         glValidateProgram(programID);
@@ -52,6 +57,10 @@ public abstract class Shader {
         glDetachShader(programID, fragmentShaderID);
         glDeleteShader(vertexShaderID);
         glDeleteShader(fragmentShaderID);
+        if (geometryShaderID != 0) {
+            glDetachShader(programID, geometryShaderID);
+            glDeleteShader(geometryShaderID);
+        }
     }
 
     protected abstract void bindAttributes();
@@ -79,6 +88,10 @@ public abstract class Shader {
         loadFloat(getUniformLocations().get(uniformName).get(0), value);
     }
 
+    public void doLoadInt(int value, String uniformName) {
+        loadInt(getUniformLocations().get(uniformName).get(0), value);
+    }
+
     protected void bindAttribute(int attribute, String variableName) {
         glBindAttribLocation(programID, attribute, variableName);
     }
@@ -104,7 +117,7 @@ public abstract class Shader {
     }
 
 
-    private void loadMatrix(int location, Matrix4f matrix) {
+    protected void loadMatrix(int location, Matrix4f matrix) {
         try (MemoryStack stack = stackPush()) {
             FloatBuffer buffer = stack.mallocFloat(16);
             glUniformMatrix4fv(location, false, matrix.get(buffer));
@@ -112,6 +125,9 @@ public abstract class Shader {
     }
 
     private int loadShader(String fileName, int type) throws IOException {
+        if (fileName == null) {
+            return 0;
+        }
         InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
         String shaderSource;
         if (is != null) {
