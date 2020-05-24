@@ -28,7 +28,7 @@ public class LightEntity extends Entity {
         private float offsetY = 0;
         private float offsetZ = 0;
         private boolean isPointLight = false;
-        private BoundingBox boundingBox = new BoundingBox();
+        private BoundingBox boundingBox = null;
 
         public Builder(TexturedModel texturedModel, Vector3f position) {
             super(texturedModel, position);
@@ -79,12 +79,20 @@ public class LightEntity extends Entity {
         }
 
         public Builder regionMin(Vector3f min) {
-            boundingBox.setFirst(min);
+            if (boundingBox == null) {
+                boundingBox = new BoundingBox(min, null);
+            } else {
+                boundingBox.setFirst(min);
+            }
             return this;
         }
 
         public Builder regionMax(Vector3f max) {
-            boundingBox.setSecond(max);
+            if (boundingBox == null) {
+                boundingBox = new BoundingBox(null, max);
+            } else {
+                boundingBox.setSecond(max);
+            }
             return this;
         }
 

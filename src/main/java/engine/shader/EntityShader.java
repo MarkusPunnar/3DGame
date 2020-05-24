@@ -29,10 +29,6 @@ public class EntityShader extends Shader {
         doLoadMatrix(MathUtil.createViewMatrix(camera), "viewMatrix");
         doLoadMatrix(MathUtil.getLightSpaceMatrix(lights.get(0), camera), "lightSpaceMatrix");
         doLoadFloat(PointShadowShader.FAR_PLANE, "farPlane");
-        List<Integer> shadowCubes = uniformLocations.get("shadowCube");
-        for (int i = 0; i < shadowCubes.size(); i++) {
-            loadInt(uniformLocations.get("shadowCube").get(i), 6 + i);
-        }
     }
 
     @Override

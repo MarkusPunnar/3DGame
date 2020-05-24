@@ -41,6 +41,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.flogger</groupId>
+            <artifactId>flogger</artifactId>
+            <version>0.5.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.joml</groupId>
             <artifactId>joml</artifactId>
             <version>1.9.24</version>

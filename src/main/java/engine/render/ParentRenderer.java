@@ -28,8 +28,8 @@ import java.util.*;
 import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE5;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class ParentRenderer {
@@ -124,15 +124,18 @@ public class ParentRenderer {
         terrains.clear();
     }
 
-    public void renderDepthMaps(List<Light> lights, Camera camera) {
+    public void renderDepthMaps(List<Light> lights, Player player, Camera camera) {
         glViewport(0, 0, ShadowFrameBuffer.SHADOW_WIDTH, ShadowFrameBuffer.SHADOW_HEIGHT);
         glCullFace(GL_FRONT);
         for (Light light : lights) {
-            if (light.isPointLight()) {
-                renderPointDepthMap(light, camera);
-            } else {
-                renderDirectionalDepthMap(light, camera);
+            if (light.isActive(player)) {
+                if (light.isPointLight()) {
+                    renderPointDepthMap(light, camera);
+                } else {
+                    renderDirectionalDepthMap(light, camera);
+                }
             }
+            light.setInitialized(true);
         }
         glCullFace(GL_BACK);
     }
@@ -189,7 +192,6 @@ public class ParentRenderer {
         glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(RED, GREEN, BLUE, 1.0f);
-
     }
 
     public void cleanUp() {
@@ -198,6 +200,7 @@ public class ParentRenderer {
         guiRenderer.getShader().cleanUp();
         fontRenderer.getShader().cleanUp();
         directionalShadowRenderer.getShader().cleanUp();
+        pointShadowRenderer.getShader().cleanUp();
     }
 
     public void loadText(GUIText text) {

@@ -8,6 +8,7 @@ import engine.shader.EntityShader;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
@@ -24,6 +25,7 @@ public class EntityRenderer implements Renderer {
         shader.start();
         shader.doLoadMatrix(projectionMatrix, "projectionMatrix");
         shader.doLoadInt(5, "shadowMap");
+        shader.doLoadInts(6, "shadowCube");
         shader.stop();
     }
 

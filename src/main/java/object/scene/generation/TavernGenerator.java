@@ -93,37 +93,40 @@ public class TavernGenerator implements Generator {
     private List<Entity> generateLanterns(List<Light> lights) throws IOException, URISyntaxException {
         List<Entity> lanterns = new ArrayList<>();
         TexturedModel lanternModel = GeneratorUtil.getTexturedModel(loader, "lantern");
-        Vector3f lanternAttenuation = new Vector3f(0.6f, 0, 0);
+        Vector3f lanternAttenuation = new Vector3f(0.8f, 0.0005f, 0.0001f);
         Vector3f lanternLightColour = new Vector3f(189f / 255f, 183f / 255f, 107f / 255f);
         //Room lanterns
         LightEntity lantern = new LightEntity.Builder(lanternModel, new Vector3f(31, 48.5f, 50)).colour(lanternLightColour).attenuation(lanternAttenuation)
-                .offset(new Vector3f(-5, 7, 0)).pointLight(true).build();
+                .offset(new Vector3f(-5, 7, 0)).regionMin(new Vector3f(-40, 34.5f, 27))
+                .regionMax(new Vector3f(31, 67, 70)).pointLight(true).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         lantern = new LightEntity.Builder(lanternModel, new Vector3f(31, 48.5f, 3.5f)).colour(lanternLightColour).attenuation(lanternAttenuation)
-                .offset(new Vector3f(-5, 7, 0)).pointLight(true).build();
+                .offset(new Vector3f(-5, 7, 0)).regionMin(new Vector3f(-40, 34.5f, -20))
+                .regionMax(new Vector3f(31, 67, 22)).pointLight(true).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         lantern = new LightEntity.Builder(lanternModel, new Vector3f(31, 48.5f, -43)).colour(lanternLightColour).attenuation(lanternAttenuation)
-                .offset(new Vector3f(-5, 7, 0)).pointLight(true).build();
+                .offset(new Vector3f(-5, 7, 0)).regionMin(new Vector3f(-40, 34.5f, -65))
+                .regionMax(new Vector3f(31, 67, -25)).pointLight(true).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         //Second floor lanterns
         lantern = new LightEntity.Builder(lanternModel, new Vector3f(-42.5f, 55, 95)).colour(lanternLightColour).attenuation(lanternAttenuation)
-                .offsetX(7).pointLight(true).build();
+                .offsetX(7).regionMin(new Vector3f(-40, 34.5f, 27)).regionMax(new Vector3f(92, 67, 121)).pointLight(true).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         lantern = new LightEntity.Builder(lanternModel, new Vector3f(93, 55, 95)).colour(lanternLightColour).attenuation(lanternAttenuation)
-                .offsetX(-7).pointLight(true).build();
+                .offsetX(-7).regionMin(new Vector3f(0, 0, 67)).regionMax(new Vector3f(new Vector3f(92, 67, 121))).pointLight(true).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         //First floor lanterns
-        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-7, 24, 123.5f)).colour(lanternLightColour).attenuation(lanternAttenuation)
-                .offsetZ(-5).pointLight(true).build();
+        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-7, 20, 123.5f)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .regionMin(new Vector3f(-40, -1, 27)).regionMax(new Vector3f(40, 30, 121)).offsetZ(-5).pointLight(true).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
-        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-42, 24, -5)).colour(lanternLightColour).attenuation(lanternAttenuation)
-                .offsetX(5).pointLight(true).build();
+        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-42, 20, -5)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .regionMin(new Vector3f(-40, -1, -65)).regionMax(new Vector3f(31, 30, 62)).offsetX(5).pointLight(true).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         return lanterns;

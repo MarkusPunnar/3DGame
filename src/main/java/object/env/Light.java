@@ -1,6 +1,7 @@
 package object.env;
 
 import engine.shadow.ShadowFrameBuffer;
+import object.Player;
 import org.joml.Vector3f;
 import util.octree.BoundingBox;
 
@@ -10,8 +11,12 @@ public class Light {
     private Vector3f colour;
     private Vector3f attenuation;
     private ShadowFrameBuffer fbo;
-    private boolean isPointLight;
     private BoundingBox activeRegion;
+    private boolean isPointLight;
+    private boolean isInitialized;
+
+    private static float start = System.currentTimeMillis();
+    private static final BoundingBox initBox = new BoundingBox(new Vector3f(-200, 0, -200), new Vector3f(200, 100, 200));
 
     public Light(Vector3f position, Vector3f colour, boolean isPointLight, BoundingBox box) {
         this(position, colour, new Vector3f(1, 0, 0), isPointLight, box);
@@ -38,16 +43,8 @@ public class Light {
         return colour;
     }
 
-    public void setColour(Vector3f colour) {
-        this.colour = colour;
-    }
-
     public Vector3f getAttenuation() {
         return attenuation;
-    }
-
-    public void setAttenuation(Vector3f attenuation) {
-        this.attenuation = attenuation;
     }
 
     public ShadowFrameBuffer getFbo() {
@@ -58,7 +55,20 @@ public class Light {
         return isPointLight;
     }
 
-    public BoundingBox getActiveRegion() {
-        return activeRegion;
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
+    public void setInitialized(boolean initialized) {
+        isInitialized = initialized;
+    }
+
+    public boolean isActive(Player player) {
+        Vector3f playerPos = player.getPosition();
+        BoundingBox playerBox = new BoundingBox(
+                new Vector3f(playerPos.x - 1, playerPos.y - 1, playerPos.z - 1),
+                new Vector3f(playerPos.x + 1, playerPos.y + 1, playerPos.z + 1));
+        return !isInitialized || activeRegion == null || playerBox.isEmbeddedIn(activeRegion)
+                || playerBox.intersectsWith(activeRegion);
     }
 }

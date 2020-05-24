@@ -17,6 +17,7 @@ import object.scene.generation.TerrainGenerator;
 import object.terrain.Terrain;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import util.octree.BoundingBox;
 import util.octree.OctTree;
 
@@ -67,7 +68,7 @@ public class MainGameLoop {
             for (Handler handler : handlers) {
                 handler.handle();
             }
-            renderer.renderDepthMaps(lights, camera);
+            renderer.renderDepthMaps(lights, player, camera);
             renderer.renderObjects(lights, camera);
             DisplayManager.updateDisplay();
         }

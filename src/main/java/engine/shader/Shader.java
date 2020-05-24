@@ -92,6 +92,13 @@ public abstract class Shader {
         loadInt(getUniformLocations().get(uniformName).get(0), value);
     }
 
+    public void doLoadInts(int startingValue, String uniformName) {
+        List<Integer> locations = getUniformLocations().get(uniformName);
+        for (int i = 0; i < locations.size(); i++) {
+            loadInt(locations.get(i), startingValue + i);
+        }
+    }
+
     protected void bindAttribute(int attribute, String variableName) {
         glBindAttribLocation(programID, attribute, variableName);
     }
