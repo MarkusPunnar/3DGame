@@ -14,9 +14,7 @@ public class Light {
     private BoundingBox activeRegion;
     private boolean isPointLight;
     private boolean isInitialized;
-
-    private static float start = System.currentTimeMillis();
-    private static final BoundingBox initBox = new BoundingBox(new Vector3f(-200, 0, -200), new Vector3f(200, 100, 200));
+    private int callCount;
 
     public Light(Vector3f position, Vector3f colour, boolean isPointLight, BoundingBox box) {
         this(position, colour, new Vector3f(1, 0, 0), isPointLight, box);
@@ -64,6 +62,10 @@ public class Light {
     }
 
     public boolean isActive(Player player) {
+        if (callCount < 2) {
+            callCount++;
+            return true;
+        }
         Vector3f playerPos = player.getPosition();
         BoundingBox playerBox = new BoundingBox(
                 new Vector3f(playerPos.x - 1, playerPos.y - 1, playerPos.z - 1),

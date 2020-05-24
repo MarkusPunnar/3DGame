@@ -1,5 +1,6 @@
 package game;
 
+import com.google.common.flogger.FluentLogger;
 import engine.DisplayManager;
 import engine.loader.VAOLoader;
 import engine.render.ParentRenderer;
@@ -17,7 +18,6 @@ import object.scene.generation.TerrainGenerator;
 import object.terrain.Terrain;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 import util.octree.BoundingBox;
 import util.octree.OctTree;
 
@@ -25,11 +25,14 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 public class MainGameLoop {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         DisplayManager.createDisplay();
@@ -43,7 +46,7 @@ public class MainGameLoop {
         lights.add(sun);
         List<Entity> roomEntities = tavernGenerator.generate(lights);
         List<Terrain> terrains = terrainGenerator.generate(lights);
-        OctTree octTree =  new OctTree(new BoundingBox(new Vector3f(-400, -1, -400), new Vector3f(200, 100, 200)));
+        OctTree octTree = new OctTree(new BoundingBox(new Vector3f(-400, -1, -400), new Vector3f(200, 100, 200)));
 
         Camera camera = new Camera(player);
         MousePicker mousePicker = new MousePicker(renderer.getProjectionMatrix(), camera);
@@ -56,7 +59,7 @@ public class MainGameLoop {
         GameState.getInstance().setCurrentTree(octTree);
 
         while (!GLFW.glfwWindowShouldClose(DisplayManager.getWindow())) {
-            System.out.println(DisplayManager.getFrameTime());
+            logger.atInfo().atMostEvery(5, TimeUnit.SECONDS).log("Current FPS: %d", ((int) (1 / DisplayManager.getFrameTime())));
             camera.checkState();
             if (GameState.getInstance().getCurrentState() == State.IN_GAME) {
                 player.move(renderObjects);
@@ -87,17 +90,15 @@ public class MainGameLoop {
     }
 
     private static void initCallbacks(Player player) {
-        GameState state =  GameState.getInstance();
+        GameState state = GameState.getInstance();
         GLFW.glfwSetKeyCallback(DisplayManager.getWindow(), ((window, key, scancode, action, mods) -> {
-           if (key == GLFW.GLFW_KEY_I && action == GLFW.GLFW_PRESS && List.of(State.IN_GAME, State.IN_INVENTORY).contains(state.getCurrentState())) {
-               player.interactWithInventory();
-           }
-           else if (key == GLFW.GLFW_KEY_F && action == GLFW.GLFW_PRESS && List.of(State.IN_GAME, State.IN_CHEST).contains(state.getCurrentState())) {
-               player.interactWithObject();
-           }
-           else if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE && state.getCurrentState().equals(State.IN_GAME)) {
-               GLFW.glfwSetWindowShouldClose(window, true);
-           }
+            if (key == GLFW.GLFW_KEY_I && action == GLFW.GLFW_PRESS && List.of(State.IN_GAME, State.IN_INVENTORY).contains(state.getCurrentState())) {
+                player.interactWithInventory();
+            } else if (key == GLFW.GLFW_KEY_F && action == GLFW.GLFW_PRESS && List.of(State.IN_GAME, State.IN_CHEST).contains(state.getCurrentState())) {
+                player.interactWithObject();
+            } else if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE && state.getCurrentState().equals(State.IN_GAME)) {
+                GLFW.glfwSetWindowShouldClose(window, true);
+            }
         }));
     }
 }

@@ -1,5 +1,6 @@
 package engine;
 
+import com.google.common.flogger.FluentLogger;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -23,17 +24,21 @@ public class DisplayManager {
     private static double lastFrameTime = 0.0;
     private static float delta;
 
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
     public static void createDisplay() {
         //Set the error callback routine to use System.err
         GLFWErrorCallback.createPrint(System.err).set();
         if (!GLFW.glfwInit()) { //Init GLFW First
             throw new RuntimeException("ERROR: GLFW not initialized");
         }
+        logger.atInfo().log("Initialized GLFW");
         glfwDefaultWindowHints();
         window = glfwCreateWindow(width, height, "First display", NULL, NULL); //Create the window
         if (window == NULL) {
             throw new RuntimeException("ERROR: Window not created");
         }
+        logger.atInfo().log("Created the main window");
         try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1); //Get integer buffers
             IntBuffer pHeight = stack.mallocInt(1);
@@ -49,6 +54,7 @@ public class DisplayManager {
         glfwSwapInterval(1); //Enable V-Sync
         GL.createCapabilities();
         glfwShowWindow(window); //Show screen
+        logger.atInfo().log("Display created successfully");
     }
 
     public static void updateDisplay() {
@@ -70,6 +76,7 @@ public class DisplayManager {
         Callbacks.glfwFreeCallbacks(window); //Release callbacks
         glfwDestroyWindow(window); //Destroy the window
         glfwTerminate(); //Terminate GLFW
+        logger.atInfo().log("Terminated GLFW");
         glfwSetErrorCallback(null).free();
     }
 
