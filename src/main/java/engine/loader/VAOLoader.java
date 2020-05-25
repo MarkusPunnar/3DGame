@@ -1,5 +1,7 @@
 package engine.loader;
 
+import com.google.common.flogger.FluentLogger;
+import com.google.common.flogger.StackSize;
 import engine.model.RawModel;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -24,6 +26,8 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
 public class VAOLoader {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private List<Integer> VAOs;
     private List<Integer> VBOs;
@@ -153,35 +157,38 @@ public class VAOLoader {
             IntBuffer comp = stack.mallocInt(1);
             URL location = getClass().getClassLoader().getResource("textures/" + fileName + ".png");
             if (location == null) {
+                logger.atSevere().withStackTrace(StackSize.LARGE).log("Texture file %s was not found", fileName);
                 throw new IllegalArgumentException("Could not find resource from classpath: " + fileName);
             }
             try {
                 image = STBImage.stbi_load(Paths.get(location.toURI()).toString(), widthBuffer, heightBuffer, comp, 4);
                 if (image == null) {
+                    logger.atSevere().withStackTrace(StackSize.LARGE).log("Image from %s could not be loaded", location.toURI());
                     throw new IllegalArgumentException("Failed to load texture image: " + STBImage.stbi_failure_reason());
                 }
                 width = widthBuffer.get();
                 height = heightBuffer.get();
             } catch (URISyntaxException e) {
+                logger.atWarning().log("Tried to load texture from invalid");
                 throw new IllegalArgumentException("Invalid URI for texture " + fileName);
             }
         }
         textureID = glGenTextures();
         textures.add(textureID);
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //sets MINIFICATION filtering to nearest
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //sets MAGNIFICATION filtering to nearest
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
         return textureID;
     }
 
 
     private void storeDataInAttributeList(int attributeNumber, int coordSize, float[] data) {
-        int vboID = glGenBuffers(); //Create VBO
+        int vboID = glGenBuffers();
         VBOs.add(vboID);
-        glBindBuffer(GL_ARRAY_BUFFER, vboID); //Bind the VBO
-        FloatBuffer buffer = storeDataInFloatBuffer(data); //Create FloatBuffer
-        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW); //Write data to VBO
+        glBindBuffer(GL_ARRAY_BUFFER, vboID);
+        FloatBuffer buffer = storeDataInFloatBuffer(data);
+        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
         glVertexAttribPointer(attributeNumber, coordSize, GL_FLOAT, false, 0, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
@@ -198,28 +205,31 @@ public class VAOLoader {
         for (Integer vao : VAOs) {
             glDeleteVertexArrays(vao);
         }
+        logger.atInfo().log("Cleaned up VAOs");
         for (Integer vbo : VBOs) {
             glDeleteBuffers(vbo);
         }
+        logger.atInfo().log("Cleaned up VBOs");
         for (Integer texture : textures) {
             glDeleteTextures(texture);
         }
+        logger.atInfo().log("Cleaned up textures");
     }
 
     private int createVAO() {
-        int vaoID = glGenVertexArrays(); //Create VAO
-        glBindVertexArray(vaoID); //Bind VAO
+        int vaoID = glGenVertexArrays();
+        glBindVertexArray(vaoID);
         return vaoID;
     }
 
     private void unbindVAO() {
-        glBindVertexArray(0); //Unbind VAO
+        glBindVertexArray(0);
     }
 
     private FloatBuffer storeDataInFloatBuffer(float[] data) {
         FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
         buffer.put(data);
-        buffer.flip(); //Flip buffer so it can be read from
+        buffer.flip();
         return buffer;
     }
 

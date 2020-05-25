@@ -1,5 +1,6 @@
 package game.state;
 
+import com.google.common.flogger.FluentLogger;
 import engine.render.RenderRequest;
 import interraction.InteractableEntity;
 import interraction.LootableEntity;
@@ -11,6 +12,8 @@ import java.util.List;
 import java.util.Queue;
 
 public class HandlerState {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private static final HandlerState INSTANCE = new HandlerState();
 
@@ -30,10 +33,12 @@ public class HandlerState {
     }
 
     public void registerRequest(RenderRequest request) {
+        logger.atInfo().log("Registered new render request of type %s", request.toString());
         requests.add(request);
     }
 
     public void registerInteractableEntity(InteractableEntity object) {
+        logger.atInfo().log("Registered new interactable entity with type %s", object.getClass().getSimpleName());
         interactableEntities.add(object);
     }
 

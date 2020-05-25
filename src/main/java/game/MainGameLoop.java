@@ -1,6 +1,7 @@
 package game;
 
 import com.google.common.flogger.FluentLogger;
+import com.google.common.flogger.LoggerConfig;
 import engine.DisplayManager;
 import engine.loader.VAOLoader;
 import engine.render.ParentRenderer;
@@ -27,8 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class MainGameLoop {
 
@@ -56,6 +56,7 @@ public class MainGameLoop {
         List<RenderObject> renderObjects = new ArrayList<>(roomEntities);
         renderObjects.addAll(terrains);
         octTree.initTree(renderObjects);
+        logger.atInfo().log("Octree initialized with %d objects", renderObjects.size());
         GameState.getInstance().setCurrentTree(octTree);
 
         while (!GLFW.glfwWindowShouldClose(DisplayManager.getWindow())) {
@@ -86,6 +87,7 @@ public class MainGameLoop {
         handlers.add(new RenderRequestHandler(renderer, player, "gamefont"));
         handlers.add(new InventoryHandler(player, mousePicker));
         handlers.add(new LootingHandler(player, mousePicker));
+        logger.atInfo().log("Initialized handlers");
         return handlers;
     }
 
@@ -100,5 +102,6 @@ public class MainGameLoop {
                 GLFW.glfwSetWindowShouldClose(window, true);
             }
         }));
+        logger.atInfo().log("Initialized callbacks");
     }
 }

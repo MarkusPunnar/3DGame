@@ -1,5 +1,6 @@
 package object;
 
+import com.google.common.flogger.FluentLogger;
 import engine.model.TexturedModel;
 import engine.render.RenderRequest;
 import engine.render.RequestInfo;
@@ -26,6 +27,8 @@ import java.util.Set;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Player extends Entity {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private static final float FORWARD_SPEED = 35;
     private static final float SIDEWAYS_SPEED = 30;
@@ -195,6 +198,7 @@ public class Player extends Entity {
         int spaceState = glfwGetKey(window, GLFW_KEY_SPACE);
         if (spaceState == GLFW_PRESS && !isInAir) {
             upwardsSpeed = JUMP_POWER;
+            logger.atInfo().log("Registered player jump");
         }
     }
 
@@ -215,9 +219,11 @@ public class Player extends Entity {
 
     public void interactWithInventory() {
         if (!inventory.isOpen()) {
+            logger.atInfo().log("Request to open inventory sent");
             HandlerState.getInstance().registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0, 0.15f), new Vector2f(0.6f, 0.6f), ObjectType.INVENTORY)));
         }
         else {
+            logger.atInfo().log("Request to close inventory sent");
             HandlerState.getInstance().registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(ObjectType.INVENTORY)));
         }
     }
@@ -227,6 +233,7 @@ public class Player extends Entity {
         InteractableEntity closestObject = HandlerState.getInstance().getClosestObject();
         float closestDistance = getPosition().distance(closestObject.getPosition());
         if (closestDistance < INTERACT_DISTANCE) {
+            logger.atInfo().log("Found close interactable object of type %s", closestObject.getClass().getSimpleName());
             closestObject.interact();
             state.getCurrentTree().update(closestObject);
             closestObject.handleGui(state);

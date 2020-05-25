@@ -1,5 +1,7 @@
 package engine.loader;
 
+import com.google.common.flogger.FluentLogger;
+import com.google.common.flogger.StackSize;
 import engine.model.data.TerrainData;
 
 import java.io.IOException;
@@ -11,12 +13,14 @@ import java.util.List;
 
 public class TerrainLoader {
 
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
     private static int VERTEX_COUNT = 129;
 
     public static TerrainData loadTerrainModel(String fileName) throws URISyntaxException, IOException {
         float[][] heights = new float[VERTEX_COUNT][VERTEX_COUNT];
         URL location = TerrainLoader.class.getClassLoader().getResource("models/terrains/" + fileName + ".obj");
         if (location == null) {
+            logger.atSevere().withStackTrace(StackSize.LARGE).log("Terrain file %s was not found", fileName);
             throw new IllegalArgumentException("Terrain model file " + fileName + " not found");
         }
         List<String> lines = Files.readAllLines(Paths.get(location.toURI()));
@@ -37,6 +41,7 @@ public class TerrainLoader {
                 default:
             }
         }
+        logger.atInfo().log("Terrain model from %s was loaded successfully", fileName);
         return new TerrainData(heights, null);
     }
 

@@ -1,5 +1,6 @@
 package object.scene.generation;
 
+import com.google.common.flogger.FluentLogger;
 import game.state.HandlerState;
 import object.Entity;
 import object.env.Light;
@@ -25,6 +26,8 @@ import java.util.List;
 public class TavernGenerator implements Generator {
 
     private VAOLoader loader;
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     public TavernGenerator(VAOLoader loader) {
         this.loader = loader;
@@ -70,6 +73,7 @@ public class TavernGenerator implements Generator {
         roomEntities.addAll(generateCabinets());
         //Generate shelves
         roomEntities.addAll(generateShelves());
+        logger.atInfo().log("%s - Entities generated", getClass().getSimpleName());
         return roomEntities;
     }
 
@@ -126,7 +130,7 @@ public class TavernGenerator implements Generator {
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         lantern = new LightEntity.Builder(lanternModel, new Vector3f(-42, 20, -5)).colour(lanternLightColour).attenuation(lanternAttenuation)
-                .regionMin(new Vector3f(-40, -1, -65)).regionMax(new Vector3f(31, 30, 62)).offsetX(5).pointLight(true).build();
+                .regionMin(new Vector3f(-50, -1, -65)).regionMax(new Vector3f(31, 30, 62)).offsetX(5).pointLight(true).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         return lanterns;

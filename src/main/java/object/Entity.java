@@ -1,5 +1,6 @@
 package object;
 
+import com.google.common.flogger.FluentLogger;
 import engine.model.TexturedModel;
 import engine.shader.Shader;
 import engine.texture.ObjectType;
@@ -11,6 +12,8 @@ import util.math.MathUtil;
 import java.util.Objects;
 
 public class Entity extends RenderObject {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private TexturedModel texturedModel;
     private Vector3f position;
@@ -72,12 +75,14 @@ public class Entity extends RenderObject {
         position.x += dx;
         position.y += dy;
         position.z += dz;
+        logger.atInfo().log("Changed %s position by (%f, %f, %f)", getClass().getSimpleName(), dx, dy, dz);
     }
 
     public void increaseRotation(float rx, float ry, float rz) {
         rotation.x += rx;
         rotation.y += ry;
         rotation.z += rz;
+        logger.atInfo().log("Changed %s rotation by (%f, %f, %f)", getClass().getSimpleName(), rx, ry, rz);
     }
 
     public TexturedModel getModel() {

@@ -1,5 +1,6 @@
 package engine.shadow;
 
+import com.google.common.flogger.FluentLogger;
 import org.lwjgl.opengl.GL32;
 
 import java.nio.ByteBuffer;
@@ -7,6 +8,8 @@ import java.nio.ByteBuffer;
 import static org.lwjgl.opengl.GL30.*;
 
 public class ShadowFrameBuffer {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     public static final int SHADOW_WIDTH = 4096;
     public static final int SHADOW_HEIGHT = 4096;
@@ -25,6 +28,7 @@ public class ShadowFrameBuffer {
 
         this.hasCubeMapTexture = isCubeMap;
         initFrameBuffer();
+        logger.atInfo().log("Initialized framebuffer - isCubeMap %s", isCubeMap);
     }
 
     private void initFrameBuffer() {

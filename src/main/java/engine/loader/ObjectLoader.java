@@ -1,5 +1,7 @@
 package engine.loader;
 
+import com.google.common.flogger.FluentLogger;
+import com.google.common.flogger.StackSize;
 import engine.model.data.ModelData;
 import engine.model.data.VertexData;
 import org.joml.Vector2f;
@@ -15,9 +17,12 @@ import java.util.List;
 
 public class ObjectLoader {
 
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
     public static ModelData loadObjectModel(String fileName) throws URISyntaxException, IOException {
         URL location = ObjectLoader.class.getClassLoader().getResource("models/" + fileName + ".obj");
         if (location == null) {
+            logger.atSevere().withStackTrace(StackSize.LARGE).log("Object file %s was not found", fileName);
             throw new IllegalArgumentException("Object model file not found");
         }
         List<String> lines = Files.readAllLines(Paths.get(location.toURI()));
@@ -63,6 +68,7 @@ public class ObjectLoader {
         float[] normalsArray = new float[vertices.size() * 3];
         float furthest = convertDataToArrays(vertices, textures, normals, verticesArray, texturesArray, normalsArray);
         int[] indicesArray = convertIndicesListToArray(indices);
+        logger.atInfo().log("%s object model was loaded successfully", fileName);
         return new ModelData(verticesArray, texturesArray, normalsArray, indicesArray, furthest);
     }
 

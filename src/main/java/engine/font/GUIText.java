@@ -1,5 +1,6 @@
 package engine.font;
 
+import com.google.common.flogger.FluentLogger;
 import engine.font.structure.FontType;
 import engine.model.Model;
 import engine.model.TextModel;
@@ -12,6 +13,8 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 public class GUIText extends RenderObject {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private String text;
     private float fontSize;
@@ -58,6 +61,7 @@ public class GUIText extends RenderObject {
         }
 
         public GUIText build() {
+            logger.atInfo().log("Created a GUI text for text - %s", text);
             return new GUIText(this);
         }
     }

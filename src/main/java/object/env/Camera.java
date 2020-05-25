@@ -1,5 +1,6 @@
 package object.env;
 
+import com.google.common.flogger.FluentLogger;
 import game.state.GameState;
 import game.state.State;
 import interraction.MousePicker;
@@ -16,6 +17,8 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class Camera {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private final float MAX_PITCH = 70;
     private final float MIN_PITCH = -70;
@@ -37,8 +40,10 @@ public class Camera {
         yaw = 0;
         pitch = 10;
         roll = 0;
-        if (glfwRawMouseMotionSupported())
+        if (glfwRawMouseMotionSupported()) {
             glfwSetInputMode(DisplayManager.getWindow(), GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+            logger.atInfo().log("Enabled raw mouse motion");
+        }
     }
 
     public void checkState() {

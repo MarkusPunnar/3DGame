@@ -1,5 +1,6 @@
 package util;
 
+import com.google.common.flogger.FluentLogger;
 import engine.DisplayManager;
 import engine.font.GUIText;
 import engine.render.RenderRequest;
@@ -15,6 +16,8 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 public class HandlerUtil {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private static boolean leftMouseButtonPressed = false;
     private static Slot lastInteracted;
@@ -48,6 +51,7 @@ public class HandlerUtil {
             if (activeSlot != null) {
                 if (leftMouseButtonPressed) {
                     HandlerState.getInstance().setBindedItem(activeSlot.getItem());
+                    logger.atInfo().log("Binded item of type %s for moving", activeSlot.getItem().getClass().getSimpleName());
                     lastInteracted = activeSlot;
                     activeSlot.resetTexture();
                 }
@@ -68,10 +72,10 @@ public class HandlerUtil {
         Slot activeSlot = HandlerUtil.calculateActiveSlot(destination, currentMousePosition);
         Slot otherSlot = HandlerUtil.calculateActiveSlot(source, currentMousePosition);
         if (activeSlot == null && otherSlot == null) {
-            //Misplaced item
             bindedItem.getIcon().setPosition(new Vector2f(lastInteracted.getPosition().x, lastInteracted.getPosition().y));
             setItemText(lastInteracted, bindedItem, lastInteracted.getPosition());
             HandlerState.getInstance().setBindedItem(null);
+            logger.atInfo().log("Misplaced item, moving back to original location");
             return;
         }
         Slot selectedSlot = activeSlot == null ? otherSlot : activeSlot;
@@ -80,6 +84,7 @@ public class HandlerUtil {
             bindedItem.getIcon().setPosition(new Vector2f(selectedSlot.getPosition().x, selectedSlot.getPosition().y));
             setItemText(lastInteracted, bindedItem, selectedSlot.getPosition());
             selectedSlot.setGuiText(lastInteracted.getGuiText());
+            logger.atInfo().log("Moved item %s successfully", lastInteracted.getItem().getClass().getSimpleName());
             lastInteracted.setItem(null);
             lastInteracted.setGuiText(null);
         } else {
@@ -90,10 +95,12 @@ public class HandlerUtil {
 
     private static void stackItems(Item bindedItem, Slot selectedSlot) {
         if (!selectedSlot.equals(lastInteracted)) {
+            logger.atInfo().log("Detected item in selected slot, trying to stack");
             HandlerState handlerState = HandlerState.getInstance();
             Item existingItem = selectedSlot.getItem();
             existingItem.stack(lastInteracted.getItem());
             GUIText newText = lastInteracted.getGuiText().copyWithValueChange(String.valueOf(existingItem.getAmount()));
+            logger.atInfo().log("Sending requests to remove old item icons and text");
             handlerState.registerRequest(new RenderRequest(RequestType.REMOVE_TEXT, new RequestInfo(selectedSlot.getItem().getIcon(), selectedSlot.getGuiText())));
             selectedSlot.setGuiText(newText);
             setItemText(selectedSlot, existingItem, selectedSlot.getPosition());

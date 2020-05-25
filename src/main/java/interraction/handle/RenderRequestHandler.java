@@ -1,5 +1,6 @@
 package interraction.handle;
 
+import com.google.common.flogger.FluentLogger;
 import engine.DisplayManager;
 import engine.font.GUIText;
 import engine.font.structure.FontType;
@@ -30,6 +31,8 @@ import java.util.Queue;
 
 public class RenderRequestHandler implements Handler {
 
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
     private final ParentRenderer renderer;
     private FontType font;
     private final Player player;
@@ -46,6 +49,7 @@ public class RenderRequestHandler implements Handler {
         GameState state = GameState.getInstance();
         while (requests.peek() != null) {
             RenderRequest request = requests.poll();
+            logger.atInfo().log("Resolving render request of type %s", request.toString());
             RequestInfo requestInfo = request.getRequestInfo();
             switch (request.getRequestType()) {
                 case ADD:
@@ -54,10 +58,12 @@ public class RenderRequestHandler implements Handler {
                             state.setCurrentState(State.IN_INVENTORY);
                             renderInventory(requestInfo);
                             player.getInventory().setOpen(true);
+                            logger.atInfo().log("Rendered player inventory GUI");
                             break;
                         case CHEST:
                             state.setCurrentState(State.IN_CHEST);
                             renderChestInterface(requestInfo);
+                            logger.atInfo().log("Rendered chest interface");
                             break;
                         default:
                     }
@@ -69,12 +75,14 @@ public class RenderRequestHandler implements Handler {
                             state.setCurrentState(State.IN_GAME);
                             player.getInventory().setOpen(false);
                             GLFW.glfwSetCursorPos(DisplayManager.getWindow(), DisplayManager.getWidth() / 2f, DisplayManager.getHeight() / 2f);
+                            logger.atInfo().log("Player inventory GUI removed");
                             break;
                         case CHEST:
                             removeGui(List.of(ObjectType.CHEST_TITLE, ObjectType.SLOT, ObjectType.SLOT_HOVER, ObjectType.ICON));
                             state.setCurrentState(State.IN_GAME);
                             HandlerState.getInstance().setLastLooted(null);
                             GLFW.glfwSetCursorPos(DisplayManager.getWindow(), DisplayManager.getWidth() / 2f, DisplayManager.getHeight() / 2f);
+                            logger.atInfo().log("Chest interface removed");
                             break;
                         default:
                     }
@@ -85,12 +93,15 @@ public class RenderRequestHandler implements Handler {
                     if (removeText != null) {
                         renderer.removeText(removeText);
                     }
+                    logger.atInfo().log("Removed item GUI of type %s", requestInfo.getObject().getClass().getSimpleName());
                     break;
                 case REFRESH_TEXT:
                     renderer.loadText(requestInfo.getGuiText());
+                    logger.atInfo().log("Refreshed GUI text");
                     break;
                 case REMOVE_TEXT:
                     renderer.removeText(requestInfo.getGuiText());
+                    logger.atInfo().log("Removed GUI text");
                     break;
                 default:
             }

@@ -1,9 +1,10 @@
 package object.item;
 
-import engine.font.GUIText;
-import org.joml.Vector2f;
+import com.google.common.flogger.FluentLogger;
 
 public abstract class Item {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private Icon icon;
 
@@ -29,12 +30,15 @@ public abstract class Item {
 
     public boolean stack(Item otherItem) {
         if (!isStackable()) {
+            logger.atInfo().log("This item is not stackable");
             return false;
         }
         if (!getClass().equals(otherItem.getClass())) {
+            logger.atInfo().log("Selected items are incompatible to stack");
             return false;
         }
         this.setAmount(this.getAmount() + otherItem.getAmount());
+        logger.atInfo().log("Stacked items successfully");
         return true;
     }
 }

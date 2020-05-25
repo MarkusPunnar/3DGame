@@ -1,5 +1,6 @@
 package engine.shader;
 
+import com.google.common.flogger.FluentLogger;
 import object.env.Camera;
 import object.env.Light;
 import org.joml.Matrix4f;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 public class PointShadowShader extends Shader {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private static final String PREFIX = "shaders/shadow/point/";
 
@@ -26,6 +29,7 @@ public class PointShadowShader extends Shader {
 
     public PointShadowShader() throws IOException {
         super(VERTEX_FILE, FRAGMENT_FILE, GEOMETRY_FILE);
+        logger.atInfo().log("Initialized shader - %s", getClass().getSimpleName());
     }
 
     @Override

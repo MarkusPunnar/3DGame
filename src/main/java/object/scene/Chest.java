@@ -1,5 +1,6 @@
 package object.scene;
 
+import com.google.common.flogger.FluentLogger;
 import engine.render.RenderRequest;
 import game.state.GameState;
 import game.state.HandlerState;
@@ -15,6 +16,8 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class Chest extends LootableEntity {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private TexturedModel openModel;
     private TexturedModel closedModel;
@@ -57,11 +60,13 @@ public class Chest extends LootableEntity {
         if (sinceLastInteraction > 0.5f) {
             if (!isOpened) {
                 setTexturedModel(openModel);
+                logger.atInfo().log("Chest opened");
                 isOpened = true;
                 sinceLastInteraction = 0;
             } else {
                 setTexturedModel(closedModel);
                 isOpened = false;
+                logger.atInfo().log("Chest closed");
                 sinceLastInteraction = 0;
             }
         }
@@ -71,6 +76,7 @@ public class Chest extends LootableEntity {
     public void handleGui(GameState state) {
         HandlerState handlerState = HandlerState.getInstance();
         handlerState.setLastLooted(this);
+        logger.atInfo().log("Handling GUI changes for object of type %s", getClass().getSimpleName());
         if (isOpened) {
             handlerState.registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(-0.5f, 0.2f), new Vector2f(0.4f, 0.6f), ObjectType.INVENTORY)));
             handlerState.registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0.5f, 0.2f), new Vector2f(0.4f, 0.6f), ObjectType.CHEST)));
@@ -101,6 +107,7 @@ public class Chest extends LootableEntity {
         for (Slot slot : content) {
             if (slot.isFree()) {
                 slot.setItem(item);
+                logger.atInfo().log("Added %s to chest", item.getClass().getSimpleName());
                 return true;
             }
         }

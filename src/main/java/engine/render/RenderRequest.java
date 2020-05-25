@@ -17,4 +17,9 @@ public class RenderRequest {
     public RequestInfo getRequestInfo() {
         return requestInfo;
     }
+
+    @Override
+    public String toString() {
+        return requestType.toString();
+    }
 }

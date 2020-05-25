@@ -1,6 +1,7 @@
 package engine.font.structure;
 
-import engine.DisplayManager;
+import com.google.common.flogger.FluentLogger;
+import com.google.common.flogger.StackSize;
 import engine.font.TextMeshCreator;
 
 import java.io.IOException;
@@ -17,10 +18,12 @@ public class FontFile {
     private static final String SPLITTER = " ";
     private static final String DELIMITER = ",";
 
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
+
     private Map<Integer, Character> characterInfo = new HashMap<>();
     private Map<String, String> lineValues = new HashMap<>();
 
-    private float aspectRatio;
     private int paddingWidth;
     private int paddingHeight;
     private int[] padding;
@@ -30,7 +33,6 @@ public class FontFile {
     private Scanner sc;
 
     public FontFile(String fontFileName) throws URISyntaxException, IOException {
-        this.aspectRatio = ((float) DisplayManager.getWidth()) / ((float) DisplayManager.getHeight());
         initFontFile(fontFileName);
         processPaddingData();
         loadLineSizes();
@@ -42,8 +44,10 @@ public class FontFile {
     private void initFontFile(String fontFileName) throws IOException, URISyntaxException {
         URL location = FontFile.class.getClassLoader().getResource("textures/fonts/" + fontFileName + ".fnt");
         if (location == null) {
+            logger.atSevere().withStackTrace(StackSize.LARGE).log("Font file %s was not found", fontFileName);
             throw new IllegalArgumentException("Font file not found");
         }
+        logger.atInfo().log("Successfully read font file %s", fontFileName);
         this.sc = new Scanner(Paths.get(location.toURI()));
     }
 

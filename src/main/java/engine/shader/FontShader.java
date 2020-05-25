@@ -1,5 +1,6 @@
 package engine.shader;
 
+import com.google.common.flogger.FluentLogger;
 import object.env.Camera;
 import object.env.Light;
 
@@ -10,6 +11,8 @@ import java.util.Map;
 
 public class FontShader extends Shader {
 
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
     private static final String PREFIX = "shaders/font/";
 
     private static final String VERTEX_FILE = PREFIX + "fontVertexShader.glsl";
@@ -19,6 +22,7 @@ public class FontShader extends Shader {
 
     public FontShader() throws IOException {
         super(VERTEX_FILE, FRAGMENT_FILE, null);
+        logger.atInfo().log("Initialized shader - %s", getClass().getSimpleName());
     }
 
     @Override

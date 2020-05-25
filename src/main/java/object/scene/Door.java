@@ -1,5 +1,6 @@
 package object.scene;
 
+import com.google.common.flogger.FluentLogger;
 import engine.model.TexturedModel;
 import game.state.GameState;
 import interraction.InteractableEntity;
@@ -7,6 +8,8 @@ import org.joml.Vector3f;
 import util.FacingDirection;
 
 public class Door extends InteractableEntity {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private FacingDirection facingDirection;
 
@@ -54,6 +57,7 @@ public class Door extends InteractableEntity {
                 }
                 isOpened = true;
                 sinceLastInteraction = 0f;
+                logger.atInfo().log("Opened door with facing direction %s", facingDirection);
             }
             else {
                 switch (facingDirection) {
@@ -69,6 +73,7 @@ public class Door extends InteractableEntity {
                 }
                 isOpened = false;
                 sinceLastInteraction = 0f;
+                logger.atInfo().log("Closed door with facing direction %s", facingDirection);
             }
         }
     }

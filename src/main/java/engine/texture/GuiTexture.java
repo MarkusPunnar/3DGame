@@ -1,5 +1,6 @@
 package engine.texture;
 
+import com.google.common.flogger.FluentLogger;
 import engine.font.GUIText;
 import engine.model.TexturedModel;
 import engine.shader.Shader;
@@ -14,6 +15,8 @@ import util.math.MathUtil;
 import java.util.Objects;
 
 public class GuiTexture extends RenderObject {
+
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private static int INCREMENT = 0;
 

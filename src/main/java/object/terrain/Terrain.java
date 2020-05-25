@@ -1,5 +1,6 @@
 package object.terrain;
 
+import com.google.common.flogger.FluentLogger;
 import engine.model.TerrainModel;
 import engine.model.data.TerrainData;
 import object.RenderObject;
@@ -22,6 +23,8 @@ import static org.lwjgl.opengl.GL13.*;
 
 public class Terrain extends RenderObject {
 
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
     private static final float SIZE = 400;
     private static final int VERTICES = 129;
 
@@ -31,12 +34,15 @@ public class Terrain extends RenderObject {
     private final TerrainTexturePack texturePack;
     private final TerrainTexture blendMap;
 
+    private boolean texturesBound;
+
     public Terrain(int gridX, int gridZ, VAOLoader loader, TerrainData data, TerrainTexturePack pack, TerrainTexture blendMap) {
         this.x = gridX * SIZE;
         this.z = gridZ * SIZE;
         this.texturedModel = new TerrainModel(generateTerrain(loader, data), null);
         this.texturePack = pack;
         this.blendMap = blendMap;
+        this.texturesBound = false;
         GeneratorUtil.setParentObject(this);
     }
 
@@ -76,6 +82,7 @@ public class Terrain extends RenderObject {
                 indices[pointer++] = bottomRight;
             }
         }
+        logger.atInfo().log("Generated terrain tile at coordinates (%f, %f)", x, z);
         return loader.loadToVAO(vertices, indices, normals, textureCoords);
     }
 
@@ -89,6 +96,9 @@ public class Terrain extends RenderObject {
     private void bindTextures() {
         GL13.glActiveTexture(GL_TEXTURE0);
         GL11.glBindTexture(GL_TEXTURE_2D, texturePack.getBackgroundTexture().getTextureID());
+        if (texturesBound) {
+            return;
+        }
         GL13.glActiveTexture(GL_TEXTURE1);
         GL11.glBindTexture(GL_TEXTURE_2D, texturePack.getRedTexture().getTextureID());
         GL13.glActiveTexture(GL_TEXTURE2);
@@ -97,6 +107,8 @@ public class Terrain extends RenderObject {
         GL11.glBindTexture(GL_TEXTURE_2D, texturePack.getBlueTexture().getTextureID());
         GL13.glActiveTexture(GL_TEXTURE4);
         GL11.glBindTexture(GL_TEXTURE_2D, blendMap.getTextureID());
+        logger.atInfo().log("Binded terrain blendmap textures");
+        texturesBound = true;
     }
 
     public float getX() {

@@ -1,5 +1,6 @@
 package engine.shader;
 
+import com.google.common.flogger.FluentLogger;
 import object.env.Camera;
 import object.env.Light;
 import util.math.MathUtil;
@@ -11,6 +12,8 @@ import java.util.Map;
 
 public class DirectionalShadowShader extends Shader {
 
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
     private static final String PREFIX = "shaders/shadow/directional/";
 
     private static final String VERTEX_FILE = PREFIX + "directionalShadowVertexShader.glsl";
@@ -20,6 +23,7 @@ public class DirectionalShadowShader extends Shader {
 
     public DirectionalShadowShader() throws IOException {
         super(VERTEX_FILE, FRAGMENT_FILE, null);
+        logger.atInfo().log("Initialized shader - %s", getClass().getSimpleName());
     }
 
     @Override

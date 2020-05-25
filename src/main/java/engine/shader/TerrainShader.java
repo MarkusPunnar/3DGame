@@ -1,5 +1,6 @@
 package engine.shader;
 
+import com.google.common.flogger.FluentLogger;
 import object.env.Camera;
 import object.env.Light;
 import util.math.MathUtil;
@@ -12,6 +13,8 @@ import java.util.Map;
 
 public class TerrainShader extends Shader {
 
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
     private static final String PREFIX = "shaders/terrain/";
 
     private static final String VERTEX_FILE = PREFIX + "terrainVertexShader.glsl";
@@ -21,6 +24,7 @@ public class TerrainShader extends Shader {
 
     public TerrainShader() throws IOException {
         super(VERTEX_FILE, FRAGMENT_FILE, null);
+        logger.atInfo().log("Initialized shader - %s", getClass().getSimpleName());
     }
 
 
