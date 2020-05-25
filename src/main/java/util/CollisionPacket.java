@@ -6,6 +6,7 @@ import util.math.MathUtil;
 
 public class CollisionPacket {
 
+    private Vector3f hitbox;
     private Vector3f velocityR3;
     private Vector3f positionR3;
 
@@ -18,10 +19,11 @@ public class CollisionPacket {
     private float nearestDistance;
     private Vector3f intersectionPoint;
 
-    public CollisionPacket(Vector3f velocityR3, Vector3f positionR3) {
+    public CollisionPacket(Vector3f velocityR3, Vector3f positionR3, Vector3f hitbox) {
         this.velocityR3 = velocityR3;
         this.positionR3 = positionR3;
-        Matrix3f ellipticMatrix = MathUtil.getEllipticMatrix();
+        this.hitbox = hitbox;
+        Matrix3f ellipticMatrix = MathUtil.getEllipticMatrix(hitbox);
         ellipticVelocity = new Vector3f();
         velocityR3.mul(ellipticMatrix, ellipticVelocity);
         normalizedEllipticVelocity = new Vector3f();
@@ -34,6 +36,9 @@ public class CollisionPacket {
         movementVelocity = new Vector3f();
     }
 
+    public Vector3f getHitbox() {
+        return hitbox;
+    }
     public Vector3f getVelocityR3() {
         return velocityR3;
     }

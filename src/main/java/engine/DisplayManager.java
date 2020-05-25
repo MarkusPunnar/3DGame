@@ -95,4 +95,8 @@ public class DisplayManager {
     public static int getHeight() {
         return height;
     }
+
+    public static float getAspectRatio() {
+        return (float) width / (float) height;
+    }
 }

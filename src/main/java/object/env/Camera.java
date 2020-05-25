@@ -1,45 +1,41 @@
 package object.env;
 
 import com.google.common.flogger.FluentLogger;
+import engine.DisplayManager;
 import game.state.GameState;
 import game.state.State;
 import interraction.MousePicker;
 import object.Player;
+import object.RenderObject;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.system.MemoryStack;
-import engine.DisplayManager;
+import util.CameraUtil;
 
-import java.nio.DoubleBuffer;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class Camera {
 
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-    private final float MAX_PITCH = 70;
-    private final float MIN_PITCH = -70;
-    private final float PITCHSPEED = 35;
-    private final float YAWSPEED = 100;
-
-    private float distanceFromPlayer = 17;
+    private static final float MAX_PITCH = 70;
+    private static final float MIN_PITCH = -70;
+    private static final float PITCH_SPEED = 35;
+    private static final float YAW_SPEED = 100;
+    private static final float DISTANCE_FROM_PLAYER = 17;
 
     private Player player;
     private MousePicker mousePicker;
     private Vector3f position;
     private float pitch;
-    private float yaw;
-    private float roll;
 
     public Camera(Player player) {
         this.player = player;
         this.position = new Vector3f();
-        yaw = 0;
         pitch = 10;
-        roll = 0;
         if (glfwRawMouseMotionSupported()) {
             glfwSetInputMode(DisplayManager.getWindow(), GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
             logger.atInfo().log("Enabled raw mouse motion");
@@ -54,32 +50,14 @@ public class Camera {
         }
     }
 
-    public void move() {
+    public void move(List<RenderObject> renderObjects) {
         Vector2f mouseCoords = mousePicker.calculateDeviceCoords();
-        pitch += mouseCoords.y * PITCHSPEED;
+        pitch += mouseCoords.y * PITCH_SPEED;
         pitch = Math.max(Math.min(pitch, MAX_PITCH), MIN_PITCH);
-        player.getRotation().y += -mouseCoords.x * YAWSPEED;
+        player.getRotation().y += -mouseCoords.x * YAW_SPEED;
         GLFW.glfwSetCursorPos(DisplayManager.getWindow(), DisplayManager.getWidth() / 2f, DisplayManager.getHeight() / 2f);
-        float horizontalDistance = calculateHorizontalDistance();
-        float verticalDistance = calculateVerticalDistance();
-        calculateCameraPosition(horizontalDistance, verticalDistance);
-    }
-
-    private void calculateCameraPosition(float horizontalDistance, float verticalDistance) {
-        float theta = ((float) Math.toRadians(player.getRotation().y));
-        float offsetX = ((float) (Math.sin(theta) * horizontalDistance));
-        float offsetZ = ((float) (Math.cos(theta) * horizontalDistance));
-        position.x = player.getPosition().x - offsetX;
-        position.y = player.getPosition().y + verticalDistance + 20;
-        position.z = player.getPosition().z - offsetZ;
-    }
-
-    private float calculateHorizontalDistance() {
-        return ((float) (distanceFromPlayer * Math.cos(Math.toRadians(pitch))));
-    }
-
-    private float calculateVerticalDistance() {
-        return ((float) (distanceFromPlayer * Math.sin(Math.toRadians(pitch))));
+        CameraUtil.calculateCameraPosition(this);
+        CameraUtil.checkCameraCollision(this, renderObjects);
     }
 
     public Player getPlayer() {
@@ -90,19 +68,24 @@ public class Camera {
         return position;
     }
 
+    public void setMousePicker(MousePicker mousePicker) {
+        this.mousePicker = mousePicker;
+    }
+
+    public Matrix4f createProjectionMatrix() {
+        return new Matrix4f().perspective(((float) Math.toRadians(CameraUtil.FOV)),
+                DisplayManager.getAspectRatio(), CameraUtil.NEAR_PLANE, CameraUtil.FAR_PLANE);
+    }
+
+    public float getDistanceFromPlayer() {
+        return DISTANCE_FROM_PLAYER;
+    }
+
     public float getPitch() {
         return pitch;
     }
 
-    public float getYaw() {
-        return yaw;
-    }
-
-    public float getRoll() {
-        return roll;
-    }
-
-    public void setMousePicker(MousePicker mousePicker) {
-        this.mousePicker = mousePicker;
+    public void setPosition(Vector3f position) {
+        this.position = position;
     }
 }

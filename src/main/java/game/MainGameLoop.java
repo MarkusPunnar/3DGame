@@ -1,7 +1,6 @@
 package game;
 
 import com.google.common.flogger.FluentLogger;
-import com.google.common.flogger.LoggerConfig;
 import engine.DisplayManager;
 import engine.loader.VAOLoader;
 import engine.render.ParentRenderer;
@@ -37,7 +36,6 @@ public class MainGameLoop {
     public static void main(String[] args) throws IOException, URISyntaxException {
         DisplayManager.createDisplay();
         VAOLoader loader = new VAOLoader();
-        ParentRenderer renderer = new ParentRenderer(loader);
         TavernGenerator tavernGenerator = new TavernGenerator(loader);
         TerrainGenerator terrainGenerator = new TerrainGenerator(loader);
         Player player = tavernGenerator.generatePlayer();
@@ -49,6 +47,7 @@ public class MainGameLoop {
         OctTree octTree = new OctTree(new BoundingBox(new Vector3f(-400, -1, -400), new Vector3f(200, 100, 200)));
 
         Camera camera = new Camera(player);
+        ParentRenderer renderer = new ParentRenderer(loader, camera);
         MousePicker mousePicker = new MousePicker(renderer.getProjectionMatrix(), camera);
         camera.setMousePicker(mousePicker);
         initCallbacks(player);
@@ -64,7 +63,7 @@ public class MainGameLoop {
             camera.checkState();
             if (GameState.getInstance().getCurrentState() == State.IN_GAME) {
                 player.move(renderObjects);
-                camera.move();
+                camera.move(renderObjects);
             }
             mousePicker.update();
             renderer.processTerrains(terrains);
@@ -72,7 +71,7 @@ public class MainGameLoop {
             for (Handler handler : handlers) {
                 handler.handle();
             }
-            renderer.renderDepthMaps(lights, player, camera);
+            renderer.updateDepthMaps(lights, player, camera);
             renderer.renderObjects(lights, camera);
             DisplayManager.updateDisplay();
         }

@@ -38,19 +38,19 @@ public class MathUtil {
         return matrix.lookAt(cameraPos, new Vector3f(playerPos.x, playerPos.y + 20, playerPos.z), new Vector3f(0, 1, 0));
     }
 
-    public static Matrix3f getEllipticMatrix() {
+    public static Matrix3f getEllipticMatrix(Vector3f hitbox) {
         Matrix3f matrix = new Matrix3f();
-        matrix.m00 = 1 / Player.PLAYER_HITBOX_X;
-        matrix.m11 = 1 / Player.PLAYER_HITBOX_Y;
-        matrix.m22 = 1 / Player.PLAYER_HITBOX_Z;
+        matrix.m00 = 1 / hitbox.x;
+        matrix.m11 = 1 / hitbox.y;
+        matrix.m22 = 1 / hitbox.z;
         return matrix;
     }
 
-    public static Matrix3f getEllipticInverseMatrix() {
+    public static Matrix3f getEllipticInverseMatrix(Vector3f hitbox) {
         Matrix3f matrix = new Matrix3f();
-        matrix.m00 = Player.PLAYER_HITBOX_X;
-        matrix.m11 = Player.PLAYER_HITBOX_Y;
-        matrix.m22 = Player.PLAYER_HITBOX_Z;
+        matrix.m00 = hitbox.x;
+        matrix.m11 = hitbox.y;
+        matrix.m22 = hitbox.z;
         return matrix;
     }
 

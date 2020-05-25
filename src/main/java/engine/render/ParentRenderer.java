@@ -34,10 +34,6 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class ParentRenderer {
 
-    private static final float FOV = 70;
-    private static final float NEAR_PLANE = 0.1f;
-    private static final float FAR_PLANE = 500;
-
     private static final float RED = 135f/256f;
     private static final float GREEN = 206f/256f;
     private static final float BLUE = 250f/256f;
@@ -57,9 +53,9 @@ public class ParentRenderer {
     private Matrix4f projectionMatrix;
     private VAOLoader loader;
 
-    public ParentRenderer(VAOLoader loader) throws IOException {
+    public ParentRenderer(VAOLoader loader, Camera camera) throws IOException {
         OpenGLUtil.enableCulling();
-        createProjectionMatrix();
+        this.projectionMatrix = camera.createProjectionMatrix();
         initRenderers(loader);
         this.entityBatches = new TreeSet<>(new ObjectComparator());
         this.terrains = new ArrayList<>();
@@ -76,21 +72,6 @@ public class ParentRenderer {
         this.directionalShadowRenderer = new DirectionalShadowRenderer(projectionMatrix);
         this.pointShadowRenderer = new PointShadowRenderer(projectionMatrix);
     }
-
-
-    private void createProjectionMatrix() {
-        long current = glfwGetCurrentContext();
-        float aspectRatio;
-        try (MemoryStack stack = stackPush()) {
-            IntBuffer pWidth = stack.mallocInt(1);
-            IntBuffer pHeight = stack.mallocInt(1);
-            glfwGetWindowSize(current, pWidth, pHeight);
-            aspectRatio = ((float) pWidth.get()) / ((float) pHeight.get());
-        }
-        projectionMatrix = new Matrix4f().perspective(((float) Math.toRadians(FOV)), aspectRatio, NEAR_PLANE, FAR_PLANE);
-    }
-
-
 
     private void processEntity(Entity entity) {
         entityBatches.add(entity);
@@ -124,7 +105,7 @@ public class ParentRenderer {
         terrains.clear();
     }
 
-    public void renderDepthMaps(List<Light> lights, Player player, Camera camera) {
+    public void updateDepthMaps(List<Light> lights, Player player, Camera camera) {
         glViewport(0, 0, ShadowFrameBuffer.SHADOW_WIDTH, ShadowFrameBuffer.SHADOW_HEIGHT);
         glCullFace(GL_FRONT);
         for (Light light : lights) {

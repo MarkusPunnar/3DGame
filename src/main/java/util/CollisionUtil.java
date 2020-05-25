@@ -1,5 +1,7 @@
 package util;
 
+import game.state.GameState;
+import object.RenderObject;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -8,6 +10,10 @@ import engine.DisplayManager;
 import util.math.MathUtil;
 import util.math.structure.Plane3D;
 import util.math.structure.Triangle;
+import util.octree.BoundingBox;
+
+import java.util.List;
+import java.util.Set;
 
 public class CollisionUtil {
 
@@ -15,7 +21,24 @@ public class CollisionUtil {
         return basePoint.dot(plane.getNormalizedNormal()) + plane.getCoefficients()[3];
     }
 
-    public static void checkTriangle(CollisionPacket packet, Vector3f p1, Vector3f p2, Vector3f p3) {
+
+    public static void checkCollision(List<RenderObject> renderedObjects, CollisionPacket packet, BoundingBox checkBox) {
+        Matrix3f ellipticMatrix = MathUtil.getEllipticMatrix(packet.getHitbox());
+        Set<Triangle> closeTriangles = GameState.getInstance().getCurrentTree().getCloseTriangles(checkBox);
+        for (RenderObject object : renderedObjects) {
+            Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(object);
+            List<Triangle> objectTriangles = object.getModel().getRawModel().getTriangles();
+            for (Triangle triangle : objectTriangles) {
+                Triangle worldTriangle = new Triangle(CollisionUtil.convertToWorld(transformationMatrix, triangle));
+                if (closeTriangles.contains(worldTriangle)) {
+                    Vector3f[] verticesElliptic = CollisionUtil.convertToElliptic(ellipticMatrix, worldTriangle);
+                    CollisionUtil.checkTriangle(packet, verticesElliptic[0], verticesElliptic[1], verticesElliptic[2]);
+                }
+            }
+        }
+    }
+
+    private static void checkTriangle(CollisionPacket packet, Vector3f p1, Vector3f p2, Vector3f p3) {
         Plane3D trianglePlane = new Plane3D(p1, p2, p3);
         //Check only triangles facing the velocity vector
         if (trianglePlane.isFrontFacing(packet.getNormalizedEllipticVelocity())) {
