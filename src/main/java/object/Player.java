@@ -39,6 +39,7 @@ public class Player extends Entity {
     private float currentSidewaysSpeed;
     private float upwardsSpeed;
     private boolean isInAir;
+    private boolean isMoving;
     private Inventory inventory;
 
     private Player(Builder builder) {
@@ -71,6 +72,7 @@ public class Player extends Entity {
     }
 
     public void move(List<RenderObject> renderedObjects) {
+        isMoving = false;
         checkInputs();
         float distanceMovedForward = currentForwardSpeed * DisplayManager.getFrameTime();
         float dx = (float) (Math.sin(Math.toRadians(getRotation().y)) * distanceMovedForward);
@@ -169,8 +171,10 @@ public class Player extends Entity {
         int dState = glfwGetKey(window, GLFW_KEY_D);
         if (aState == GLFW_PRESS) {
             currentSidewaysSpeed = SIDEWAYS_SPEED;
+            isMoving = true;
         } else if (dState == GLFW_PRESS) {
             currentSidewaysSpeed = -SIDEWAYS_SPEED;
+            isMoving = true;
         }
     }
 
@@ -179,6 +183,7 @@ public class Player extends Entity {
         int spaceState = glfwGetKey(window, GLFW_KEY_SPACE);
         if (spaceState == GLFW_PRESS && !isInAir) {
             upwardsSpeed = JUMP_POWER;
+            isMoving = true;
             logger.atInfo().log("Registered player jump");
         }
     }
@@ -189,9 +194,15 @@ public class Player extends Entity {
         int sState = glfwGetKey(window, GLFW_KEY_S);
         if (wState == GLFW_PRESS) {
             currentForwardSpeed = FORWARD_SPEED;
+            isMoving = true;
         } else if (sState == GLFW_PRESS) {
             currentForwardSpeed = -FORWARD_SPEED;
+            isMoving = true;
         }
+    }
+
+    public boolean isMoving() {
+        return isMoving;
     }
 
     public Inventory getInventory() {

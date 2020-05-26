@@ -25,12 +25,15 @@ public class Camera {
     private static final float MIN_PITCH = -70;
     private static final float PITCH_SPEED = 35;
     private static final float YAW_SPEED = 100;
+
     private static final float DISTANCE_FROM_PLAYER = 17;
 
     private Player player;
     private MousePicker mousePicker;
     private Vector3f position;
     private float pitch;
+    private Vector3f movementCache;
+    private CameraState state;
 
     public Camera(Player player) {
         this.player = player;
@@ -40,6 +43,7 @@ public class Camera {
             glfwSetInputMode(DisplayManager.getWindow(), GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
             logger.atInfo().log("Enabled raw mouse motion");
         }
+        setStateNormal();
     }
 
     public void checkState() {
@@ -54,10 +58,10 @@ public class Camera {
         Vector2f mouseCoords = mousePicker.calculateDeviceCoords();
         pitch += mouseCoords.y * PITCH_SPEED;
         pitch = Math.max(Math.min(pitch, MAX_PITCH), MIN_PITCH);
-        player.getRotation().y += -mouseCoords.x * YAW_SPEED;
+        float horisontalRotation = -mouseCoords.x * YAW_SPEED;
+        player.getRotation().y += (Math.abs(horisontalRotation)) < 10 ? horisontalRotation : Math.signum(horisontalRotation) * 8;
         GLFW.glfwSetCursorPos(DisplayManager.getWindow(), DisplayManager.getWidth() / 2f, DisplayManager.getHeight() / 2f);
-        CameraUtil.calculateCameraPosition(this);
-        CameraUtil.checkCameraCollision(this, renderObjects);
+        CameraUtil.calculateCameraPosition(this, renderObjects);
     }
 
     public Player getPlayer() {
@@ -87,5 +91,38 @@ public class Camera {
 
     public void setPosition(Vector3f position) {
         this.position = position;
+    }
+
+    public Vector3f getMovementCache() {
+        return movementCache;
+    }
+
+    public boolean hasMovementCached() {
+        return movementCache != null;
+    }
+
+    public void setMovementCache(Vector3f movementCache) {
+        this.movementCache = movementCache;
+    }
+
+    public CameraState getState() {
+        return state;
+    }
+
+    public void setStateZoom() {
+        this.state = CameraState.ZOOMED;
+    }
+
+    public void setStateNormal() {
+        this.state = CameraState.NORMAL;
+    }
+
+    public boolean isZoomed() {
+        return state == CameraState.ZOOMED;
+    }
+
+    private enum CameraState {
+        ZOOMED,
+        NORMAL;
     }
 }
