@@ -2,7 +2,7 @@ package object.scene;
 
 import com.google.common.flogger.FluentLogger;
 import engine.model.TexturedModel;
-import game.state.GameState;
+import game.state.Game;
 import interraction.InteractableEntity;
 import org.joml.Vector3f;
 import util.FacingDirection;
@@ -79,6 +79,6 @@ public class Door extends InteractableEntity {
     }
 
     @Override
-    public void handleGui(GameState state) {
+    public void handleGui(Game state) {
     }
 }

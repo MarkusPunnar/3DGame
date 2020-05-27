@@ -1,17 +1,14 @@
 package engine.render;
 
-import engine.loader.VAOLoader;
 import engine.model.Model;
 import engine.model.RawModel;
+import engine.shader.GuiShader;
 import engine.shader.Shader;
+import game.state.Game;
 import object.RenderObject;
-import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import engine.shader.GuiShader;
-import util.math.MathUtil;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -21,9 +18,9 @@ public class GuiRenderer implements Renderer {
     private final RawModel quadModel;
     private Shader shader;
 
-    public GuiRenderer(VAOLoader loader) throws IOException {
+    public GuiRenderer() throws IOException {
         float[] positions = new float[]{-1, 1, -1, -1, 1, 1, 1, -1};
-        this.quadModel = loader.loadToVAO(positions);
+        this.quadModel = Game.getInstance().getLoader().loadToVAO(positions);
         this.shader = new GuiShader();
     }
 

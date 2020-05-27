@@ -6,7 +6,7 @@ import engine.render.RenderRequest;
 import engine.render.RequestInfo;
 import engine.render.RequestType;
 import engine.texture.ObjectType;
-import game.state.GameState;
+import game.state.Game;
 import game.state.HandlerState;
 import interraction.InteractableEntity;
 import interraction.Inventory;
@@ -221,7 +221,7 @@ public class Player extends Entity {
     }
 
     public void interactWithObject() {
-        GameState state = GameState.getInstance();
+        Game state = Game.getInstance();
         InteractableEntity closestObject = HandlerState.getInstance().getClosestObject();
         float closestDistance = getPosition().distance(closestObject.getPosition());
         if (closestDistance < INTERACT_DISTANCE) {

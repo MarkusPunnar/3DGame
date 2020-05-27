@@ -1,6 +1,6 @@
 package interraction;
 
-import object.env.Camera;
+import game.state.Game;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -19,16 +19,14 @@ public class MousePicker {
     private Vector3f currentRay;
     private Matrix4f projectionMatrix;
     private Matrix4f viewMatrix;
-    private Camera camera;
 
-    public MousePicker(Matrix4f projectionMatrix, Camera camera) {
-        this.projectionMatrix = projectionMatrix;
-        this.camera = camera;
-        this.viewMatrix = MathUtil.createViewMatrix(camera);
+    public MousePicker() {
+        this.projectionMatrix = Game.getInstance().getRenderer().getProjectionMatrix();
+        this.viewMatrix = MathUtil.createViewMatrix(Game.getInstance().getPlayerCamera());
     }
 
     public void update() {
-        viewMatrix = MathUtil.createViewMatrix(camera);
+        viewMatrix = MathUtil.createViewMatrix(Game.getInstance().getPlayerCamera());
         currentRay = calculateMouseRay();
     }
 

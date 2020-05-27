@@ -7,8 +7,8 @@ import engine.render.RenderRequest;
 import engine.render.RequestInfo;
 import engine.render.RequestType;
 import engine.texture.GuiTexture;
+import game.state.Game;
 import game.state.HandlerState;
-import interraction.MousePicker;
 import object.item.Item;
 import object.item.Slot;
 import org.joml.Vector2f;
@@ -37,8 +37,8 @@ public class HandlerUtil {
         return activeSlot;
     }
 
-    public static void moveItems(Slot[] source, Slot[] destination, MousePicker mousePicker) {
-        Vector2f currentMousePosition = mousePicker.calculateDeviceCoords();
+    public static void moveItems(Slot[] source, Slot[] destination) {
+        Vector2f currentMousePosition = Game.getInstance().getMousePicker().calculateDeviceCoords();
         Item bindedItem = HandlerState.getInstance().getBindedItem();
         int leftMouseButtonState = GLFW.glfwGetMouseButton(DisplayManager.getWindow(), GLFW.GLFW_MOUSE_BUTTON_LEFT);
         if (leftMouseButtonState == GLFW.GLFW_PRESS) {

@@ -10,7 +10,7 @@ import interraction.LootableEntity;
 import object.RenderObject;
 import engine.render.RenderRequest;
 import engine.render.RequestInfo;
-import game.state.GameState;
+import game.state.Game;
 import game.state.State;
 import engine.loader.VAOLoader;
 import engine.texture.GuiTexture;
@@ -37,16 +37,16 @@ public class RenderRequestHandler implements Handler {
     private FontType font;
     private final Player player;
 
-    public RenderRequestHandler(ParentRenderer renderer, Player player, String fontName) throws IOException, URISyntaxException {
-        this.renderer = renderer;
-        this.font = new FontType(renderer.getLoader().loadFontAtlas(fontName));
-        this.player = player;
+    public RenderRequestHandler(String fontName) throws IOException, URISyntaxException {
+        this.renderer = Game.getInstance().getRenderer();
+        this.font = new FontType(Game.getInstance().getLoader().loadFontAtlas(fontName));
+        this.player = Game.getInstance().getPlayer();
     }
 
     @Override
     public void handle() {
         Queue<RenderRequest> requests = HandlerState.getInstance().getRequests();
-        GameState state = GameState.getInstance();
+        Game state = Game.getInstance();
         while (requests.peek() != null) {
             RenderRequest request = requests.poll();
             logger.atInfo().log("Resolving render request of type %s", request.toString());
@@ -165,7 +165,7 @@ public class RenderRequestHandler implements Handler {
     }
 
     private void renderTitle(float n, RequestInfo requestInfo, ObjectType titleType) {
-        VAOLoader loader = renderer.getLoader();
+        VAOLoader loader = Game.getInstance().getLoader();
         int titleTextureID = loader.loadGuiTexture(titleType.getTextureName());
         Vector2f position = requestInfo.getTexturePosition();
         Vector2f scale = requestInfo.getTextureScale();
@@ -179,7 +179,7 @@ public class RenderRequestHandler implements Handler {
     private void renderGrid(float n, float m, RequestInfo requestInfo) {
         Vector2f scale = requestInfo.getTextureScale();
         Vector2f position = requestInfo.getTexturePosition();
-        VAOLoader loader = renderer.getLoader();
+        VAOLoader loader = Game.getInstance().getLoader();
         int slotTextureID = loader.loadGuiTexture(ObjectType.SLOT.getTextureName());
         int slotHoverTextureID = loader.loadGuiTexture(ObjectType.SLOT_HOVER.getTextureName());
         float slotWidth = (2 * scale.x) / m;

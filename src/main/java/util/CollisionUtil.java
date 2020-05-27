@@ -1,12 +1,11 @@
 package util;
 
-import game.state.GameState;
+import game.state.Game;
 import object.RenderObject;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import engine.DisplayManager;
 import util.math.MathUtil;
 import util.math.structure.Plane3D;
 import util.math.structure.Triangle;
@@ -24,7 +23,7 @@ public class CollisionUtil {
 
     public static void checkCollision(List<RenderObject> renderedObjects, CollisionPacket packet, BoundingBox checkBox) {
         Matrix3f ellipticMatrix = MathUtil.getEllipticMatrix(packet.getHitbox());
-        Set<Triangle> closeTriangles = GameState.getInstance().getCurrentTree().getCloseTriangles(checkBox);
+        Set<Triangle> closeTriangles = Game.getInstance().getCurrentTree().getCloseTriangles(checkBox);
         for (RenderObject object : renderedObjects) {
             Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(object);
             List<Triangle> objectTriangles = object.getModel().getRawModel().getTriangles();

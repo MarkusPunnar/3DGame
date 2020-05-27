@@ -2,7 +2,7 @@ package object.scene;
 
 import com.google.common.flogger.FluentLogger;
 import engine.render.RenderRequest;
-import game.state.GameState;
+import game.state.Game;
 import game.state.HandlerState;
 import engine.render.RequestInfo;
 import engine.render.RequestType;
@@ -73,7 +73,7 @@ public class Chest extends LootableEntity {
     }
 
     @Override
-    public void handleGui(GameState state) {
+    public void handleGui(Game state) {
         HandlerState handlerState = HandlerState.getInstance();
         handlerState.setLastLooted(this);
         logger.atInfo().log("Handling GUI changes for object of type %s", getClass().getSimpleName());

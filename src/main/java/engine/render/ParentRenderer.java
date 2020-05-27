@@ -4,10 +4,10 @@ import engine.DisplayManager;
 import engine.font.GUIText;
 import engine.font.structure.FontType;
 import engine.font.structure.TextMeshData;
-import engine.loader.VAOLoader;
 import engine.shader.Shader;
 import engine.shadow.ShadowFrameBuffer;
 import engine.texture.GuiTexture;
+import game.state.Game;
 import object.Entity;
 import object.Player;
 import object.RenderObject;
@@ -16,21 +16,16 @@ import object.env.Light;
 import object.terrain.Terrain;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.system.MemoryStack;
 import util.GuiComparator;
 import util.ObjectComparator;
 import util.OpenGLUtil;
 
 import java.io.IOException;
-import java.nio.IntBuffer;
 import java.util.*;
 
-import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
-import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE5;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class ParentRenderer {
 
@@ -51,23 +46,24 @@ public class ParentRenderer {
     private Map<FontType, List<GUIText>> texts;
 
     private Matrix4f projectionMatrix;
-    private VAOLoader loader;
 
-    public ParentRenderer(VAOLoader loader, Camera camera) throws IOException {
-        OpenGLUtil.enableCulling();
-        this.projectionMatrix = camera.createProjectionMatrix();
-        initRenderers(loader);
+    public ParentRenderer() throws IOException {
+        this.guis = new TreeSet<>(new GuiComparator());
         this.entityBatches = new TreeSet<>(new ObjectComparator());
         this.terrains = new ArrayList<>();
-        this.guis = new TreeSet<>(new GuiComparator());
         this.texts = new HashMap<>();
-        this.loader = loader;
+        this.guiRenderer = new GuiRenderer();
     }
 
-    private void initRenderers(VAOLoader loader) throws IOException {
+    public void load(Camera camera) throws IOException {
+        OpenGLUtil.enableCulling();
+        this.projectionMatrix = camera.createProjectionMatrix();
+        initRenderers();
+    }
+
+    private void initRenderers() throws IOException {
         this.entityRenderer = new EntityRenderer(projectionMatrix);
         this.terrainRenderer = new TerrainRenderer(projectionMatrix);
-        this.guiRenderer = new GuiRenderer(loader);
         this.fontRenderer = new FontRenderer();
         this.directionalShadowRenderer = new DirectionalShadowRenderer(projectionMatrix);
         this.pointShadowRenderer = new PointShadowRenderer(projectionMatrix);
@@ -87,6 +83,12 @@ public class ParentRenderer {
         }
     }
 
+    public void processGuis(List<GuiTexture> guis) {
+        for (GuiTexture gui : guis) {
+            processGui(gui);
+        }
+    }
+
     public void processGui(GuiTexture gui) {
         guis.add(gui);
     }
@@ -101,8 +103,6 @@ public class ParentRenderer {
     public void renderObjects(List<Light> lights, Camera camera) {
         glViewport(0, 0, DisplayManager.getWidth(), DisplayManager.getHeight());
         doRenderScene(lights, camera);
-        entityBatches.clear();
-        terrains.clear();
     }
 
     public void updateDepthMaps(List<Light> lights, Player player, Camera camera) {
@@ -187,7 +187,7 @@ public class ParentRenderer {
     public void loadText(GUIText text) {
         FontType fontType = text.getFont();
         TextMeshData meshData = fontType.loadText(text);
-        int vaoID = loader.loadToVAO(meshData.getVertices(), meshData.getTextureCoords());
+        int vaoID = Game.getInstance().getLoader().loadToVAO(meshData.getVertices(), meshData.getTextureCoords());
         text.setMeshInfo(vaoID, meshData.getVertexCount());
         if (texts.containsKey(fontType)) {
             List<GUIText> fontTexts = texts.get(fontType);
@@ -211,11 +211,15 @@ public class ParentRenderer {
         return projectionMatrix;
     }
 
-    public VAOLoader getLoader() {
-        return loader;
-    }
-
     public Collection<GuiTexture> getGuis() {
         return guis;
+    }
+
+    public Collection<Entity> getEntityBatches() {
+        return entityBatches;
+    }
+
+    public Collection<Terrain> getTerrains() {
+        return terrains;
     }
 }

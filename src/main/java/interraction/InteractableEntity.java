@@ -1,7 +1,7 @@
 package interraction;
 
 import engine.model.TexturedModel;
-import game.state.GameState;
+import game.state.Game;
 import object.Entity;
 import org.joml.Vector3f;
 
@@ -34,7 +34,7 @@ public abstract class InteractableEntity extends Entity {
 
     public abstract void interact();
 
-    public abstract void handleGui(GameState state);
+    public abstract void handleGui(Game state);
 
     public float getInteractionTime() {
         return sinceLastInteraction;

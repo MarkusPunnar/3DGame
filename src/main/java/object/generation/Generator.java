@@ -1,4 +1,4 @@
-package object.scene.generation;
+package object.generation;
 
 import object.RenderObject;
 import object.env.Light;
@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface Generator {
 
-    List<? extends RenderObject> generate(List<Light> lights) throws IOException, URISyntaxException;
+    List<? extends RenderObject> generate() throws IOException, URISyntaxException;
 }

@@ -6,6 +6,7 @@ import engine.model.RawModel;
 import engine.model.TexturedModel;
 import engine.model.data.ModelData;
 import engine.texture.ModelTexture;
+import game.state.Game;
 import object.RenderObject;
 import util.math.structure.Triangle;
 
@@ -20,13 +21,14 @@ public class GeneratorUtil {
         }
     }
 
-    public static TexturedModel getTexturedModel(VAOLoader loader, String objName, ModelTexture texture) throws IOException, URISyntaxException {
+    public static TexturedModel getTexturedModel(String objName, ModelTexture texture) throws IOException, URISyntaxException {
         ModelData modelData = ObjectLoader.loadObjectModel(objName);
-        RawModel rawModel = loader.loadToVAO(modelData.getVertices(), modelData.getIndices(), modelData.getNormals(), modelData.getTextureCoords());
+        RawModel rawModel = Game.getInstance().getLoader().loadToVAO(modelData.getVertices(), modelData.getIndices(), modelData.getNormals(), modelData.getTextureCoords());
         return new TexturedModel(rawModel, texture);
     }
 
-    public static TexturedModel getTexturedModel(VAOLoader loader, String fileName) throws URISyntaxException, IOException {
+    public static TexturedModel getTexturedModel(String fileName) throws URISyntaxException, IOException {
+        VAOLoader loader = Game.getInstance().getLoader();
         ModelData modelData = ObjectLoader.loadObjectModel(fileName);
         RawModel rawModel = loader.loadToVAO(modelData.getVertices(), modelData.getIndices(), modelData.getNormals(), modelData.getTextureCoords());
         ModelTexture texture = new ModelTexture(loader.loadObjectTexture(fileName));

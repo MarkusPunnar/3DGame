@@ -1,13 +1,11 @@
 package object.item;
 
-import engine.loader.VAOLoader;
-
 public class Coin extends Item {
 
     private int amount;
 
-    public Coin(VAOLoader loader, int amount) {
-        super(new Icon(loader, "coin"));
+    public Coin(int amount) {
+        super(new Icon("coin"));
         this.amount = amount;
     }
 

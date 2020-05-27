@@ -1,4 +1,4 @@
-package object.scene.generation;
+package object.generation;
 
 import com.google.common.flogger.FluentLogger;
 import engine.loader.TerrainLoader;
@@ -6,7 +6,7 @@ import engine.loader.VAOLoader;
 import engine.model.data.TerrainData;
 import engine.texture.TerrainTexture;
 import engine.texture.TerrainTexturePack;
-import object.env.Light;
+import game.state.Game;
 import object.terrain.Terrain;
 
 import java.io.IOException;
@@ -16,16 +16,11 @@ import java.util.List;
 
 public class TerrainGenerator implements Generator {
 
-    private VAOLoader loader;
-
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-    public TerrainGenerator(VAOLoader loader) {
-        this.loader = loader;
-    }
-
     @Override
-    public List<Terrain> generate(List<Light> lights) throws IOException, URISyntaxException {
+    public List<Terrain> generate() throws IOException, URISyntaxException {
+        VAOLoader loader = Game.getInstance().getLoader();
         List<Terrain> terrains = new ArrayList<>();
         TerrainData test = TerrainLoader.loadTerrainModel("terrain");
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTerrainTexture("grass"));

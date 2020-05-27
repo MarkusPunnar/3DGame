@@ -1,5 +1,6 @@
 package interraction.handle;
 
+import game.state.Game;
 import game.state.HandlerState;
 import interraction.InteractableEntity;
 import object.Player;
@@ -8,15 +9,9 @@ import engine.DisplayManager;
 
 public class InteractionHandler implements Handler {
 
-    private Player player;
-
-    public InteractionHandler(Player player) {
-        this.player = player;
-    }
-
     @Override
     public void handle() {
-        Vector3f playerPosition = player.getPosition();
+        Vector3f playerPosition = Game.getInstance().getPlayer().getPosition();
         float closestDistance = Float.MAX_VALUE;
         for (InteractableEntity object : HandlerState.getInstance().getInteractableEntities()) {
             object.setInteractionTime(object.getInteractionTime() + DisplayManager.getFrameTime());

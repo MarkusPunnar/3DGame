@@ -2,9 +2,8 @@ package object.env;
 
 import com.google.common.flogger.FluentLogger;
 import engine.DisplayManager;
-import game.state.GameState;
+import game.state.Game;
 import game.state.State;
-import interraction.MousePicker;
 import object.Player;
 import object.RenderObject;
 import org.joml.Matrix4f;
@@ -28,15 +27,12 @@ public class Camera {
 
     private static final float DISTANCE_FROM_PLAYER = 17;
 
-    private Player player;
-    private MousePicker mousePicker;
     private Vector3f position;
     private float pitch;
     private Vector3f movementCache;
     private CameraState state;
 
-    public Camera(Player player) {
-        this.player = player;
+    public Camera() {
         this.position = new Vector3f();
         pitch = 10;
         if (glfwRawMouseMotionSupported()) {
@@ -47,7 +43,7 @@ public class Camera {
     }
 
     public void checkState() {
-        if (GameState.getInstance().getCurrentState().equals(State.IN_GAME)) {
+        if (Game.getInstance().getCurrentState().equals(State.IN_GAME)) {
             glfwSetInputMode(DisplayManager.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         } else {
             glfwSetInputMode(DisplayManager.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -55,25 +51,21 @@ public class Camera {
     }
 
     public void move(List<RenderObject> renderObjects) {
-        Vector2f mouseCoords = mousePicker.calculateDeviceCoords();
+        Vector2f mouseCoords = Game.getInstance().getMousePicker().calculateDeviceCoords();
         pitch += mouseCoords.y * PITCH_SPEED;
         pitch = Math.max(Math.min(pitch, MAX_PITCH), MIN_PITCH);
         float horisontalRotation = -mouseCoords.x * YAW_SPEED;
-        player.getRotation().y += (Math.abs(horisontalRotation)) < 10 ? horisontalRotation : Math.signum(horisontalRotation) * 8;
+        getPlayer().getRotation().y += (Math.abs(horisontalRotation)) < 10 ? horisontalRotation : Math.signum(horisontalRotation) * 8;
         GLFW.glfwSetCursorPos(DisplayManager.getWindow(), DisplayManager.getWidth() / 2f, DisplayManager.getHeight() / 2f);
         CameraUtil.calculateCameraPosition(this, renderObjects);
     }
 
     public Player getPlayer() {
-        return player;
+        return Game.getInstance().getPlayer();
     }
 
     public Vector3f getPosition() {
         return position;
-    }
-
-    public void setMousePicker(MousePicker mousePicker) {
-        this.mousePicker = mousePicker;
     }
 
     public Matrix4f createProjectionMatrix() {
@@ -123,6 +115,6 @@ public class Camera {
 
     private enum CameraState {
         ZOOMED,
-        NORMAL;
+        NORMAL
     }
 }
