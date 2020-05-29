@@ -13,8 +13,8 @@ import engine.render.RequestInfo;
 import game.state.Game;
 import game.state.State;
 import engine.loader.VAOLoader;
-import engine.texture.GuiTexture;
-import engine.texture.ObjectType;
+import game.ui.UIComponent;
+import game.ui.ObjectType;
 import object.Player;
 import object.item.Item;
 import object.item.Slot;
@@ -173,7 +173,7 @@ public class RenderRequestHandler implements Handler {
         float titleY = position.y + scale.y - height;
         Vector2f titlePosition = new Vector2f(position.x, titleY);
         Vector2f titleScale = new Vector2f(scale.x, height);
-        renderer.processGui(new GuiTexture(titleTextureID, titlePosition, titleScale, ObjectType.INVENTORY_TITLE));
+        renderer.processGui(new UIComponent(titleTextureID, titlePosition, titleScale, titleType));
     }
 
     private void renderGrid(float n, float m, RequestInfo requestInfo) throws IOException {

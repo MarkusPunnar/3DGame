@@ -6,7 +6,7 @@ import engine.font.GUIText;
 import engine.render.RenderRequest;
 import engine.render.RequestInfo;
 import engine.render.RequestType;
-import engine.texture.GuiTexture;
+import game.ui.UIComponent;
 import game.state.Game;
 import game.state.HandlerState;
 import object.item.Item;
@@ -115,7 +115,7 @@ public class HandlerUtil {
         }
     }
 
-    private static void setItemText(GuiTexture gui, Item item, Vector3f coords) {
+    private static void setItemText(UIComponent gui, Item item, Vector3f coords) {
         gui.getGuiText().setPosition( new Vector2f((1 + coords.x) / 2f + item.getPaddingX(),  Math.abs(coords.y - 1) / 2f + item.getPaddingY()));
     }
 }

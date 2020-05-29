@@ -5,7 +5,7 @@ import engine.model.TexturedModel;
 import engine.render.RenderRequest;
 import engine.render.RequestInfo;
 import engine.render.RequestType;
-import engine.texture.ObjectType;
+import game.ui.ObjectType;
 import game.state.Game;
 import game.state.HandlerState;
 import interraction.InteractableEntity;

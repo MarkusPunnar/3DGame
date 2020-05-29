@@ -4,8 +4,8 @@ import com.google.common.flogger.FluentLogger;
 import engine.loader.TerrainLoader;
 import engine.loader.VAOLoader;
 import engine.model.data.TerrainData;
-import engine.texture.TerrainTexture;
-import engine.texture.TerrainTexturePack;
+import object.terrain.TerrainTexture;
+import object.terrain.TerrainTexturePack;
 import game.state.Game;
 import object.terrain.Terrain;
 

@@ -1,7 +1,7 @@
 package engine.render;
 
 import engine.font.GUIText;
-import engine.texture.ObjectType;
+import game.ui.ObjectType;
 import object.RenderObject;
 import org.joml.Vector2f;
 

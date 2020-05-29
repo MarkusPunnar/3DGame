@@ -1,4 +1,4 @@
-package engine.texture;
+package object.terrain;
 
 public class TerrainTexture {
 

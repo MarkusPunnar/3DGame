@@ -1,6 +1,6 @@
 package interraction;
 
-import engine.texture.ObjectType;
+import game.ui.ObjectType;
 import object.item.Slot;
 import org.joml.Vector2f;
 

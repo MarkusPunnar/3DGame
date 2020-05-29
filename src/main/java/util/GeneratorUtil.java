@@ -5,7 +5,7 @@ import engine.loader.VAOLoader;
 import engine.model.RawModel;
 import engine.model.TexturedModel;
 import engine.model.data.ModelData;
-import engine.texture.ModelTexture;
+import engine.model.ModelTexture;
 import game.state.Game;
 import object.RenderObject;
 import util.math.structure.Triangle;

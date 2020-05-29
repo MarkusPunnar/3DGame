@@ -1,8 +1,12 @@
 #version 440
 
+const float ambientStrength = 0.2;
+const float specularStrength = 0.5;
+const int maxLights = 10;
+
 in vec2 textureCoords;
 in vec3 normalCoords;
-in vec3 lightCoords[10];
+in vec3 lightCoords[maxLights];
 in vec3 fragmentCoords;
 in vec4 shadowCoords;
 
@@ -10,9 +14,9 @@ out vec4 outColour;
 
 uniform sampler2D textureSampler;
 uniform sampler2D shadowMap;
-uniform samplerCube shadowCube[9];
+uniform samplerCube shadowCube[maxLights - 1];
 
-uniform vec3 lightColour[10];
+uniform vec3 lightColour[maxLights];
 uniform vec3 cameraCoords;
 
 uniform float reflectivity;
@@ -20,10 +24,7 @@ uniform float shineDamper;
 uniform float fakeLighting;
 uniform float farPlane;
 uniform vec3 skyColour;
-uniform vec3 attenuation[10];
-
-const float ambientStrength = 0.2;
-const float specularStrength = 0.5;
+uniform vec3 attenuation[maxLights];
 
 float directionalShadowCalculation(vec4 shadowCoords) {
     vec3 projectedCoords = shadowCoords.xyz / shadowCoords.w;
@@ -47,7 +48,7 @@ float pointShadowCalculation(vec3 fragmentCoords, vec3 lightCoords, int cubeInde
 void main (void) {
     vec3 totalDiffuse = vec3(0.0);
     vec3 totalSpecular = vec3(0.0);
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < maxLights; i++) {
         if (lightColour[i].x == 0 && lightColour[i].y == 0 && lightColour[i].z == 0) {
             continue;
         }

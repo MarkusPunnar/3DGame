@@ -1,7 +1,6 @@
 package engine.model;
 
 import engine.shader.Shader;
-import engine.texture.ModelTexture;
 import util.OpenGLUtil;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;

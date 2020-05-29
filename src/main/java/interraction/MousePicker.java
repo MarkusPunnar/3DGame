@@ -20,7 +20,7 @@ public class MousePicker {
     private Matrix4f projectionMatrix;
     private Matrix4f viewMatrix;
 
-    public MousePicker() {
+    public void init() {
         this.projectionMatrix = Game.getInstance().getRenderer().getProjectionMatrix();
         this.viewMatrix = MathUtil.createViewMatrix(Game.getInstance().getPlayerCamera());
     }

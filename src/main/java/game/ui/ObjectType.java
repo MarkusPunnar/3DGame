@@ -1,4 +1,4 @@
-package engine.texture;
+package game.ui;
 
 public enum ObjectType {
 
@@ -9,6 +9,8 @@ public enum ObjectType {
     SLOT("slot"),
     SLOT_HOVER("hoverslot"),
     ICON(""),
+    BACKGROUND_IMAGE(""),
+    BUTTON(""),
 
     ENTITY(""),
     TERRAIN(""),

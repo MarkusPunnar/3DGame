@@ -1,10 +1,10 @@
 package object.item;
 
-import engine.texture.GuiTexture;
-import engine.texture.ObjectType;
+import game.ui.UIComponent;
+import game.ui.ObjectType;
 import org.joml.Vector2f;
 
-public class Slot extends GuiTexture {
+public class Slot extends UIComponent {
 
     private Item item;
     private int normalTextureID;

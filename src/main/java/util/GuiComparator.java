@@ -1,13 +1,13 @@
 package util;
 
-import engine.texture.GuiTexture;
+import game.ui.UIComponent;
 
 import java.util.Comparator;
 
-public class GuiComparator implements Comparator<GuiTexture> {
+public class GuiComparator implements Comparator<UIComponent> {
 
     @Override
-    public int compare(GuiTexture type, GuiTexture otherType) {
+    public int compare(UIComponent type, UIComponent otherType) {
         return type.getPriority() - otherType.getPriority();
     }
 }

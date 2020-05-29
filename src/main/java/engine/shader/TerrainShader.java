@@ -1,6 +1,7 @@
 package engine.shader;
 
 import com.google.common.flogger.FluentLogger;
+import game.state.Game;
 import object.env.Camera;
 import object.env.Light;
 import util.math.MathUtil;
@@ -29,7 +30,8 @@ public class TerrainShader extends Shader {
 
 
     @Override
-    public void loadUniforms(List<Light> lights, Camera camera) {
+    public void loadUniforms(List<Light> lights) {
+        Camera camera = Game.getInstance().getPlayerCamera();
         doLoadMatrix(MathUtil.createViewMatrix(camera), "viewMatrix");
         doLoadMatrix(MathUtil.getLightSpaceMatrix(lights.get(0), camera), "lightSpaceMatrix");
     }

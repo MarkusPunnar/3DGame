@@ -6,8 +6,9 @@ import engine.font.structure.FontType;
 import engine.font.structure.TextMeshData;
 import engine.shader.Shader;
 import engine.shadow.ShadowFrameBuffer;
-import engine.texture.GuiTexture;
+import game.ui.UIComponent;
 import game.state.Game;
+import game.state.State;
 import object.Entity;
 import object.Player;
 import object.RenderObject;
@@ -42,7 +43,7 @@ public class ParentRenderer {
 
     private Collection<Entity> entityBatches;
     private Collection<Terrain> terrains;
-    private Collection<GuiTexture> guis;
+    private Collection<UIComponent> guis;
     private Map<FontType, List<GUIText>> texts;
 
     private Matrix4f projectionMatrix;
@@ -83,13 +84,13 @@ public class ParentRenderer {
         }
     }
 
-    public void processGuis(List<GuiTexture> guis) {
-        for (GuiTexture gui : guis) {
+    public void processGuis(List<UIComponent> guis) {
+        for (UIComponent gui : guis) {
             processGui(gui);
         }
     }
 
-    public void processGui(GuiTexture gui) {
+    public void processGui(UIComponent gui) {
         guis.add(gui);
     }
 
@@ -100,29 +101,31 @@ public class ParentRenderer {
         processEntity(player);
     }
 
-    public void renderObjects(List<Light> lights, Camera camera) {
+    public void renderObjects(List<Light> lights) {
         glViewport(0, 0, DisplayManager.getWidth(), DisplayManager.getHeight());
         prepare();
-        bindDepthMaps(lights);
-        doRender(entityRenderer, entityBatches, lights, camera);
-        doRender(terrainRenderer, terrains, lights, camera);
-        doRender(guiRenderer, guis, lights, camera);
+        if (Game.getInstance().getCurrentState() != State.IN_MAIN_MENU) {
+            bindDepthMaps(lights);
+            doRender(entityRenderer, entityBatches, lights);
+            doRender(terrainRenderer, terrains, lights);
+        }
+        doRender(guiRenderer, guis, lights);
         for (FontType fontType : texts.keySet()) {
             GL13.glActiveTexture(GL13.GL_TEXTURE0);
             GL13.glBindTexture(GL_TEXTURE_2D, fontType.getTextureAtlas());
-            doRender(fontRenderer, texts.get(fontType), lights, camera);
+            doRender(fontRenderer, texts.get(fontType), lights);
         }
     }
 
-    public void updateDepthMaps(List<Light> lights, Player player, Camera camera) {
+    public void updateDepthMaps(List<Light> lights, Player player) {
         glViewport(0, 0, ShadowFrameBuffer.SHADOW_WIDTH, ShadowFrameBuffer.SHADOW_HEIGHT);
         glCullFace(GL_FRONT);
         for (Light light : lights) {
             if (light.isActive(player)) {
                 if (light.isPointLight()) {
-                    renderPointDepthMap(light, camera);
+                    renderPointDepthMap(light);
                 } else {
-                    renderDirectionalDepthMap(light, camera);
+                    renderDirectionalDepthMap(light);
                 }
             }
             light.setInitialized(true);
@@ -130,17 +133,17 @@ public class ParentRenderer {
         glCullFace(GL_BACK);
     }
 
-    private void renderDirectionalDepthMap(Light sun, Camera camera) {
+    private void renderDirectionalDepthMap(Light sun) {
         glBindFramebuffer(GL_FRAMEBUFFER, sun.getFbo().getFboID());
         glClear(GL_DEPTH_BUFFER_BIT);
-        doRender(directionalShadowRenderer, entityBatches, List.of(sun), camera);
+        doRender(directionalShadowRenderer, entityBatches, List.of(sun));
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    private void renderPointDepthMap(Light pointLight, Camera camera) {
+    private void renderPointDepthMap(Light pointLight) {
         glBindFramebuffer(GL_FRAMEBUFFER, pointLight.getFbo().getFboID());
         glClear(GL_DEPTH_BUFFER_BIT);
-        doRender(pointShadowRenderer, entityBatches, List.of(pointLight), camera);
+        doRender(pointShadowRenderer, entityBatches, List.of(pointLight));
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -156,10 +159,10 @@ public class ParentRenderer {
         }
     }
 
-    private void doRender(Renderer renderer, Collection<? extends RenderObject> objects, List<Light> lights, Camera camera) {
+    private void doRender(Renderer renderer, Collection<? extends RenderObject> objects, List<Light> lights) {
         Shader shader = renderer.getShader();
         shader.start();
-        shader.loadUniforms(lights, camera);
+        shader.loadUniforms(lights);
         renderer.render(objects);
         shader.stop();
     }
@@ -172,12 +175,14 @@ public class ParentRenderer {
     }
 
     public void cleanUp() {
-        entityRenderer.getShader().cleanUp();
-        terrainRenderer.getShader().cleanUp();
-        guiRenderer.getShader().cleanUp();
-        fontRenderer.getShader().cleanUp();
-        directionalShadowRenderer.getShader().cleanUp();
-        pointShadowRenderer.getShader().cleanUp();
+        if (Game.getInstance().getCurrentState() != State.IN_MAIN_MENU) {
+            entityRenderer.getShader().cleanUp();
+            terrainRenderer.getShader().cleanUp();
+            guiRenderer.getShader().cleanUp();
+            fontRenderer.getShader().cleanUp();
+            directionalShadowRenderer.getShader().cleanUp();
+            pointShadowRenderer.getShader().cleanUp();
+        }
     }
 
     public void loadText(GUIText text) {
@@ -207,15 +212,7 @@ public class ParentRenderer {
         return projectionMatrix;
     }
 
-    public Collection<GuiTexture> getGuis() {
+    public Collection<UIComponent> getGuis() {
         return guis;
-    }
-
-    public Collection<Entity> getEntityBatches() {
-        return entityBatches;
-    }
-
-    public Collection<Terrain> getTerrains() {
-        return terrains;
     }
 }

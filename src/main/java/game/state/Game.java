@@ -4,7 +4,11 @@ import com.google.common.flogger.FluentLogger;
 import engine.DisplayManager;
 import engine.loader.VAOLoader;
 import engine.render.ParentRenderer;
-import engine.texture.GuiTexture;
+import game.ui.menu.Button;
+import game.ui.menu.Menu;
+import game.ui.UIComponent;
+import game.ui.menu.MenuCache;
+import game.ui.menu.MenuType;
 import interraction.MousePicker;
 import interraction.handle.*;
 import object.Entity;
@@ -27,8 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Game {
 
@@ -48,6 +51,8 @@ public class Game {
     private Camera playerCamera;
     private MousePicker mousePicker;
     private Player player;
+    private MenuType currentMenu;
+    private MenuCache menuCache;
 
     private Game() {
         this.activeHandlers = new ArrayList<>();
@@ -60,23 +65,31 @@ public class Game {
     }
 
     public void init() throws IOException, URISyntaxException {
-        currentState = State.IN_MENU;
+        currentState = State.IN_MAIN_MENU;
         loader = new VAOLoader();
+        menuCache = new MenuCache();
         MainMenuGenerator menuGenerator = new MainMenuGenerator();
         renderer = new ParentRenderer();
-        List<GuiTexture> menuGuis = menuGenerator.generate();
+        currentMenu = MenuType.MAIN_MENU;
+        menuCache.addToCache(currentMenu, new Menu());
+        List<UIComponent> menuGuis = menuGenerator.generate();
+        activeHandlers.add(new MainMenuHandler());
         renderer.processGuis(menuGuis);
+        mousePicker = new MousePicker();
+        initMenuCallbacks();
     }
 
     public void loadGame() throws IOException, URISyntaxException {
+        activeHandlers.clear();
+        renderer.getGuis().clear();
         currentState = State.IN_GAME;
         activeLights.add(new Light(new Vector3f(3000, 5000, 3000), new Vector3f(1), false, null));
         loadRenderObjects();
-        initCallbacks();
-        initHandlers();
+        initGameCallbacks();
+        initGameHandlers();
         playerCamera = new Camera();
         renderer.load(playerCamera, activeLights);
-        mousePicker = new MousePicker();
+        mousePicker.init();
         OctTree octTree = new OctTree(new BoundingBox(new Vector3f(-400, -1, -400), new Vector3f(200, 100, 200)));
         octTree.initTree(activeObjects);
         currentTree = octTree;
@@ -95,17 +108,37 @@ public class Game {
         activeObjects.addAll(terrains);
     }
 
-    private void initHandlers() throws IOException, URISyntaxException {
+    private void initGameHandlers() throws IOException, URISyntaxException {
         List<Handler> handlers = new ArrayList<>();
         handlers.add(new InteractionHandler());
         handlers.add(new RenderRequestHandler("gamefont"));
         handlers.add(new InventoryHandler());
         handlers.add(new LootingHandler());
-        logger.atInfo().log("Initialized handlers");
+        logger.atInfo().log("Initialized game handlers");
         activeHandlers = handlers;
     }
 
-    private void initCallbacks() {
+    private void initMenuCallbacks() {
+        GLFW.glfwSetMouseButtonCallback(DisplayManager.getWindow(), ((window, button, action, mods) -> {
+            if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+                Button activeButton = menuCache.getFromCache(currentMenu).getActiveButton(mousePicker.calculateDeviceCoords());
+                if (activeButton != null) {
+                    try {
+                        if (activeButton.getClickCallback() == null) {
+                            logger.atWarning().log("Button callback function is undefined");
+                            return;
+                        }
+                        activeButton.onClick();
+                    } catch (Exception e) {
+                        logger.atSevere().log("Error occurred during button callback");
+                        throw new RuntimeException("Error while button callback");
+                    }
+                }
+            }
+        }));
+    }
+
+    private void initGameCallbacks() {
         GLFW.glfwSetKeyCallback(DisplayManager.getWindow(), ((window, key, scancode, action, mods) -> {
             if (key == GLFW.GLFW_KEY_I && action == GLFW.GLFW_PRESS && List.of(State.IN_GAME, State.IN_INVENTORY).contains(currentState)) {
                 player.interactWithInventory();
@@ -115,22 +148,30 @@ public class Game {
                 GLFW.glfwSetWindowShouldClose(window, true);
             }
         }));
-        logger.atInfo().log("Initialized callbacks");
+        logger.atInfo().log("Initialized game callbacks");
     }
 
-    public void updateGame() throws IOException {
+    public void update() throws IOException {
         logger.atInfo().atMostEvery(5, TimeUnit.SECONDS).log("Current FPS: %d", ((int) (1 / DisplayManager.getFrameTime())));
+        if (currentState != State.IN_MAIN_MENU) {
+            updateGame();
+        }
+        for (Handler handler : activeHandlers) {
+            handler.handle();
+        }
+        renderer.renderObjects(activeLights);
+    }
+
+
+
+    private void updateGame() {
         playerCamera.checkState();
-        if (Game.getInstance().getCurrentState() == State.IN_GAME) {
+        if (currentState == State.IN_GAME) {
             player.move(activeObjects);
             playerCamera.move(activeObjects);
         }
         mousePicker.update();
-        for (Handler handler : activeHandlers) {
-            handler.handle();
-        }
-        renderer.updateDepthMaps(activeLights, player, playerCamera);
-        renderer.renderObjects(activeLights, playerCamera);
+        renderer.updateDepthMaps(activeLights, player);
     }
 
     public void cleanUp() {
@@ -173,5 +214,9 @@ public class Game {
 
     public VAOLoader getLoader() {
         return loader;
+    }
+
+    public MenuCache getMenuCache() {
+        return menuCache;
     }
 }

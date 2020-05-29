@@ -1,6 +1,7 @@
 package engine.shader;
 
 import com.google.common.flogger.FluentLogger;
+import game.state.Game;
 import object.env.Camera;
 import object.env.Light;
 import util.math.MathUtil;
@@ -27,8 +28,8 @@ public class DirectionalShadowShader extends Shader {
     }
 
     @Override
-    public void loadUniforms(List<Light> lights, Camera camera) {
-        doLoadMatrix(MathUtil.getLightSpaceMatrix(lights.get(0), camera), "lightSpaceMatrix");
+    public void loadUniforms(List<Light> lights) {
+        doLoadMatrix(MathUtil.getLightSpaceMatrix(lights.get(0), Game.getInstance().getPlayerCamera()), "lightSpaceMatrix");
     }
 
     @Override

@@ -6,7 +6,7 @@ import game.state.Game;
 import game.state.HandlerState;
 import engine.render.RequestInfo;
 import engine.render.RequestType;
-import engine.texture.ObjectType;
+import game.ui.ObjectType;
 import engine.model.TexturedModel;
 import interraction.LootableEntity;
 import object.item.Icon;

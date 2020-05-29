@@ -3,7 +3,7 @@ package object;
 import com.google.common.flogger.FluentLogger;
 import engine.model.TexturedModel;
 import engine.shader.Shader;
-import engine.texture.ObjectType;
+import game.ui.ObjectType;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import util.GeneratorUtil;

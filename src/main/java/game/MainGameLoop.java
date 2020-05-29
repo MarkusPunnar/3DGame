@@ -13,9 +13,8 @@ public class MainGameLoop {
         DisplayManager.createDisplay();
         Game gameInstance = Game.getInstance();
         gameInstance.init();
-        gameInstance.loadGame();
         while (!GLFW.glfwWindowShouldClose(DisplayManager.getWindow())) {
-            gameInstance.updateGame();
+            gameInstance.update();
             DisplayManager.updateDisplay();
         }
         gameInstance.cleanUp();

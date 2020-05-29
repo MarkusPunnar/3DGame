@@ -1,7 +1,6 @@
 package engine.shader;
 
 import com.google.common.flogger.FluentLogger;
-import object.env.Camera;
 import object.env.Light;
 
 import java.io.IOException;
@@ -46,7 +45,7 @@ public class FontShader extends Shader {
     }
 
     @Override
-    public void loadUniforms(List<Light> lights, Camera camera) {
+    public void loadUniforms(List<Light> lights) {
 
     }
 }

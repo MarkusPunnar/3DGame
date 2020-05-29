@@ -1,10 +1,9 @@
-package engine.texture;
+package game.ui;
 
 import com.google.common.flogger.FluentLogger;
 import engine.font.GUIText;
 import engine.model.TexturedModel;
 import engine.shader.Shader;
-import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import object.RenderObject;
@@ -14,7 +13,7 @@ import util.math.MathUtil;
 
 import java.util.Objects;
 
-public class GuiTexture extends RenderObject {
+public class UIComponent extends RenderObject {
 
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
@@ -27,7 +26,7 @@ public class GuiTexture extends RenderObject {
     private int priority;
     private GUIText guiText;
 
-    public GuiTexture(int textureID, Vector2f position, Vector2f scale, ObjectType type) {
+    public UIComponent(int textureID, Vector2f position, Vector2f scale, ObjectType type) {
         this.textureID = textureID;
         this.position = position;
         this.scale = scale;
@@ -102,7 +101,7 @@ public class GuiTexture extends RenderObject {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        GuiTexture that = (GuiTexture) other;
+        UIComponent that = (UIComponent) other;
         return textureID == that.textureID &&
                 priority == that.priority &&
                 Objects.equals(position, that.position) &&

@@ -2,9 +2,8 @@ package object;
 
 import engine.font.GUIText;
 import engine.model.Model;
-import engine.model.TexturedModel;
 import engine.shader.Shader;
-import engine.texture.ObjectType;
+import game.ui.ObjectType;
 import org.joml.Vector3f;
 
 public abstract class RenderObject {

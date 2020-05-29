@@ -6,11 +6,9 @@ import engine.model.Model;
 import engine.model.TextModel;
 import object.RenderObject;
 import engine.shader.Shader;
-import engine.texture.ObjectType;
+import game.ui.ObjectType;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 
 public class GUIText extends RenderObject {
 

@@ -1,7 +1,6 @@
 package engine.shader;
 
 import com.google.common.flogger.FluentLogger;
-import object.env.Camera;
 import object.env.Light;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -58,7 +57,7 @@ public class PointShadowShader extends Shader {
     }
 
     @Override
-    public void loadUniforms(List<Light> lights, Camera camera) {
+    public void loadUniforms(List<Light> lights) {
         Matrix4f shadowProjectionMatrix = new Matrix4f().perspective(((float) Math.toRadians(90)), 1, NEAR_PLANE, FAR_PLANE);
         loadLightMatrices(shadowProjectionMatrix, lights.get(0));
         doLoadFloat(FAR_PLANE, "farPlane");

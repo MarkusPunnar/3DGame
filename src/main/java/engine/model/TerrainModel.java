@@ -1,7 +1,6 @@
 package engine.model;
 
 import engine.shader.Shader;
-import engine.texture.ModelTexture;
 
 public class TerrainModel extends TexturedModel {
 

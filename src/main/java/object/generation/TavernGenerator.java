@@ -15,8 +15,7 @@ import object.Player;
 import engine.model.TexturedModel;
 import engine.model.data.ModelData;
 import org.joml.Vector3f;
-import engine.loader.VAOLoader;
-import engine.texture.ModelTexture;
+import engine.model.ModelTexture;
 import util.GeneratorUtil;
 
 import java.io.IOException;
