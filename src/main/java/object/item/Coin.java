@@ -1,10 +1,12 @@
 package object.item;
 
+import java.io.IOException;
+
 public class Coin extends Item {
 
     private int amount;
 
-    public Coin(int amount) {
+    public Coin(int amount) throws IOException {
         super(new Icon("coin"));
         this.amount = amount;
     }

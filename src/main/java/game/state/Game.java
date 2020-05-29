@@ -75,7 +75,7 @@ public class Game {
         initCallbacks();
         initHandlers();
         playerCamera = new Camera();
-        renderer.load(playerCamera);
+        renderer.load(playerCamera, activeLights);
         mousePicker = new MousePicker();
         OctTree octTree = new OctTree(new BoundingBox(new Vector3f(-400, -1, -400), new Vector3f(200, 100, 200)));
         octTree.initTree(activeObjects);
@@ -118,7 +118,7 @@ public class Game {
         logger.atInfo().log("Initialized callbacks");
     }
 
-    public void updateGame() {
+    public void updateGame() throws IOException {
         logger.atInfo().atMostEvery(5, TimeUnit.SECONDS).log("Current FPS: %d", ((int) (1 / DisplayManager.getFrameTime())));
         playerCamera.checkState();
         if (Game.getInstance().getCurrentState() == State.IN_GAME) {

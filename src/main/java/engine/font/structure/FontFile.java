@@ -3,14 +3,15 @@ package engine.font.structure;
 import com.google.common.flogger.FluentLogger;
 import com.google.common.flogger.StackSize;
 import engine.font.TextMeshCreator;
+import engine.loader.ObjectLoader;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 public class FontFile {
 
@@ -30,29 +31,24 @@ public class FontFile {
     private float spaceWidth;
     private float verticalPerPixelSize;
     private float horizontalPerPixelSize;
-    private Scanner sc;
+    private BufferedReader reader;
 
-    public FontFile(String fontFileName) throws URISyntaxException, IOException {
-        initFontFile(fontFileName);
-        processPaddingData();
-        loadLineSizes();
-        int imageWidth = getIntValueFromString(lineValues.get("scaleW"));
-        loadCharacterData(imageWidth);
-        sc.close();
-    }
-
-    private void initFontFile(String fontFileName) throws IOException, URISyntaxException {
-        URL location = FontFile.class.getClassLoader().getResource("textures/fonts/" + fontFileName + ".fnt");
-        if (location == null) {
-            logger.atSevere().withStackTrace(StackSize.LARGE).log("Font file %s was not found", fontFileName);
-            throw new IllegalArgumentException("Font file not found");
+    public FontFile(String fontFileName) throws IOException {
+        try (InputStream is = ObjectLoader.class.getClassLoader().getResourceAsStream("textures/fonts/" + fontFileName + ".fnt")) {
+            if (is == null) {
+                logger.atSevere().withStackTrace(StackSize.LARGE).log("Font file %s was not found", fontFileName);
+                throw new IllegalArgumentException("Font file not found");
+            }
+            reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+            logger.atInfo().log("Successfully read font file %s", fontFileName);
+            processPaddingData();
+            loadLineSizes();
+            int imageWidth = getIntValueFromString(lineValues.get("scaleW"));
+            loadCharacterData(imageWidth);
         }
-        logger.atInfo().log("Successfully read font file %s", fontFileName);
-        this.sc = new Scanner(Paths.get(location.toURI()));
     }
 
-
-    private void loadCharacterData(int imageWidth) {
+    private void loadCharacterData(int imageWidth) throws IOException {
         processLine();
         processLine();
         while (processLine()) {
@@ -83,14 +79,14 @@ public class FontFile {
         return new Character(id, xTextureCoord, yTextureCoord, xTexSize, yTexSize, xOffset, yOffset, quadWidth, quadHeight, xAdvance);
     }
 
-    private void loadLineSizes() {
+    private void loadLineSizes() throws IOException {
         processLine();
         int lineHeightPixels = getIntValueFromString(lineValues.get("lineHeight"));
         this.verticalPerPixelSize = TextMeshCreator.LINE_HEIGHT / lineHeightPixels;
         this.horizontalPerPixelSize = verticalPerPixelSize;
     }
 
-    private void processPaddingData() {
+    private void processPaddingData() throws IOException {
         processLine();
         int[] paddingData = getIntValuesFromString(lineValues.get("padding"));
         this.padding = paddingData;
@@ -111,10 +107,10 @@ public class FontFile {
         return Integer.parseInt(variable);
     }
 
-    private boolean processLine() {
+    private boolean processLine() throws IOException {
         lineValues.clear();
-        if (sc.hasNext()) {
-            String line = sc.nextLine();
+        String line = reader.readLine();
+        if (line != null) {
             String[] lineParts = line.split(SPLITTER);
             for (String part : lineParts) {
                 String[] partValues = part.split("=");

@@ -4,26 +4,29 @@ import com.google.common.flogger.FluentLogger;
 import com.google.common.flogger.StackSize;
 import engine.model.data.TerrainData;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TerrainLoader {
 
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
     private static int VERTEX_COUNT = 129;
 
-    public static TerrainData loadTerrainModel(String fileName) throws URISyntaxException, IOException {
+    public static TerrainData loadTerrainModel(String fileName) throws IOException {
         float[][] heights = new float[VERTEX_COUNT][VERTEX_COUNT];
-        URL location = TerrainLoader.class.getClassLoader().getResource("models/terrains/" + fileName + ".obj");
-        if (location == null) {
-            logger.atSevere().withStackTrace(StackSize.LARGE).log("Terrain file %s was not found", fileName);
-            throw new IllegalArgumentException("Terrain model file " + fileName + " not found");
+        List<String> lines;
+        try (InputStream is = ObjectLoader.class.getClassLoader().getResourceAsStream("models/terrains/" + fileName + ".obj")) {
+            if (is == null) {
+                logger.atSevere().withStackTrace(StackSize.LARGE).log("Object file %s was not found", fileName);
+                throw new IllegalArgumentException("Object model file not found");
+            }
+            lines = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
         }
-        List<String> lines = Files.readAllLines(Paths.get(location.toURI()));
         for (String line : lines) {
             String[] lineParts = line.split(" ");
             String type = lineParts[0];

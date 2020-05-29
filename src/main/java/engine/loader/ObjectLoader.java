@@ -7,25 +7,28 @@ import engine.model.data.VertexData;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ObjectLoader {
 
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-    public static ModelData loadObjectModel(String fileName) throws URISyntaxException, IOException {
-        URL location = ObjectLoader.class.getClassLoader().getResource("models/" + fileName + ".obj");
-        if (location == null) {
-            logger.atSevere().withStackTrace(StackSize.LARGE).log("Object file %s was not found", fileName);
-            throw new IllegalArgumentException("Object model file not found");
+    public static ModelData loadObjectModel(String fileName) throws IOException {
+        List<String> lines;
+        try (InputStream is = ObjectLoader.class.getClassLoader().getResourceAsStream("models/" + fileName + ".obj")) {
+            if (is == null) {
+                logger.atSevere().withStackTrace(StackSize.LARGE).log("Object file %s was not found", fileName);
+                throw new IllegalArgumentException("Object model file not found");
+            }
+            lines = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
         }
-        List<String> lines = Files.readAllLines(Paths.get(location.toURI()));
         List<VertexData> vertices = new ArrayList<>();
         List<Vector3f> normals = new ArrayList<>();
         List<Integer> indices = new ArrayList<>();

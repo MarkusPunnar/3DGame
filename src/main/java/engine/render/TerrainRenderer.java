@@ -4,10 +4,12 @@ import engine.model.Model;
 import engine.shader.Shader;
 import engine.shader.TerrainShader;
 import object.RenderObject;
+import object.env.Light;
 import org.joml.Matrix4f;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
@@ -17,9 +19,10 @@ public class TerrainRenderer implements Renderer {
 
     private TerrainShader shader;
 
-    public TerrainRenderer(Matrix4f projectionMatrix) throws IOException {
+    public TerrainRenderer(Matrix4f projectionMatrix, List<Light> lights) throws IOException {
         this.shader = new TerrainShader();
         shader.start();
+        shader.loadLights(lights, shader.getUniformLocations());
         shader.doLoadMatrix(projectionMatrix, "projectionMatrix");
         shader.connectTextureUnits();
         shader.stop();

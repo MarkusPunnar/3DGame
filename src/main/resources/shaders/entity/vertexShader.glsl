@@ -1,4 +1,4 @@
-#version 460 core
+#version 440
 
 //VertexShader input attributes from model data
 in vec3 aPosition;

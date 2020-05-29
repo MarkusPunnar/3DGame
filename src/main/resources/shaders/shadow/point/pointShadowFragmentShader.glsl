@@ -1,4 +1,4 @@
-#version 460 core
+#version 440
 
 in vec4 fragmentCoords;
 

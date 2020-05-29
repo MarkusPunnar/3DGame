@@ -10,20 +10,19 @@ import org.lwjgl.system.MemoryStack;
 import util.math.structure.Triangle;
 import util.octree.BoundingBox;
 
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class VAOLoader {
 
@@ -127,27 +126,27 @@ public class VAOLoader {
         return new RawModel(vaoID, positions.length / 2, null);
     }
 
-    public int loadIconTexture(String fileName) {
+    public int loadIconTexture(String fileName) throws IOException {
         return loadTexture("icons/" + fileName);
     }
 
-    public int loadObjectTexture(String fileName) {
+    public int loadObjectTexture(String fileName) throws IOException {
         return loadTexture("objects/" + fileName);
     }
 
-    public int loadGuiTexture(String fileName) {
+    public int loadGuiTexture(String fileName) throws IOException {
         return loadTexture("guis/" + fileName);
     }
 
-    public int loadTerrainTexture(String fileName) {
+    public int loadTerrainTexture(String fileName) throws IOException {
         return loadTexture("terrains/" + fileName);
     }
 
-    public int loadFontAtlas(String fileName) {
+    public int loadFontAtlas(String fileName) throws IOException {
         return loadTexture("fonts/" + fileName);
     }
 
-    private int loadTexture(String fileName) {
+    private int loadTexture(String fileName) throws IOException {
         int textureID;
         int width, height;
         ByteBuffer image;
@@ -155,23 +154,29 @@ public class VAOLoader {
             IntBuffer widthBuffer = stack.mallocInt(1);
             IntBuffer heightBuffer = stack.mallocInt(1);
             IntBuffer comp = stack.mallocInt(1);
-            URL location = getClass().getClassLoader().getResource("textures/" + fileName + ".png");
-            if (location == null) {
-                logger.atSevere().withStackTrace(StackSize.LARGE).log("Texture file %s was not found", fileName);
-                throw new IllegalArgumentException("Could not find resource from classpath: " + fileName);
-            }
-            try {
-                image = STBImage.stbi_load(Paths.get(location.toURI()).toString(), widthBuffer, heightBuffer, comp, 4);
-                if (image == null) {
-                    logger.atSevere().withStackTrace(StackSize.LARGE).log("Image from %s could not be loaded", location.toURI());
-                    throw new IllegalArgumentException("Failed to load texture image: " + STBImage.stbi_failure_reason());
+            try (InputStream is = getClass().getClassLoader().getResourceAsStream("textures/" + fileName + ".png")) {
+                if (is == null) {
+                    logger.atSevere().withStackTrace(StackSize.LARGE).log("Texture file %s was not found", fileName);
+                    throw new IllegalArgumentException("Could not find resource from classpath: " + fileName);
                 }
-                width = widthBuffer.get();
-                height = heightBuffer.get();
-            } catch (URISyntaxException e) {
-                logger.atWarning().log("Tried to load texture from invalid");
-                throw new IllegalArgumentException("Invalid URI for texture " + fileName);
+                try {
+                    byte[] textureBytes = is.readAllBytes();
+                    ByteBuffer textureBuffer = BufferUtils.createByteBuffer(textureBytes.length);
+                    textureBuffer.put(textureBytes);
+                    textureBuffer.flip();
+                    image = STBImage.stbi_load_from_memory(textureBuffer, widthBuffer, heightBuffer, comp, 4);
+                    if (image == null) {
+                        logger.atSevere().withStackTrace(StackSize.LARGE).log("Image %s could not be loaded", fileName);
+                        throw new IllegalArgumentException("Failed to load texture image: " + STBImage.stbi_failure_reason());
+                    }
+                    width = widthBuffer.get();
+                    height = heightBuffer.get();
+                } catch (IllegalArgumentException e) {
+                    logger.atWarning().log("Tried to load texture from invalid file %s", fileName);
+                    throw e;
+                }
             }
+
         }
         textureID = glGenTextures();
         textures.add(textureID);

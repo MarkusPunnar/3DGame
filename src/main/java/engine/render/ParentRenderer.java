@@ -55,18 +55,18 @@ public class ParentRenderer {
         this.guiRenderer = new GuiRenderer();
     }
 
-    public void load(Camera camera) throws IOException {
+    public void load(Camera camera, List<Light> lights) throws IOException {
         OpenGLUtil.enableCulling();
         this.projectionMatrix = camera.createProjectionMatrix();
-        initRenderers();
+        initRenderers(lights);
     }
 
-    private void initRenderers() throws IOException {
-        this.entityRenderer = new EntityRenderer(projectionMatrix);
-        this.terrainRenderer = new TerrainRenderer(projectionMatrix);
+    private void initRenderers(List<Light> lights) throws IOException {
+        this.entityRenderer = new EntityRenderer(projectionMatrix, lights);
+        this.terrainRenderer = new TerrainRenderer(projectionMatrix, lights);
         this.fontRenderer = new FontRenderer();
-        this.directionalShadowRenderer = new DirectionalShadowRenderer(projectionMatrix);
-        this.pointShadowRenderer = new PointShadowRenderer(projectionMatrix);
+        this.directionalShadowRenderer = new DirectionalShadowRenderer(projectionMatrix, lights);
+        this.pointShadowRenderer = new PointShadowRenderer(projectionMatrix, lights);
     }
 
     private void processEntity(Entity entity) {
@@ -102,7 +102,16 @@ public class ParentRenderer {
 
     public void renderObjects(List<Light> lights, Camera camera) {
         glViewport(0, 0, DisplayManager.getWidth(), DisplayManager.getHeight());
-        doRenderScene(lights, camera);
+        prepare();
+        bindDepthMaps(lights);
+        doRender(entityRenderer, entityBatches, lights, camera);
+        doRender(terrainRenderer, terrains, lights, camera);
+        doRender(guiRenderer, guis, lights, camera);
+        for (FontType fontType : texts.keySet()) {
+            GL13.glActiveTexture(GL13.GL_TEXTURE0);
+            GL13.glBindTexture(GL_TEXTURE_2D, fontType.getTextureAtlas());
+            doRender(fontRenderer, texts.get(fontType), lights, camera);
+        }
     }
 
     public void updateDepthMaps(List<Light> lights, Player player, Camera camera) {
@@ -133,19 +142,6 @@ public class ParentRenderer {
         glClear(GL_DEPTH_BUFFER_BIT);
         doRender(pointShadowRenderer, entityBatches, List.of(pointLight), camera);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-
-    private void doRenderScene(List<Light> lights, Camera camera) {
-        prepare();
-        bindDepthMaps(lights);
-        doRender(entityRenderer, entityBatches, lights, camera);
-        doRender(terrainRenderer, terrains, lights, camera);
-        doRender(guiRenderer, guis, lights, camera);
-        for (FontType fontType : texts.keySet()) {
-            GL13.glActiveTexture(GL13.GL_TEXTURE0);
-            GL13.glBindTexture(GL_TEXTURE_2D, fontType.getTextureAtlas());
-            doRender(fontRenderer, texts.get(fontType), lights, camera);
-        }
     }
 
     private void bindDepthMaps(List<Light> lights) {

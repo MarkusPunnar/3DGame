@@ -44,7 +44,7 @@ public class RenderRequestHandler implements Handler {
     }
 
     @Override
-    public void handle() {
+    public void handle() throws IOException {
         Queue<RenderRequest> requests = HandlerState.getInstance().getRequests();
         Game state = Game.getInstance();
         while (requests.peek() != null) {
@@ -119,7 +119,7 @@ public class RenderRequestHandler implements Handler {
         }
     }
 
-    private void renderInventory(RequestInfo requestInfo) {
+    private void renderInventory(RequestInfo requestInfo) throws IOException {
         float n = 4;
         float m = 5;
         renderTitle(n, requestInfo, ObjectType.INVENTORY_TITLE);
@@ -127,7 +127,7 @@ public class RenderRequestHandler implements Handler {
         renderItems(player.getInventory().getInventorySlots());
     }
 
-    private void renderChestInterface(RequestInfo requestInfo) {
+    private void renderChestInterface(RequestInfo requestInfo) throws IOException {
         float n = 4;
         float m = 5;
         renderTitle(n, requestInfo, ObjectType.CHEST_TITLE);
@@ -164,7 +164,7 @@ public class RenderRequestHandler implements Handler {
         }
     }
 
-    private void renderTitle(float n, RequestInfo requestInfo, ObjectType titleType) {
+    private void renderTitle(float n, RequestInfo requestInfo, ObjectType titleType) throws IOException {
         VAOLoader loader = Game.getInstance().getLoader();
         int titleTextureID = loader.loadGuiTexture(titleType.getTextureName());
         Vector2f position = requestInfo.getTexturePosition();
@@ -176,7 +176,7 @@ public class RenderRequestHandler implements Handler {
         renderer.processGui(new GuiTexture(titleTextureID, titlePosition, titleScale, ObjectType.INVENTORY_TITLE));
     }
 
-    private void renderGrid(float n, float m, RequestInfo requestInfo) {
+    private void renderGrid(float n, float m, RequestInfo requestInfo) throws IOException {
         Vector2f scale = requestInfo.getTextureScale();
         Vector2f position = requestInfo.getTexturePosition();
         VAOLoader loader = Game.getInstance().getLoader();

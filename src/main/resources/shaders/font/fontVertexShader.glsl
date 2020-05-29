@@ -1,4 +1,4 @@
-#version 460 core
+#version 440
 
 in vec2 aPosition;
 in vec2 aTextureCoords;

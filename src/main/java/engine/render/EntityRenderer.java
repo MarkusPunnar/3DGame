@@ -3,6 +3,7 @@ package engine.render;
 import engine.model.Model;
 import engine.shader.Shader;
 import object.RenderObject;
+import object.env.Light;
 import org.joml.Matrix4f;
 import engine.shader.EntityShader;
 
@@ -20,9 +21,10 @@ public class EntityRenderer implements Renderer {
     private Shader shader;
     private Model currentTexture;
 
-    public EntityRenderer(Matrix4f projectionMatrix) throws IOException {
+    public EntityRenderer(Matrix4f projectionMatrix, List<Light> lights) throws IOException {
         this.shader = new EntityShader();
         shader.start();
+        shader.loadLights(lights, shader.getUniformLocations());
         shader.doLoadMatrix(projectionMatrix, "projectionMatrix");
         shader.doLoadInt(5, "shadowMap");
         shader.doLoadInts(6, "shadowCube");
