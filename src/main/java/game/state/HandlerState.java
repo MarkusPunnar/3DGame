@@ -2,9 +2,9 @@ package game.state;
 
 import com.google.common.flogger.FluentLogger;
 import engine.render.RenderRequest;
-import interraction.InteractableEntity;
-import interraction.LootableEntity;
-import object.item.Item;
+import game.interraction.InteractableEntity;
+import game.interraction.LootableEntity;
+import game.object.item.Item;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

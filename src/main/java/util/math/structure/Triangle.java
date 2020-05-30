@@ -1,6 +1,6 @@
 package util.math.structure;
 
-import object.RenderObject;
+import game.object.RenderObject;
 import org.joml.Vector3f;
 import util.octree.BoundingBox;
 

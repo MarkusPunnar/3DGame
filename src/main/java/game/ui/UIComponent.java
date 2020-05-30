@@ -2,11 +2,11 @@ package game.ui;
 
 import com.google.common.flogger.FluentLogger;
 import engine.font.GUIText;
-import engine.model.TexturedModel;
+import engine.model.Model;
 import engine.shader.Shader;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import object.RenderObject;
+import game.object.RenderObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import util.math.MathUtil;
@@ -21,14 +21,20 @@ public class UIComponent extends RenderObject {
 
     private int textureID;
     private Vector2f position;
+    private Vector2f rotation;
     private Vector2f scale;
     private ObjectType type;
     private int priority;
     private GUIText guiText;
 
     public UIComponent(int textureID, Vector2f position, Vector2f scale, ObjectType type) {
+        this(textureID, position, new Vector2f(), scale, type);
+    }
+
+    public UIComponent(int textureID, Vector2f position, Vector2f rotation, Vector2f scale, ObjectType type) {
         this.textureID = textureID;
         this.position = position;
+        this.rotation = rotation;
         this.scale = scale;
         this.type = type;
         this.priority = INCREMENT;
@@ -48,7 +54,7 @@ public class UIComponent extends RenderObject {
     }
 
     @Override
-    public TexturedModel getModel() {
+    public Model getModel() {
         return null;
     }
 
@@ -58,7 +64,7 @@ public class UIComponent extends RenderObject {
 
     @Override
     public Vector3f getRotation() {
-        return new Vector3f();
+        return new Vector3f(rotation, 0);
     }
 
     @Override
@@ -70,7 +76,7 @@ public class UIComponent extends RenderObject {
     public void prepareObject(Shader shader) {
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-        shader.doLoadMatrix(MathUtil.createTransformationMatrix(getPosition(), getScaleVector()), "transformationMatrix");
+        shader.doLoadMatrix(MathUtil.createTransformationMatrix(getPosition(), getRotation(),  getScaleVector()), "transformationMatrix");
     }
 
     public ObjectType getType() {

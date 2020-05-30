@@ -1,7 +1,7 @@
 package engine.shader;
 
 import com.google.common.flogger.FluentLogger;
-import object.env.Light;
+import game.object.env.Light;
 
 import java.io.IOException;
 import java.util.HashMap;

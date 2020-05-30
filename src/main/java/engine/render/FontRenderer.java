@@ -3,7 +3,7 @@ package engine.render;
 import engine.model.Model;
 import engine.shader.FontShader;
 import engine.shader.Shader;
-import object.RenderObject;
+import game.object.RenderObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;

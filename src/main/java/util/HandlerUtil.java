@@ -9,8 +9,8 @@ import engine.render.RequestType;
 import game.ui.UIComponent;
 import game.state.Game;
 import game.state.HandlerState;
-import object.item.Item;
-import object.item.Slot;
+import game.object.item.Item;
+import game.object.item.Slot;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -51,7 +51,9 @@ public class HandlerUtil {
             if (activeSlot != null) {
                 if (leftMouseButtonPressed) {
                     HandlerState.getInstance().setBindedItem(activeSlot.getItem());
-                    logger.atInfo().log("Binded item of type %s for moving", activeSlot.getItem().getClass().getSimpleName());
+                    if (activeSlot.getItem() != null) {
+                        logger.atInfo().log("Binded item of type %s for moving", activeSlot.getItem().getClass().getSimpleName());
+                    }
                     lastInteracted = activeSlot;
                     activeSlot.resetTexture();
                 }

@@ -5,7 +5,7 @@ import engine.model.RawModel;
 import engine.shader.GuiShader;
 import engine.shader.Shader;
 import game.state.Game;
-import object.RenderObject;
+import game.object.RenderObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;

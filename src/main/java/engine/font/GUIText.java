@@ -4,9 +4,11 @@ import com.google.common.flogger.FluentLogger;
 import engine.font.structure.FontType;
 import engine.model.Model;
 import engine.model.TextModel;
-import object.RenderObject;
+import game.object.RenderObject;
 import engine.shader.Shader;
+import game.state.Game;
 import game.ui.ObjectType;
+import game.ui.UIComponent;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -26,16 +28,16 @@ public class GUIText extends RenderObject {
     public static class Builder {
 
         private final String text;
-        private final FontType font;
 
-        private float fontSize = 0;
+        private FontType font = Game.getInstance().getGameFont();
+        private Vector3f colour = new Vector3f(1);
+        private float fontSize = 1;
         private Vector2f position = new Vector2f();
         private float maxLineLength = 1;
         private boolean centerText = false;
 
-        public Builder(String text, FontType font) {
+        public Builder(String text) {
             this.text = text;
-            this.font = font;
         }
 
         public Builder fontSize(float fontSize) {
@@ -58,6 +60,11 @@ public class GUIText extends RenderObject {
             return this;
         }
 
+        public Builder colour(Vector3f colour) {
+            this.colour = colour;
+            return this;
+        }
+
         public GUIText build() {
             logger.atInfo().log("Created a GUI text for text - %s", text);
             return new GUIText(this);
@@ -67,7 +74,7 @@ public class GUIText extends RenderObject {
     private GUIText(Builder builder) {
         this.text = builder.text;
         this.fontSize = builder.fontSize;
-        this.model = new TextModel();
+        this.model = new TextModel(builder.colour);
         this.position = builder.position;
         this.maxLineLength = builder.maxLineLength;
         this.font = builder.font;

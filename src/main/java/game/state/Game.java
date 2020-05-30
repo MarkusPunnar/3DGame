@@ -2,6 +2,7 @@ package game.state;
 
 import com.google.common.flogger.FluentLogger;
 import engine.DisplayManager;
+import engine.font.structure.FontType;
 import engine.loader.VAOLoader;
 import engine.render.ParentRenderer;
 import game.ui.menu.Button;
@@ -9,17 +10,19 @@ import game.ui.menu.Menu;
 import game.ui.UIComponent;
 import game.ui.menu.MenuCache;
 import game.ui.menu.MenuType;
-import interraction.MousePicker;
-import interraction.handle.*;
-import object.Entity;
-import object.Player;
-import object.RenderObject;
-import object.env.Camera;
-import object.env.Light;
-import object.generation.MainMenuGenerator;
-import object.generation.TavernGenerator;
-import object.generation.TerrainGenerator;
-import object.terrain.Terrain;
+import game.interraction.MousePicker;
+import game.interraction.handle.*;
+import game.object.Entity;
+import game.object.Player;
+import game.object.RenderObject;
+import game.object.env.Camera;
+import game.object.env.Light;
+import game.object.generation.menu.MainMenuGenerator;
+import game.object.generation.TavernGenerator;
+import game.object.generation.TerrainGenerator;
+import game.object.generation.menu.MenuGenerator;
+import game.object.generation.menu.OptionsMenuGenerator;
+import game.object.terrain.Terrain;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import util.octree.BoundingBox;
@@ -53,6 +56,7 @@ public class Game {
     private Player player;
     private MenuType currentMenu;
     private MenuCache menuCache;
+    private FontType gameFont;
 
     private Game() {
         this.activeHandlers = new ArrayList<>();
@@ -65,18 +69,44 @@ public class Game {
     }
 
     public void init() throws IOException, URISyntaxException {
-        currentState = State.IN_MAIN_MENU;
+        currentState = State.IN_MENU;
         loader = new VAOLoader();
         menuCache = new MenuCache();
-        MainMenuGenerator menuGenerator = new MainMenuGenerator();
         renderer = new ParentRenderer();
         currentMenu = MenuType.MAIN_MENU;
-        menuCache.addToCache(currentMenu, new Menu());
-        List<UIComponent> menuGuis = menuGenerator.generate();
-        activeHandlers.add(new MainMenuHandler());
+        gameFont = new FontType(Game.getInstance().getLoader().loadFontAtlas("gamefont"));
+        activeHandlers.add(new RenderRequestHandler());
+        MainMenuGenerator generator = new MainMenuGenerator();
+        List<UIComponent> menuGuis = generator.generate();
         renderer.processGuis(menuGuis);
         mousePicker = new MousePicker();
         initMenuCallbacks();
+    }
+
+    public void loadOptionsMenu() throws IOException {
+       loadMenu(MenuType.OPTIONS_MENU, new OptionsMenuGenerator());
+    }
+
+    public void loadMainMenu() throws IOException {
+        loadMenu(MenuType.MAIN_MENU, new MainMenuGenerator());
+    }
+
+    private void loadMenu(MenuType menuType, MenuGenerator menuGenerator) throws IOException {
+        removeOldMenu();
+        currentMenu = menuType;
+        Menu cachedMenu = menuCache.getFromCache(currentMenu);
+        if (!cachedMenu.isInitialized()) {
+            List<UIComponent> menuGuis = menuGenerator.generate();
+            renderer.processGuis(menuGuis);
+        } else {
+            renderer.processGuis(cachedMenu.getMenuComponents());
+        }
+        renderer.loadTexts(cachedMenu.getMenuTexts());
+    }
+
+    private void removeOldMenu() {
+        renderer.getGuis().clear();
+        renderer.removeTexts(menuCache.getFromCache(currentMenu).getMenuTexts());
     }
 
     public void loadGame() throws IOException, URISyntaxException {
@@ -108,10 +138,10 @@ public class Game {
         activeObjects.addAll(terrains);
     }
 
-    private void initGameHandlers() throws IOException, URISyntaxException {
+    private void initGameHandlers() {
         List<Handler> handlers = new ArrayList<>();
         handlers.add(new InteractionHandler());
-        handlers.add(new RenderRequestHandler("gamefont"));
+        handlers.add(new RenderRequestHandler());
         handlers.add(new InventoryHandler());
         handlers.add(new LootingHandler());
         logger.atInfo().log("Initialized game handlers");
@@ -136,6 +166,7 @@ public class Game {
                 }
             }
         }));
+        logger.atInfo().log("Initialized menu callbacks");
     }
 
     private void initGameCallbacks() {
@@ -144,7 +175,7 @@ public class Game {
                 player.interactWithInventory();
             } else if (key == GLFW.GLFW_KEY_F && action == GLFW.GLFW_PRESS && List.of(State.IN_GAME, State.IN_CHEST).contains(currentState)) {
                 player.interactWithObject();
-            } else if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE && currentState.equals(State.IN_GAME)) {
+            } else if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
                 GLFW.glfwSetWindowShouldClose(window, true);
             }
         }));
@@ -153,7 +184,7 @@ public class Game {
 
     public void update() throws IOException {
         logger.atInfo().atMostEvery(5, TimeUnit.SECONDS).log("Current FPS: %d", ((int) (1 / DisplayManager.getFrameTime())));
-        if (currentState != State.IN_MAIN_MENU) {
+        if (currentState != State.IN_MENU) {
             updateGame();
         }
         for (Handler handler : activeHandlers) {
@@ -161,8 +192,6 @@ public class Game {
         }
         renderer.renderObjects(activeLights);
     }
-
-
 
     private void updateGame() {
         playerCamera.checkState();
@@ -218,5 +247,9 @@ public class Game {
 
     public MenuCache getMenuCache() {
         return menuCache;
+    }
+
+    public FontType getGameFont() {
+        return gameFont;
     }
 }

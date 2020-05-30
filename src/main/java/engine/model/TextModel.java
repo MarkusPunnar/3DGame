@@ -9,7 +9,8 @@ public class TextModel implements Model {
     private int vertexCount;
     private Vector3f colour;
 
-    public TextModel() {
+    public TextModel(Vector3f colour) {
+        this.colour = colour;
     }
 
     @Override

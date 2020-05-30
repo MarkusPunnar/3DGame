@@ -1,0 +1,39 @@
+package game.object;
+
+import engine.font.GUIText;
+import engine.model.Model;
+import engine.shader.Shader;
+import game.ui.ObjectType;
+import org.joml.Vector3f;
+
+public abstract class RenderObject {
+
+    public abstract int getID();
+
+    public abstract Model getModel();
+
+    public abstract Vector3f getPosition();
+
+    public abstract Vector3f getRotation();
+
+    public abstract Vector3f getScaleVector();
+
+    public int getPriority() {
+        return 0;
+    }
+
+    public GUIText getGuiText() {
+        return null;
+    }
+
+    public abstract ObjectType getType();
+
+    public abstract void prepareObject(Shader shader);
+
+    abstract static class Builder {
+
+        public abstract RenderObject build();
+
+        protected abstract Builder self();
+    }
+}

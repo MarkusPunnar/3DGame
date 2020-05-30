@@ -9,12 +9,12 @@ import engine.shadow.ShadowFrameBuffer;
 import game.ui.UIComponent;
 import game.state.Game;
 import game.state.State;
-import object.Entity;
-import object.Player;
-import object.RenderObject;
-import object.env.Camera;
-import object.env.Light;
-import object.terrain.Terrain;
+import game.object.Entity;
+import game.object.Player;
+import game.object.RenderObject;
+import game.object.env.Camera;
+import game.object.env.Light;
+import game.object.terrain.Terrain;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL13;
 import util.GuiComparator;
@@ -54,6 +54,7 @@ public class ParentRenderer {
         this.terrains = new ArrayList<>();
         this.texts = new HashMap<>();
         this.guiRenderer = new GuiRenderer();
+        this.fontRenderer = new FontRenderer();
     }
 
     public void load(Camera camera, List<Light> lights) throws IOException {
@@ -65,7 +66,6 @@ public class ParentRenderer {
     private void initRenderers(List<Light> lights) throws IOException {
         this.entityRenderer = new EntityRenderer(projectionMatrix, lights);
         this.terrainRenderer = new TerrainRenderer(projectionMatrix, lights);
-        this.fontRenderer = new FontRenderer();
         this.directionalShadowRenderer = new DirectionalShadowRenderer(projectionMatrix, lights);
         this.pointShadowRenderer = new PointShadowRenderer(projectionMatrix, lights);
     }
@@ -104,7 +104,7 @@ public class ParentRenderer {
     public void renderObjects(List<Light> lights) {
         glViewport(0, 0, DisplayManager.getWidth(), DisplayManager.getHeight());
         prepare();
-        if (Game.getInstance().getCurrentState() != State.IN_MAIN_MENU) {
+        if (Game.getInstance().getCurrentState() != State.IN_MENU) {
             bindDepthMaps(lights);
             doRender(entityRenderer, entityBatches, lights);
             doRender(terrainRenderer, terrains, lights);
@@ -175,7 +175,7 @@ public class ParentRenderer {
     }
 
     public void cleanUp() {
-        if (Game.getInstance().getCurrentState() != State.IN_MAIN_MENU) {
+        if (Game.getInstance().getCurrentState() != State.IN_MENU) {
             entityRenderer.getShader().cleanUp();
             terrainRenderer.getShader().cleanUp();
             guiRenderer.getShader().cleanUp();
@@ -200,11 +200,23 @@ public class ParentRenderer {
         }
     }
 
+    public void loadTexts(List<GUIText> guiTexts) {
+        for (GUIText guiText : guiTexts) {
+            loadText(guiText);
+        }
+    }
+
     public void removeText(GUIText text) {
         List<GUIText> fontTexts = texts.get(text.getFont());
         fontTexts.remove(text);
         if (fontTexts.isEmpty()) {
             texts.remove(text.getFont());
+        }
+    }
+
+    public void removeTexts(List<GUIText> guiTexts) {
+        for (GUIText guiText : guiTexts) {
+            removeText(guiText);
         }
     }
 

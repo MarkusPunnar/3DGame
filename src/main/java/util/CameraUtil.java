@@ -1,9 +1,9 @@
 package util;
 
 import engine.DisplayManager;
-import object.Player;
-import object.RenderObject;
-import object.env.Camera;
+import game.object.Player;
+import game.object.RenderObject;
+import game.object.env.Camera;
 import org.joml.Vector3f;
 import util.octree.BoundingBox;
 
@@ -93,9 +93,4 @@ public class CameraUtil {
         }
         camera.setPosition(newPosition);
     }
-
-    private static float getCameraDistance(Vector3f tempPosition, Vector3f targetPosition) {
-        return targetPosition.sub(tempPosition, new Vector3f()).length();
-    }
-
 }

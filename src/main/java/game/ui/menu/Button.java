@@ -14,9 +14,15 @@ public class Button extends UIComponent {
         super(textureID, position, scale, ObjectType.BUTTON);
     }
 
+    public Button(int textureID, Vector2f position, Vector2f rotation, Vector2f scale) {
+        super(textureID, position, rotation, scale, ObjectType.BUTTON);
+    }
+
     public void onClick() throws Exception {
         onClickCallback.call();
     }
+
+
 
     public void setClickCallback(Callable<Void> r) {
         this.onClickCallback = r;

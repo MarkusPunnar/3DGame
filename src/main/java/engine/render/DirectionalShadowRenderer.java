@@ -3,7 +3,7 @@ package engine.render;
 import engine.model.Model;
 import engine.shader.Shader;
 import engine.shader.DirectionalShadowShader;
-import object.env.Light;
+import game.object.env.Light;
 import org.joml.Matrix4f;
 
 import java.io.IOException;

@@ -1,9 +1,8 @@
 package util.math;
 
-import object.RenderObject;
-import object.Player;
-import object.env.Camera;
-import object.env.Light;
+import game.object.RenderObject;
+import game.object.env.Camera;
+import game.object.env.Light;
 import org.joml.*;
 
 import java.lang.Math;
@@ -12,11 +11,6 @@ import java.math.RoundingMode;
 
 public class MathUtil {
 
-    public static Matrix4f createTransformationMatrix(Vector3f position, Vector3f scale) {
-        Matrix4f matrix = new Matrix4f();
-        return matrix.translate(position)
-                .scale(scale);
-    }
 
     public static Matrix4f createTransformationMatrix(RenderObject object) {
         return createTransformationMatrix(object.getPosition(), object.getRotation(), object.getScaleVector());

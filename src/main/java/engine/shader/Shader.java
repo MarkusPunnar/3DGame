@@ -1,6 +1,6 @@
 package engine.shader;
 
-import object.env.Light;
+import game.object.env.Light;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;

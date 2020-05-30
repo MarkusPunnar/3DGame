@@ -2,7 +2,7 @@ package engine.render;
 
 import engine.shader.PointShadowShader;
 import engine.shader.Shader;
-import object.env.Light;
+import game.object.env.Light;
 import org.joml.Matrix4f;
 
 import java.io.IOException;

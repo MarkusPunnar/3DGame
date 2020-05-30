@@ -2,8 +2,7 @@ package engine.shader;
 
 import com.google.common.flogger.FluentLogger;
 import game.state.Game;
-import object.env.Camera;
-import object.env.Light;
+import game.object.env.Light;
 import util.math.MathUtil;
 
 import java.io.IOException;

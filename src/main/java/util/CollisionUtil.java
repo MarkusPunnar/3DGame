@@ -1,7 +1,7 @@
 package util;
 
 import game.state.Game;
-import object.RenderObject;
+import game.object.RenderObject;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

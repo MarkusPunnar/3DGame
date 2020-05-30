@@ -1,7 +1,7 @@
 package engine.shader;
 
 import com.google.common.flogger.FluentLogger;
-import object.env.Light;
+import game.object.env.Light;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

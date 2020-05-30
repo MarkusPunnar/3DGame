@@ -1,6 +1,7 @@
 package engine.shadow;
 
 import com.google.common.flogger.FluentLogger;
+import game.config.Config;
 import org.lwjgl.opengl.GL32;
 
 import java.nio.ByteBuffer;
@@ -11,8 +12,8 @@ public class ShadowFrameBuffer {
 
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-    public static final int SHADOW_WIDTH = 4096;
-    public static final int SHADOW_HEIGHT = 4096;
+    public static final int SHADOW_WIDTH = Config.getInstance().getShadowLevel().getResolution();
+    public static final int SHADOW_HEIGHT = Config.getInstance().getShadowLevel().getResolution();
 
     private int fboID;
     private int depthMapTextureID;

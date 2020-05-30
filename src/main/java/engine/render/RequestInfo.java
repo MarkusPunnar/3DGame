@@ -2,7 +2,7 @@ package engine.render;
 
 import engine.font.GUIText;
 import game.ui.ObjectType;
-import object.RenderObject;
+import game.object.RenderObject;
 import org.joml.Vector2f;
 
 public class RequestInfo {

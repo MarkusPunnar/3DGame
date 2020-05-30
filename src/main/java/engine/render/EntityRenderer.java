@@ -2,8 +2,8 @@ package engine.render;
 
 import engine.model.Model;
 import engine.shader.Shader;
-import object.RenderObject;
-import object.env.Light;
+import game.object.RenderObject;
+import game.object.env.Light;
 import org.joml.Matrix4f;
 import engine.shader.EntityShader;
 
