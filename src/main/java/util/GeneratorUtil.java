@@ -6,6 +6,7 @@ import engine.model.RawModel;
 import engine.model.TexturedModel;
 import engine.model.data.ModelData;
 import engine.model.ModelTexture;
+import engine.texture.TextureCache;
 import game.state.Game;
 import game.object.RenderObject;
 import org.joml.Vector2f;
@@ -37,5 +38,17 @@ public class GeneratorUtil {
 
     public static Vector2f fromOpenGLCoords(float x, float y) {
        return new Vector2f((1 + x) / 2f,  Math.abs(y - 1) / 2f);
+    }
+
+
+    public static int getTextureFromCache(String textureName) throws IOException {
+        VAOLoader loader = Game.getInstance().getLoader();
+        TextureCache textureCache = Game.getInstance().getTextureCache();
+        Integer textureID = textureCache.getByName(textureName);
+        if (textureID == null) {
+            textureID = loader.loadGuiTexture(textureName);
+            textureCache.addTexture(textureName, textureID);
+        }
+        return textureID;
     }
 }

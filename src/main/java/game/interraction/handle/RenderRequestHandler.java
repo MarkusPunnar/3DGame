@@ -3,7 +3,6 @@ package game.interraction.handle;
 import com.google.common.flogger.FluentLogger;
 import engine.DisplayManager;
 import engine.font.GUIText;
-import engine.loader.VAOLoader;
 import engine.render.ParentRenderer;
 import engine.render.RenderRequest;
 import engine.render.RequestInfo;
@@ -20,6 +19,7 @@ import game.ui.UIComponent;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
+import util.GeneratorUtil;
 import util.HandlerUtil;
 
 import java.io.IOException;
@@ -115,20 +115,17 @@ public class RenderRequestHandler implements Handler {
         }
     }
 
-
     private void renderInventory(RequestInfo requestInfo) throws IOException {
-        VAOLoader loader = Game.getInstance().getLoader();
         Inventory playerInventory = player.getInventory();
         playerInventory.updateSlots(requestInfo.getTexturePosition(), requestInfo.getTextureScale());
-        renderer.getGuis().add(new UIComponent(loader.loadGuiTexture("inventory"), requestInfo.getTexturePosition(), requestInfo.getTextureScale(), ObjectType.INVENTORY));
+        renderer.getGuis().add(new UIComponent(GeneratorUtil.getTextureFromCache("inventory"), requestInfo.getTexturePosition(), requestInfo.getTextureScale(), ObjectType.INVENTORY));
         renderItems(playerInventory.getInventorySlots());
     }
 
     private void renderChestInterface(RequestInfo requestInfo) throws IOException {
-        VAOLoader loader = Game.getInstance().getLoader();
         LootableEntity lastLootable = HandlerState.getInstance().getLastLooted();
         lastLootable.updateSlots(requestInfo.getTexturePosition(), requestInfo.getTextureScale());
-        renderer.getGuis().add(new UIComponent(loader.loadGuiTexture("inventory"), requestInfo.getTexturePosition(), requestInfo.getTextureScale(), ObjectType.CHEST));
+        renderer.getGuis().add(new UIComponent(GeneratorUtil.getTextureFromCache("inventory"), requestInfo.getTexturePosition(), requestInfo.getTextureScale(), ObjectType.CHEST));
         renderChestItems(lastLootable);
     }
 

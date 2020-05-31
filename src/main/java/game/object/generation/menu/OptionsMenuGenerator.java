@@ -40,7 +40,7 @@ public class OptionsMenuGenerator implements MenuGenerator {
     @Override
     public List<UIComponent> generate() throws IOException {
         List<UIComponent> optionsMenuComponents = new ArrayList<>();
-        UIComponent backgroundImage = new UIComponent(loader.loadGuiTexture("background"),
+        UIComponent backgroundImage = new UIComponent(GeneratorUtil.getTextureFromCache("background"),
                 new Vector2f(), new Vector2f(1, 1), ObjectType.BACKGROUND_IMAGE);
         optionsMenu.addStaticComponent(backgroundImage);
         optionsMenuComponents.add(backgroundImage);
@@ -84,7 +84,7 @@ public class OptionsMenuGenerator implements MenuGenerator {
         optionsMenu.addText(invertedMouseOption);
         optionsMenu.addText(invertedMouse);
         //Add shadow quality increase button
-        Button increaseShadowQualityButton = new Button(loader.loadGuiTexture("arrow"), new Vector2f(-0.15f, 0.12f),
+        Button increaseShadowQualityButton = new Button(GeneratorUtil.getTextureFromCache("arrow"), new Vector2f(-0.15f, 0.12f),
                 new Vector2f(0.025f, 0.03f));
         increaseShadowQualityButton.setClickCallback(() -> {
             Config.getInstance().changeShadowLevel(1);
@@ -95,7 +95,7 @@ public class OptionsMenuGenerator implements MenuGenerator {
         increaseShadowQualityButton.setGuiText(shadowLevel);
         optionsMenu.addButton(increaseShadowQualityButton);
         //Add shadow quality decrease button
-        Button decreaseShadowQualityButton = new Button(loader.loadGuiTexture("arrow"), new Vector2f(-0.46f, 0.12f),
+        Button decreaseShadowQualityButton = new Button(GeneratorUtil.getTextureFromCache("arrow"), new Vector2f(-0.46f, 0.12f),
                 new Vector2f(0, 180), new Vector2f(0.025f, 0.03f));
         decreaseShadowQualityButton.setClickCallback(() -> {
             Config.getInstance().changeShadowLevel(-1);
@@ -106,7 +106,7 @@ public class OptionsMenuGenerator implements MenuGenerator {
         decreaseShadowQualityButton.setGuiText(shadowLevel);
         optionsMenu.addButton(decreaseShadowQualityButton);
         //Add inverted mouse control button
-        Button invertedMouseButton = new Button(loader.loadGuiTexture("arrow"), new Vector2f(0.4f, 0.12f),
+        Button invertedMouseButton = new Button(GeneratorUtil.getTextureFromCache("arrow"), new Vector2f(0.4f, 0.12f),
                 new Vector2f(0.025f, 0.03f));
         invertedMouseButton.setClickCallback(() -> {
             Config config = Config.getInstance();
