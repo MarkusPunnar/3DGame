@@ -35,6 +35,7 @@ public class GuiShader extends Shader {
             uniformLocations = new HashMap<>();
         }
         uniformLocations.put("transformationMatrix", List.of(getUniformLocation("transformationMatrix")));
+        uniformLocations.put("transparent", List.of(getUniformLocation("transparent")));
     }
 
     @Override

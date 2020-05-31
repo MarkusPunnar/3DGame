@@ -12,16 +12,14 @@ public class RawModel {
     private int vaoID;
     private int vertexCount;
     private BoundingBox boundingBox;
-    private List<Triangle> triangles;
 
     public RawModel(int vaoID, int vertexCount, BoundingBox box) {
         this.vaoID = vaoID;
         this.vertexCount = vertexCount;
         this.boundingBox = box;
-        this.triangles = createTrianglesFromBox();
     }
 
-    private List<Triangle> createTrianglesFromBox() {
+    public List<Triangle> createTrianglesFromBox() {
         List<Triangle> triangles = new ArrayList<>();
         Vector3f[] vertices = createVerticesFromBox();
         triangles.add(new Triangle(vertices[6], vertices[0], vertices[3]));
@@ -67,13 +65,5 @@ public class RawModel {
 
     public BoundingBox getBoundingBox() {
         return boundingBox;
-    }
-
-    public List<Triangle> getTriangles() {
-        return triangles;
-    }
-
-    public void setTriangles(List<Triangle> triangles) {
-        this.triangles = triangles;
     }
 }

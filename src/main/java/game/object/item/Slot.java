@@ -1,24 +1,12 @@
 package game.object.item;
 
-import game.ui.UIComponent;
-import game.ui.ObjectType;
 import org.joml.Vector2f;
 
-public class Slot extends UIComponent {
+public class Slot {
 
     private Item item;
-    private int normalTextureID;
-    private int hoverTextureID;
-
-    public Slot(int textureID, Vector2f position, Vector2f scale, int hoverTextureID) {
-        super(textureID, position, scale, ObjectType.SLOT);
-        this.normalTextureID = textureID;
-        this.hoverTextureID = hoverTextureID;
-    }
-
-    public Slot() {
-        super(0, null, null, ObjectType.SLOT);
-    }
+    private Vector2f position;
+    private Vector2f scale;
 
     public Item getItem() {
         return item;
@@ -32,27 +20,19 @@ public class Slot extends UIComponent {
         return item == null;
     }
 
-    public void changeTexture() {
-        this.setID(hoverTextureID);
+    public Vector2f getPosition() {
+        return position;
     }
 
-    public void resetTexture() {
-        this.setID(normalTextureID);
+    public void setPosition(Vector2f position) {
+        this.position = position;
     }
 
-    public int getHoverTextureID() {
-        return hoverTextureID;
+    public Vector2f getScale() {
+        return scale;
     }
 
-    public void setHoverTextureID(int hoverTextureID) {
-        this.hoverTextureID = hoverTextureID;
-    }
-
-    public int getNormalTextureID() {
-        return normalTextureID;
-    }
-
-    public void setNormalTextureID(int normalTextureID) {
-        this.normalTextureID = normalTextureID;
+    public void setScale(Vector2f scale) {
+        this.scale = scale;
     }
 }

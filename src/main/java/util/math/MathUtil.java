@@ -3,11 +3,10 @@ package util.math;
 import game.object.RenderObject;
 import game.object.env.Camera;
 import game.object.env.Light;
-import org.joml.*;
-
-import java.lang.Math;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class MathUtil {
 
@@ -81,14 +80,5 @@ public class MathUtil {
             return x2;
         }
         return Float.MAX_VALUE;
-    }
-
-    public static float roundFloat(float value, int precision) {
-        if (precision < 1) {
-            throw new IllegalArgumentException("Precision cannot be less than 1");
-        }
-        BigDecimal valueBd = new BigDecimal(value);
-        valueBd = valueBd.setScale(precision, RoundingMode.HALF_UP);
-        return valueBd.floatValue();
     }
 }

@@ -91,6 +91,10 @@ public abstract class Shader {
         loadInt(getUniformLocations().get(uniformName).get(0), value);
     }
 
+    public void doLoadBoolean(boolean value, String uniformName) {
+        loadBoolean(getUniformLocations().get(uniformName).get(0), value);
+    }
+
     public void doLoadInts(int startingValue, String uniformName) {
         List<Integer> locations = getUniformLocations().get(uniformName);
         for (int i = 0; i < locations.size(); i++) {
@@ -110,7 +114,7 @@ public abstract class Shader {
         glUniform1i(location, value);
     }
 
-    protected void loadFloat(int location, float value) {
+    private void loadFloat(int location, float value) {
         glUniform1f(location, value);
     }
 
@@ -120,6 +124,11 @@ public abstract class Shader {
 
     private void load2DVector(int location, Vector2f vector) {
         glUniform2f(location, vector.x, vector.y);
+    }
+
+    private void loadBoolean(int location, boolean value) {
+        float valueFloat = value ? 0 : 1;
+        glUniform1f(location, valueFloat);
     }
 
 

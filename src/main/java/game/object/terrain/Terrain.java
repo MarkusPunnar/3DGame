@@ -15,6 +15,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import util.GeneratorUtil;
 import util.math.MathUtil;
+import util.math.structure.Triangle;
+
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL13.*;
@@ -31,6 +34,7 @@ public class Terrain extends RenderObject {
     private final TexturedModel texturedModel;
     private final TerrainTexturePack texturePack;
     private final TerrainTexture blendMap;
+    private final List<Triangle> triangles;
 
     private boolean texturesBound;
 
@@ -41,6 +45,7 @@ public class Terrain extends RenderObject {
         this.texturePack = pack;
         this.blendMap = blendMap;
         this.texturesBound = false;
+        this.triangles = texturedModel.getRawModel().createTrianglesFromBox();
         GeneratorUtil.setParentObject(this);
     }
 
@@ -139,5 +144,10 @@ public class Terrain extends RenderObject {
 
     public ObjectType getType() {
         return ObjectType.TERRAIN;
+    }
+
+    @Override
+    public List<Triangle> getTriangles() {
+        return triangles;
     }
 }

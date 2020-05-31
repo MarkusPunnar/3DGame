@@ -57,7 +57,7 @@ public class OctTree {
 
     private void addObject(RenderObject object) {
         Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(object);
-        for (Triangle triangle : object.getModel().getRawModel().getTriangles()) {
+        for (Triangle triangle : object.getTriangles()) {
             Vector3f[] worldVertices = new Vector3f[3];
             for (int i = 0; i < triangle.getVertices().length; i++) {
                 worldVertices[i] =  MathUtil.getCoordinates(new Vector4f(triangle.getVertices()[i], 1.0f).mul(transformationMatrix));

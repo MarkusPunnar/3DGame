@@ -212,7 +212,7 @@ public class Player extends Entity {
     public void interactWithInventory() {
         if (!inventory.isOpen()) {
             logger.atInfo().log("Request to open inventory sent");
-            HandlerState.getInstance().registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0, 0.15f), new Vector2f(0.6f, 0.6f), ObjectType.INVENTORY)));
+            HandlerState.getInstance().registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0, -0.15f), new Vector2f(1.6f, 1.6f), ObjectType.INVENTORY)));
         }
         else {
             logger.atInfo().log("Request to close inventory sent");

@@ -42,7 +42,7 @@ public class MainMenuGenerator implements MenuGenerator {
         mainMenuComponents.add(backgroundImage);
         //add title
         UIComponent gameTitle = new UIComponent(loader.loadGuiTexture("invtitle"), new Vector2f(0, 0.6f),
-                new Vector2f(0.6f, 0.2f), ObjectType.INVENTORY_TITLE);
+                new Vector2f(0.6f, 0.2f), ObjectType.INVENTORY);
         mainMenu.addStaticComponent(gameTitle);
         mainMenuComponents.add(gameTitle);
         //add main menu buttons

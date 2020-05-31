@@ -16,7 +16,7 @@ import java.io.IOException;
 public class GeneratorUtil {
 
     public static void setParentObject(RenderObject object) {
-        for (Triangle triangle : object.getModel().getRawModel().getTriangles()) {
+        for (Triangle triangle : object.getTriangles()) {
             triangle.setParentObject(object);
         }
     }

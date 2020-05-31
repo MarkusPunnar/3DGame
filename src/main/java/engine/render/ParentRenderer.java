@@ -6,6 +6,7 @@ import engine.font.structure.FontType;
 import engine.font.structure.TextMeshData;
 import engine.shader.Shader;
 import engine.shadow.ShadowFrameBuffer;
+import game.object.item.Icon;
 import game.ui.UIComponent;
 import game.state.Game;
 import game.state.State;
@@ -17,7 +18,6 @@ import game.object.env.Light;
 import game.object.terrain.Terrain;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL13;
-import util.GuiComparator;
 import util.ObjectComparator;
 import util.OpenGLUtil;
 
@@ -44,15 +44,17 @@ public class ParentRenderer {
     private Collection<Entity> entityBatches;
     private Collection<Terrain> terrains;
     private Collection<UIComponent> guis;
+    private Collection<Icon> icons;
     private Map<FontType, List<GUIText>> texts;
 
     private Matrix4f projectionMatrix;
 
     public ParentRenderer() throws IOException {
-        this.guis = new TreeSet<>(new GuiComparator());
+        this.guis = new ArrayList<>();
         this.entityBatches = new TreeSet<>(new ObjectComparator());
         this.terrains = new ArrayList<>();
         this.texts = new HashMap<>();
+        this.icons = new ArrayList<>();
         this.guiRenderer = new GuiRenderer();
         this.fontRenderer = new FontRenderer();
     }
@@ -90,8 +92,12 @@ public class ParentRenderer {
         }
     }
 
-    public void processGui(UIComponent gui) {
+    private void processGui(UIComponent gui) {
         guis.add(gui);
+    }
+
+    public void processIcon(Icon icon) {
+        icons.add(icon);
     }
 
     public void processEntities(List<Entity> entities, Player player) {
@@ -110,6 +116,7 @@ public class ParentRenderer {
             doRender(terrainRenderer, terrains, lights);
         }
         doRender(guiRenderer, guis, lights);
+        doRender(guiRenderer, icons, lights);
         for (FontType fontType : texts.keySet()) {
             GL13.glActiveTexture(GL13.GL_TEXTURE0);
             GL13.glBindTexture(GL_TEXTURE_2D, fontType.getTextureAtlas());
@@ -226,5 +233,9 @@ public class ParentRenderer {
 
     public Collection<UIComponent> getGuis() {
         return guis;
+    }
+
+    public Collection<Icon> getIcons() {
+        return icons;
     }
 }

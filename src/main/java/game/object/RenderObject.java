@@ -5,6 +5,11 @@ import engine.model.Model;
 import engine.shader.Shader;
 import game.ui.ObjectType;
 import org.joml.Vector3f;
+import util.math.structure.Triangle;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class RenderObject {
 
@@ -18,12 +23,12 @@ public abstract class RenderObject {
 
     public abstract Vector3f getScaleVector();
 
-    public int getPriority() {
-        return 0;
-    }
-
     public GUIText getGuiText() {
         return null;
+    }
+
+    public List<Triangle> getTriangles() {
+        return Collections.emptyList();
     }
 
     public abstract ObjectType getType();

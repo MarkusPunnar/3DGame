@@ -8,8 +8,11 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import util.GeneratorUtil;
 import util.math.MathUtil;
+import util.math.structure.Triangle;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Entity extends RenderObject {
 
@@ -19,12 +22,14 @@ public class Entity extends RenderObject {
     private Vector3f position;
     private Vector3f rotation;
     private Vector3f scaleVector;
+    private List<Triangle> triangles;
 
     protected Entity(Builder builder) {
         this.texturedModel = builder.texturedModel;
         this.position = builder.position;
         this.rotation = builder.rotation;
         this.scaleVector = builder.scaleVector;
+        this.triangles = texturedModel.getRawModel().createTrianglesFromBox();
         GeneratorUtil.setParentObject(this);
     }
 
@@ -122,6 +127,15 @@ public class Entity extends RenderObject {
     }
 
     @Override
+    public List<Triangle> getTriangles() {
+        return triangles;
+    }
+
+    public void setTriangles(List<Triangle> triangles) {
+        this.triangles = triangles;
+    }
+
+    @Override
     public void prepareObject(Shader shader) {
         Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(getPosition(), getRotation(), getScaleVector());
         shader.doLoadMatrix(transformationMatrix, "transformationMatrix");
@@ -133,8 +147,12 @@ public class Entity extends RenderObject {
 
     @Override
     public boolean equals(Object other) {
-        if (this == other) return true;
-        if (other == null || getClass() != other.getClass()) return false;
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
         Entity entity = (Entity) other;
         return  rotation.equals(entity.getRotation()) &&
                 scaleVector.equals(entity.getScaleVector()) &&

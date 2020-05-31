@@ -11,7 +11,7 @@ public class FontType {
     private int textureAtlas;
     private TextMeshCreator meshCreator;
 
-    public FontType(int textureAtlas) throws IOException, URISyntaxException {
+    public FontType(int textureAtlas) throws IOException {
         this.textureAtlas = textureAtlas;
         this.meshCreator = new TextMeshCreator(new FontFile("gamefont"));
     }

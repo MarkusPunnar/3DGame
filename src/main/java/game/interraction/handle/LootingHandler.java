@@ -6,10 +6,12 @@ import game.state.State;
 import game.interraction.LootableEntity;
 import util.HandlerUtil;
 
+import java.io.IOException;
+
 public class LootingHandler implements Handler {
 
     @Override
-    public void handle() {
+    public void handle() throws IOException {
         if (Game.getInstance().getCurrentState() != State.IN_CHEST) {
             return;
         }

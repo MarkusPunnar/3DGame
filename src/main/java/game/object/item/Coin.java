@@ -25,14 +25,4 @@ public class Coin extends Item {
         this.amount = amount;
     }
 
-    @Override
-    public float getPaddingX() {
-        return 0.01f;
-    }
-
-    @Override
-    public float getPaddingY() {
-        return 0.025f;
-    }
-
 }

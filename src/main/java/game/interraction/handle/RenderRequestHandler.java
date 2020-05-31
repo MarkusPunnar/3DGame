@@ -3,27 +3,26 @@ package game.interraction.handle;
 import com.google.common.flogger.FluentLogger;
 import engine.DisplayManager;
 import engine.font.GUIText;
+import engine.loader.VAOLoader;
 import engine.render.ParentRenderer;
-import game.state.HandlerState;
-import game.interraction.LootableEntity;
-import game.object.RenderObject;
 import engine.render.RenderRequest;
 import engine.render.RequestInfo;
-import game.state.Game;
-import game.state.State;
-import engine.loader.VAOLoader;
-import game.ui.UIComponent;
-import game.ui.ObjectType;
+import game.interraction.Inventory;
+import game.interraction.LootableEntity;
 import game.object.Player;
 import game.object.item.Item;
 import game.object.item.Slot;
+import game.state.Game;
+import game.state.HandlerState;
+import game.state.State;
+import game.ui.ObjectType;
+import game.ui.UIComponent;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import util.math.MathUtil;
+import util.HandlerUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
@@ -67,14 +66,18 @@ public class RenderRequestHandler implements Handler {
                 case REMOVE:
                     switch (requestInfo.getGuiType()) {
                         case INVENTORY:
-                            removeGui(List.of(ObjectType.INVENTORY_TITLE, ObjectType.SLOT, ObjectType.SLOT_HOVER, ObjectType.ICON));
+                            HandlerUtil.removeGui(List.of(ObjectType.INVENTORY, ObjectType.SLOT));
+                            renderer.getIcons().clear();
+                            removeGuiTexts(player.getInventory().getInventorySlots());
                             state.setCurrentState(State.IN_GAME);
                             player.getInventory().setOpen(false);
                             GLFW.glfwSetCursorPos(DisplayManager.getWindow(), DisplayManager.getWidth() / 2f, DisplayManager.getHeight() / 2f);
                             logger.atInfo().log("Player inventory GUI removed");
                             break;
                         case CHEST:
-                            removeGui(List.of(ObjectType.CHEST_TITLE, ObjectType.SLOT, ObjectType.SLOT_HOVER, ObjectType.ICON));
+                            HandlerUtil.removeGui(List.of(ObjectType.CHEST, ObjectType.SLOT));
+                            renderer.getIcons().clear();
+                            removeGuiTexts(HandlerState.getInstance().getLastLooted().getContent());
                             state.setCurrentState(State.IN_GAME);
                             HandlerState.getInstance().setLastLooted(null);
                             GLFW.glfwSetCursorPos(DisplayManager.getWindow(), DisplayManager.getWidth() / 2f, DisplayManager.getHeight() / 2f);
@@ -84,7 +87,7 @@ public class RenderRequestHandler implements Handler {
                     }
                     break;
                 case REMOVE_ITEM:
-                    renderer.getGuis().remove(requestInfo.getObject());
+                    renderer.getIcons().remove(requestInfo.getObject());
                     GUIText removeText = requestInfo.getGuiText();
                     if (removeText != null) {
                         renderer.removeText(removeText);
@@ -104,35 +107,32 @@ public class RenderRequestHandler implements Handler {
         }
     }
 
-    private void removeGui(List<ObjectType> typesToRemove) {
-        for (RenderObject object : new ArrayList<>(renderer.getGuis())) {
-                if (typesToRemove.contains(object.getType())) {
-                    renderer.getGuis().remove(object);
-                    if (object.getGuiText() != null) {
-                        renderer.removeText(object.getGuiText());
-                    }
-                }
+    private void removeGuiTexts(Slot[] slots) {
+        for (Slot inventorySlot : slots) {
+            if (!inventorySlot.isFree() && inventorySlot.getItem().getGuiText() != null) {
+                renderer.removeText(inventorySlot.getItem().getGuiText());
+            }
         }
     }
 
+
     private void renderInventory(RequestInfo requestInfo) throws IOException {
-        float n = 4;
-        float m = 5;
-        renderTitle(n, requestInfo, ObjectType.INVENTORY_TITLE);
-        renderGrid(n, m, requestInfo);
-        renderItems(player.getInventory().getInventorySlots());
+        VAOLoader loader = Game.getInstance().getLoader();
+        Inventory playerInventory = player.getInventory();
+        playerInventory.updateSlots(requestInfo.getTexturePosition(), requestInfo.getTextureScale());
+        renderer.getGuis().add(new UIComponent(loader.loadGuiTexture("inventory"), requestInfo.getTexturePosition(), requestInfo.getTextureScale(), ObjectType.INVENTORY));
+        renderItems(playerInventory.getInventorySlots());
     }
 
     private void renderChestInterface(RequestInfo requestInfo) throws IOException {
-        float n = 4;
-        float m = 5;
-        renderTitle(n, requestInfo, ObjectType.CHEST_TITLE);
-        renderGrid(n, m, requestInfo);
-        renderChestItems();
+        VAOLoader loader = Game.getInstance().getLoader();
+        LootableEntity lastLootable = HandlerState.getInstance().getLastLooted();
+        lastLootable.updateSlots(requestInfo.getTexturePosition(), requestInfo.getTextureScale());
+        renderer.getGuis().add(new UIComponent(loader.loadGuiTexture("inventory"), requestInfo.getTexturePosition(), requestInfo.getTextureScale(), ObjectType.CHEST));
+        renderChestItems(lastLootable);
     }
 
-    private void renderChestItems() {
-        LootableEntity lastLootable = HandlerState.getInstance().getLastLooted();
+    private void renderChestItems(LootableEntity lastLootable) {
         if (lastLootable == null) {
             return;
         }
@@ -144,59 +144,18 @@ public class RenderRequestHandler implements Handler {
         for (Slot slot : content) {
             Item slotItem = slot.getItem();
             if (slotItem != null) {
-                GUIText itemText = slot.getGuiText();
+                GUIText itemText = slotItem.getGuiText();
                 Vector3f iconPosition = slotItem.getIcon().getPosition();
+                Vector2f textPosition = new Vector2f((1 + iconPosition.x) / 2f + slotItem.getIcon().getScaleVector().x * 0.15f,
+                        Math.abs(iconPosition.y - 1) / 2f + slotItem.getIcon().getScaleVector().y * 0.2f);
                 if (itemText == null) {
-                    Vector2f textPosition = new Vector2f((1 + iconPosition.x) / 2f + slotItem.getPaddingX(), Math.abs(iconPosition.y - 1) / 2f + slotItem.getPaddingY());
-                    itemText = new GUIText.Builder(String.valueOf(slotItem.getAmount())).position(textPosition).fontSize(0.6f).build();
-                    slot.setGuiText(itemText);
+                    itemText = new GUIText.Builder(String.valueOf(slotItem.getAmount())).position(textPosition).fontSize(0.5f).colour(new Vector3f()).build();
+                    slotItem.setGuiText(itemText);
                 } else {
-                    itemText.setPosition(new Vector2f((1 + iconPosition.x) / 2f + slotItem.getPaddingX(), Math.abs(iconPosition.y - 1) / 2f + slotItem.getPaddingY()));
+                    itemText.setPosition(textPosition);
                 }
-                renderer.processGui(slotItem.getIcon());
+                renderer.processIcon(slotItem.getIcon());
                 renderer.loadText(itemText);
-            }
-        }
-    }
-
-    private void renderTitle(float n, RequestInfo requestInfo, ObjectType titleType) throws IOException {
-        VAOLoader loader = Game.getInstance().getLoader();
-        int titleTextureID = loader.loadGuiTexture(titleType.getTextureName());
-        Vector2f position = requestInfo.getTexturePosition();
-        Vector2f scale = requestInfo.getTextureScale();
-        float height = scale.y / n;
-        float titleY = position.y + scale.y - height;
-        Vector2f titlePosition = new Vector2f(position.x, titleY);
-        Vector2f titleScale = new Vector2f(scale.x, height);
-        renderer.processGui(new UIComponent(titleTextureID, titlePosition, titleScale, titleType));
-    }
-
-    private void renderGrid(float n, float m, RequestInfo requestInfo) throws IOException {
-        Vector2f scale = requestInfo.getTextureScale();
-        Vector2f position = requestInfo.getTexturePosition();
-        VAOLoader loader = Game.getInstance().getLoader();
-        int slotTextureID = loader.loadGuiTexture(ObjectType.SLOT.getTextureName());
-        int slotHoverTextureID = loader.loadGuiTexture(ObjectType.SLOT_HOVER.getTextureName());
-        float slotWidth = (2 * scale.x) / m;
-        float slotHeight = (2 * scale.y) / n;
-        Vector2f upperLeftCorner = new Vector2f(position.x - scale.x, position.y + scale.y - slotHeight);
-        Vector2f slotScale = new Vector2f(slotWidth / 2, slotHeight / 2);
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                Vector2f slotPosition = new Vector2f(MathUtil.roundFloat(upperLeftCorner.x + (j + 0.5f) * slotWidth, 4),
-                        MathUtil.roundFloat(upperLeftCorner.y - (i + 0.5f) * slotHeight, 4));
-                Slot slot;
-                if (requestInfo.getGuiType() == ObjectType.INVENTORY) {
-                    slot = player.getInventory().initSlot(slotTextureID, slotHoverTextureID, slotPosition, slotScale, i * (int) m + j);
-                }
-                else {
-                    LootableEntity currentLootable = HandlerState.getInstance().getLastLooted();
-                    if (currentLootable == null) {
-                        return;
-                    }
-                    slot = currentLootable.initSlot(slotTextureID, slotHoverTextureID, slotPosition, slotScale, i * (int) m + j);
-                }
-                renderer.processGui(slot);
             }
         }
     }

@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface Generator {
 
-    List<? extends RenderObject> generate() throws IOException, URISyntaxException;
+    List<? extends RenderObject> generate() throws IOException;
 }

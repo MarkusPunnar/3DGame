@@ -26,7 +26,7 @@ public class CollisionUtil {
         Set<Triangle> closeTriangles = Game.getInstance().getCurrentTree().getCloseTriangles(checkBox);
         for (RenderObject object : renderedObjects) {
             Matrix4f transformationMatrix = MathUtil.createTransformationMatrix(object);
-            List<Triangle> objectTriangles = object.getModel().getRawModel().getTriangles();
+            List<Triangle> objectTriangles = object.getTriangles();
             for (Triangle triangle : objectTriangles) {
                 Triangle worldTriangle = new Triangle(CollisionUtil.convertToWorld(transformationMatrix, triangle));
                 if (closeTriangles.contains(worldTriangle)) {

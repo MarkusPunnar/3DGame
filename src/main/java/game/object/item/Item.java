@@ -1,12 +1,14 @@
 package game.object.item;
 
 import com.google.common.flogger.FluentLogger;
+import engine.font.GUIText;
 
 public abstract class Item {
 
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private Icon icon;
+    private GUIText guiText;
 
     public Item(Icon itemIcon) {
         this.icon = itemIcon;
@@ -24,10 +26,6 @@ public abstract class Item {
 
     public abstract void setAmount(int amount);
 
-    public abstract float getPaddingX();
-
-    public abstract float getPaddingY();
-
     public boolean stack(Item otherItem) {
         if (!isStackable()) {
             logger.atInfo().log("This item is not stackable");
@@ -40,5 +38,13 @@ public abstract class Item {
         this.setAmount(this.getAmount() + otherItem.getAmount());
         logger.atInfo().log("Stacked items successfully");
         return true;
+    }
+
+    public void setGuiText(GUIText guiText) {
+        this.guiText = guiText;
+    }
+
+    public GUIText getGuiText() {
+        return guiText;
     }
 }

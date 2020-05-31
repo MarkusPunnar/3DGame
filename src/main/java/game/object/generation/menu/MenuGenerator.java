@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface MenuGenerator extends Generator {
 
+    @Override
     List<UIComponent> generate() throws IOException;
 }

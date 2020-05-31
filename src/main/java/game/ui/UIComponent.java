@@ -17,15 +17,13 @@ public class UIComponent extends RenderObject {
 
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-    private static int INCREMENT = 0;
-
     private int textureID;
     private Vector2f position;
     private Vector2f rotation;
     private Vector2f scale;
     private ObjectType type;
-    private int priority;
     private GUIText guiText;
+    private boolean isTransparent;
 
     public UIComponent(int textureID, Vector2f position, Vector2f scale, ObjectType type) {
         this(textureID, position, new Vector2f(), scale, type);
@@ -37,11 +35,6 @@ public class UIComponent extends RenderObject {
         this.rotation = rotation;
         this.scale = scale;
         this.type = type;
-        this.priority = INCREMENT;
-        if (type == ObjectType.ICON) {
-            this.priority += 1000;
-        }
-        INCREMENT++;
     }
 
     @Override
@@ -76,6 +69,7 @@ public class UIComponent extends RenderObject {
     public void prepareObject(Shader shader) {
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+        shader.doLoadBoolean(isTransparent, "transparent");
         shader.doLoadMatrix(MathUtil.createTransformationMatrix(getPosition(), getRotation(),  getScaleVector()), "transformationMatrix");
     }
 
@@ -95,10 +89,6 @@ public class UIComponent extends RenderObject {
         this.scale = scale;
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -109,7 +99,6 @@ public class UIComponent extends RenderObject {
         }
         UIComponent that = (UIComponent) other;
         return textureID == that.textureID &&
-                priority == that.priority &&
                 Objects.equals(position, that.position) &&
                 Objects.equals(scale, that.scale) &&
                 type == that.type;
@@ -117,7 +106,7 @@ public class UIComponent extends RenderObject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(textureID, position, scale, type, priority);
+        return Objects.hash(textureID, position, scale, type);
     }
 
     public GUIText getGuiText() {
@@ -126,5 +115,9 @@ public class UIComponent extends RenderObject {
 
     public void setGuiText(GUIText guiText) {
         this.guiText = guiText;
+    }
+
+    public void setTransparent(boolean transparent) {
+        isTransparent = transparent;
     }
 }

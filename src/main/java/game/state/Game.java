@@ -5,6 +5,7 @@ import engine.DisplayManager;
 import engine.font.structure.FontType;
 import engine.loader.VAOLoader;
 import engine.render.ParentRenderer;
+import engine.texture.TextureCache;
 import game.ui.menu.Button;
 import game.ui.menu.Menu;
 import game.ui.UIComponent;
@@ -29,10 +30,8 @@ import util.octree.BoundingBox;
 import util.octree.OctTree;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -56,6 +55,7 @@ public class Game {
     private Player player;
     private MenuType currentMenu;
     private MenuCache menuCache;
+    private TextureCache textureCache;
     private FontType gameFont;
 
     private Game() {
@@ -68,10 +68,11 @@ public class Game {
         return INSTANCE;
     }
 
-    public void init() throws IOException, URISyntaxException {
+    public void init() throws IOException {
         currentState = State.IN_MENU;
         loader = new VAOLoader();
         menuCache = new MenuCache();
+        textureCache = new TextureCache();
         renderer = new ParentRenderer();
         currentMenu = MenuType.MAIN_MENU;
         gameFont = new FontType(Game.getInstance().getLoader().loadFontAtlas("gamefont"));
@@ -109,10 +110,11 @@ public class Game {
         renderer.removeTexts(menuCache.getFromCache(currentMenu).getMenuTexts());
     }
 
-    public void loadGame() throws IOException, URISyntaxException {
+    public void loadGame() throws IOException {
         activeHandlers.clear();
         renderer.getGuis().clear();
         currentState = State.IN_GAME;
+        currentMenu = null;
         activeLights.add(new Light(new Vector3f(3000, 5000, 3000), new Vector3f(1), false, null));
         loadRenderObjects();
         initGameCallbacks();
@@ -126,7 +128,7 @@ public class Game {
         logger.atInfo().log("Octree initialized with %d objects", activeObjects.size());
     }
 
-    private void loadRenderObjects() throws IOException, URISyntaxException {
+    private void loadRenderObjects() throws IOException {
         TavernGenerator tavernGenerator = new TavernGenerator();
         TerrainGenerator terrainGenerator = new TerrainGenerator();
         player = tavernGenerator.generatePlayer();
@@ -150,7 +152,10 @@ public class Game {
 
     private void initMenuCallbacks() {
         GLFW.glfwSetMouseButtonCallback(DisplayManager.getWindow(), ((window, button, action, mods) -> {
-            if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+            if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && Game.getInstance().getCurrentState() == State.IN_MENU) {
+                if (currentMenu == null) {
+                    return;
+                }
                 Button activeButton = menuCache.getFromCache(currentMenu).getActiveButton(mousePicker.calculateDeviceCoords());
                 if (activeButton != null) {
                     try {
@@ -183,7 +188,6 @@ public class Game {
     }
 
     public void update() throws IOException {
-        logger.atInfo().atMostEvery(5, TimeUnit.SECONDS).log("Current FPS: %d", ((int) (1 / DisplayManager.getFrameTime())));
         if (currentState != State.IN_MENU) {
             updateGame();
         }
@@ -251,5 +255,9 @@ public class Game {
 
     public FontType getGameFont() {
         return gameFont;
+    }
+
+    public TextureCache getTextureCache() {
+        return textureCache;
     }
 }

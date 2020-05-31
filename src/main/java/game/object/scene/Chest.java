@@ -9,7 +9,6 @@ import engine.render.RequestType;
 import game.ui.ObjectType;
 import engine.model.TexturedModel;
 import game.interraction.LootableEntity;
-import game.object.item.Icon;
 import game.object.item.Item;
 import game.object.item.Slot;
 import org.joml.Vector2f;
@@ -78,29 +77,12 @@ public class Chest extends LootableEntity {
         handlerState.setLastLooted(this);
         logger.atInfo().log("Handling GUI changes for game.object of type %s", getClass().getSimpleName());
         if (isOpened) {
-            handlerState.registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(-0.5f, 0.2f), new Vector2f(0.4f, 0.6f), ObjectType.INVENTORY)));
-            handlerState.registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0.5f, 0.2f), new Vector2f(0.4f, 0.6f), ObjectType.CHEST)));
+            handlerState.registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(-0.55f, -0.2f), new Vector2f(1f, 1.2f), ObjectType.INVENTORY)));
+            handlerState.registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0.45f, -0.2f), new Vector2f(1f, 1.2f), ObjectType.CHEST)));
         } else {
             handlerState.registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(ObjectType.INVENTORY)));
             handlerState.registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(ObjectType.CHEST)));
         }
-    }
-
-
-    public Slot initSlot(int textureID, int hoverID, Vector2f position, Vector2f scale, int index) {
-        Slot slot = content[index];
-        slot.setID(textureID);
-        slot.setNormalTextureID(textureID);
-        slot.setHoverTextureID(hoverID);
-        slot.setPosition(position);
-        slot.setScale(scale);
-        slot.setType(ObjectType.SLOT);
-        if (slot.getItem() != null) {
-            Icon itemIcon = slot.getItem().getIcon();
-            itemIcon.setPosition(new Vector2f(slot.getPosition().x, slot.getPosition().y));
-            itemIcon.setScale(new Vector2f(slot.getScaleVector().x / 1.3f, slot.getScaleVector().y / 1.3f));
-        }
-        return slot;
     }
 
     public boolean addItem(Item item) {
