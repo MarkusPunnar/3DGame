@@ -31,7 +31,7 @@ float directionalShadowCalculation(vec4 shadowCoords) {
     projectedCoords = projectedCoords * 0.5 + 0.5;
     float closestDepth = texture(shadowMap, projectedCoords.xy).r;
     float currentDepth = projectedCoords.z;
-    float bias = 0.00005;
+    float bias = 0.001;
     return closestDepth < currentDepth - bias ? 1.0 : 0.0;
 }
 

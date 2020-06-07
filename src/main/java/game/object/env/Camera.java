@@ -11,7 +11,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import util.CameraUtil;
 
 import java.util.List;
 
@@ -30,12 +29,14 @@ public class Camera {
 
     private Vector3f position;
     private float pitch;
+    private float yaw;
     private Vector3f movementCache;
     private CameraState state;
 
     public Camera() {
         this.position = new Vector3f();
         pitch = 10;
+        yaw = 180;
         if (glfwRawMouseMotionSupported()) {
             glfwSetInputMode(DisplayManager.getWindow(), GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
             logger.atInfo().log("Enabled raw mouse motion");
@@ -52,13 +53,15 @@ public class Camera {
     }
 
     public void move(List<RenderObject> renderObjects) {
+        yaw %= 360;
         Vector2f mouseCoords = Game.getInstance().getMousePicker().calculateDeviceCoords();
         pitch += Config.getInstance().getInvertedMouse() * mouseCoords.y * PITCH_SPEED;
         pitch = Math.max(Math.min(pitch, MAX_PITCH), MIN_PITCH);
         float horizontalRotation = -mouseCoords.x * YAW_SPEED;
         getPlayer().getRotation().y += (Math.abs(horizontalRotation)) < 10 ? horizontalRotation : Math.signum(horizontalRotation) * 8;
+        yaw = 180 - getPlayer().getRotation().y;
         GLFW.glfwSetCursorPos(DisplayManager.getWindow(), DisplayManager.getWidth() / 2f, DisplayManager.getHeight() / 2f);
-        CameraUtil.calculateCameraPosition(this, renderObjects);
+        CameraUtil.calculateCameraPosition(renderObjects);
     }
 
     public Player getPlayer() {
@@ -80,6 +83,10 @@ public class Camera {
 
     public float getPitch() {
         return pitch;
+    }
+
+    public float getYaw() {
+        return yaw;
     }
 
     public void setPosition(Vector3f position) {

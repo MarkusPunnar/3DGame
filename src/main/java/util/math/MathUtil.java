@@ -1,8 +1,8 @@
 package util.math;
 
+import engine.shadow.ShadowBox;
 import game.object.RenderObject;
 import game.object.env.Camera;
-import game.object.env.Light;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -25,10 +25,11 @@ public class MathUtil {
     }
 
     public static Matrix4f createViewMatrix(Camera camera) {
-        Matrix4f matrix = new Matrix4f();
-        Vector3f cameraPos = camera.getPosition();
-        Vector3f playerPos = camera.getPlayer().getPosition();
-        return matrix.lookAt(cameraPos, new Vector3f(playerPos.x, playerPos.y + 20, playerPos.z), new Vector3f(0, 1, 0));
+        Matrix4f viewMatrix = new Matrix4f();
+        viewMatrix.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0));
+        viewMatrix.rotate((float) Math.toRadians(camera.getYaw()), new Vector3f(0, 1, 0));
+        viewMatrix.translate(camera.getPosition().negate(new Vector3f()));
+        return viewMatrix;
     }
 
     public static Matrix3f getEllipticMatrix(Vector3f hitbox) {
@@ -47,9 +48,12 @@ public class MathUtil {
         return matrix;
     }
 
-    public static Matrix4f getLightSpaceMatrix(Light sun, Camera camera) {
-        Matrix4f orthoProjectionMatrix = new Matrix4f().orthoSymmetric(500, 500, 1, 15000);
-        Matrix4f lightViewMatrix = new Matrix4f().lookAt(sun.getPosition(),camera.getPosition(), new Vector3f(0, 1, 0));
+    public static Matrix4f getLightSpaceMatrix(ShadowBox shadowBox) {
+        Matrix4f orthoProjectionMatrix = new Matrix4f();
+        orthoProjectionMatrix.set(0, 0, 2f / (shadowBox.getWidth() * 1.4f));
+        orthoProjectionMatrix.set(1, 1, 2f / (shadowBox.getHeight() * 1.4f));
+        orthoProjectionMatrix.set(2, 2, -2f / (shadowBox.getLength() * 1.4f));
+        Matrix4f lightViewMatrix = shadowBox.getLightViewMatrix();
         return orthoProjectionMatrix.mul(lightViewMatrix, new Matrix4f());
     }
 

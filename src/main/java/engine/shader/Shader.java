@@ -1,5 +1,6 @@
 package engine.shader;
 
+import engine.shadow.ShadowBox;
 import game.object.env.Light;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -7,23 +8,25 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.system.MemoryStack;
 
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.system.MemoryStack.stackPush;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Map;
 
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
+
 public abstract class Shader {
 
+    protected static ShadowBox shadowBox;
     protected final int MAX_LIGHTS = 10;
 
     private int programID;
     private int vertexShaderID;
     private int geometryShaderID;
     private int fragmentShaderID;
+
 
     public Shader(String vertexFile, String fragmentFile, String geometryFile) throws IOException {
         vertexShaderID = loadShader(vertexFile, GL_VERTEX_SHADER);
@@ -41,6 +44,9 @@ public abstract class Shader {
         initUniformLocations();
     }
 
+    public static void initShadowBox() {
+        shadowBox = new ShadowBox();
+    }
 
     public void start() {
         glUseProgram(programID);

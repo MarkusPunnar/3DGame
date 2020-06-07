@@ -2,10 +2,11 @@ package game.object.env;
 
 import engine.shadow.ShadowFrameBuffer;
 import game.object.Player;
+import game.state.Game;
 import org.joml.Vector3f;
 import util.octree.BoundingBox;
 
-public class Light {
+public class Light implements Comparable<Light> {
 
     private Vector3f position;
     private Vector3f colour;
@@ -72,5 +73,18 @@ public class Light {
                 new Vector3f(playerPos.x + 1, playerPos.y + 1, playerPos.z + 1));
         return !isInitialized || activeRegion == null || playerBox.isEmbeddedIn(activeRegion)
                 || playerBox.intersectsWith(activeRegion);
+    }
+
+
+    @Override
+    public int compareTo(Light other) {
+        if (!isPointLight) {
+            return -1;
+        }
+        if (!other.isPointLight()) {
+            return 1;
+        }
+        Vector3f playerPos = Game.getInstance().getPlayer().getPosition();
+        return (int) (playerPos.distanceSquared(position) - playerPos.distanceSquared(other.getPosition()));
     }
 }

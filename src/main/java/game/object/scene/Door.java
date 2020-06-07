@@ -2,10 +2,10 @@ package game.object.scene;
 
 import com.google.common.flogger.FluentLogger;
 import engine.model.TexturedModel;
+import game.object.Entity;
 import game.state.Game;
 import game.interraction.InteractableEntity;
 import org.joml.Vector3f;
-import util.FacingDirection;
 
 public class Door extends InteractableEntity {
 
@@ -31,6 +31,18 @@ public class Door extends InteractableEntity {
             return this;
         }
 
+        @Override
+        public Builder scale(Vector3f scale) {
+            super.scale(scale);
+            return this;
+        }
+
+        @Override
+        public Builder rotationY(float rotationY) {
+            super.rotationY(rotationY);
+            return this;
+        }
+
         public Door build() {
             return new Door(this);
         }
@@ -47,11 +59,11 @@ public class Door extends InteractableEntity {
                 switch (facingDirection) {
                     case WEST:
                         increaseRotation(0, 90, 0);
-                        increasePosition(-7, 0, 6.5f);
+                        increasePosition(-7 * getScaleVector().x, 0, 6.5f * getScaleVector().z);
                         break;
                     case EAST:
                         increaseRotation(0, -90, 0);
-                        increasePosition(7, 0, 6.5f);
+                        increasePosition(7 * getScaleVector().x, 0, 6.5f * getScaleVector().z);
                         break;
                     default:
                 }
@@ -63,11 +75,11 @@ public class Door extends InteractableEntity {
                 switch (facingDirection) {
                     case WEST:
                         increaseRotation(0, -90, 0);
-                        increasePosition(7, 0, -6.5f);
+                        increasePosition(7 * getScaleVector().x, 0, -6.5f * getScaleVector().z);
                         break;
                     case EAST:
                         increaseRotation(0, 90, 0);
-                        increasePosition(-7, 0, -6.5f);
+                        increasePosition(-7 * getScaleVector().x, 0, -6.5f * getScaleVector().z);
                         break;
                     default:
                 }

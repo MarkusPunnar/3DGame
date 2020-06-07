@@ -28,10 +28,11 @@ public class TerrainGenerator implements Generator {
         TerrainTexture blueTexture = new TerrainTexture(loader.loadTerrainTexture("path"));
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, redTexture, greenTexture, blueTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTerrainTexture("blendMap"));
-        terrains.add(new Terrain(-1, -1, loader, test, texturePack, blendMap));
-        terrains.add(new Terrain(0,0, loader, test, texturePack, blendMap));
-        terrains.add(new Terrain(-1,0, loader, test, texturePack, blendMap));
-        terrains.add(new Terrain(0,-1, loader, test ,texturePack, blendMap));
+        for (int i = -2; i < 3; i++) {
+            for (int j = -2; j < 3; j++) {
+                terrains.add(new Terrain(i, j, loader, test, texturePack, blendMap));
+            }
+        }
         logger.atInfo().log("%s - Entities generated", getClass().getSimpleName());
         return terrains;
     }

@@ -9,14 +9,13 @@ import game.object.env.LightEntity;
 import game.object.item.Coin;
 import game.object.scene.Chest;
 import game.object.scene.Door;
-import util.FacingDirection;
+import game.object.scene.FacingDirection;
 import engine.loader.ObjectLoader;
 import game.object.Player;
 import engine.model.TexturedModel;
 import engine.model.data.ModelData;
 import org.joml.Vector3f;
 import engine.model.ModelTexture;
-import util.GeneratorUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,7 +61,7 @@ public class TavernGenerator implements Generator {
         //Generate nightstands
         roomEntities.addAll(generateNightstands());
         //Generate lanterns
-        roomEntities.addAll(generateLanterns(Game.getInstance().getActiveLights()));
+//        roomEntities.addAll(generateLanterns());
         //Generate cabinets
         roomEntities.addAll(generateCabinets());
         //Generate shelves
@@ -88,7 +87,8 @@ public class TavernGenerator implements Generator {
         return cabinets;
     }
 
-    private List<Entity> generateLanterns(List<Light> lights) throws IOException {
+    private List<Entity> generateLanterns() throws IOException {
+        List<Light> lights = Game.getInstance().getActiveLights();
         List<Entity> lanterns = new ArrayList<>();
         TexturedModel lanternModel = GeneratorUtil.getTexturedModel("lantern");
         Vector3f lanternAttenuation = new Vector3f(0.8f, 0.0005f, 0.0001f);
@@ -96,35 +96,39 @@ public class TavernGenerator implements Generator {
         //Room lanterns
         LightEntity lantern = new LightEntity.Builder(lanternModel, new Vector3f(31, 48.5f, 50)).colour(lanternLightColour).attenuation(lanternAttenuation)
                 .offset(new Vector3f(-5, 7, 0)).regionMin(new Vector3f(-40, 34.5f, 27))
-                .regionMax(new Vector3f(31, 67, 70)).pointLight(true).build();
+                .regionMax(new Vector3f(31, 67, 70)).pointLight(true).scale(new Vector3f(0.8f)).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         lantern = new LightEntity.Builder(lanternModel, new Vector3f(31, 48.5f, 3.5f)).colour(lanternLightColour).attenuation(lanternAttenuation)
                 .offset(new Vector3f(-5, 7, 0)).regionMin(new Vector3f(-40, 34.5f, -20))
-                .regionMax(new Vector3f(31, 67, 22)).pointLight(true).build();
+                .regionMax(new Vector3f(31, 67, 22)).pointLight(true).scale(new Vector3f(0.8f)).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         lantern = new LightEntity.Builder(lanternModel, new Vector3f(31, 48.5f, -43)).colour(lanternLightColour).attenuation(lanternAttenuation)
                 .offset(new Vector3f(-5, 7, 0)).regionMin(new Vector3f(-40, 34.5f, -65))
-                .regionMax(new Vector3f(31, 67, -25)).pointLight(true).build();
+                .regionMax(new Vector3f(31, 67, -25)).pointLight(true).scale(new Vector3f(0.8f)).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         //Second floor lanterns
-        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-42.5f, 55, 95)).colour(lanternLightColour).attenuation(lanternAttenuation)
-                .offsetX(7).regionMin(new Vector3f(-40, 34.5f, 27)).regionMax(new Vector3f(92, 67, 121)).pointLight(true).build();
+        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-42.5f, 54.9f, 97)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .offsetX(7).regionMin(new Vector3f(-40, 34.5f, 27)).regionMax(new Vector3f(92, 67, 121))
+                .pointLight(true).scale(new Vector3f(0.8f)).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
-        lantern = new LightEntity.Builder(lanternModel, new Vector3f(93, 55, 95)).colour(lanternLightColour).attenuation(lanternAttenuation)
-                .offsetX(-7).regionMin(new Vector3f(0, 0, 67)).regionMax(new Vector3f(new Vector3f(92, 67, 121))).pointLight(true).build();
+        lantern = new LightEntity.Builder(lanternModel, new Vector3f(94.2f, 49, 97)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .offsetX(-7).regionMin(new Vector3f(0, 0, 67)).regionMax(new Vector3f(new Vector3f(92, 67, 121)))
+                .pointLight(true).scale(new Vector3f(0.8f)).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         //First floor lanterns
-        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-7, 20, 123.5f)).colour(lanternLightColour).attenuation(lanternAttenuation)
-                .regionMin(new Vector3f(-40, -1, 27)).regionMax(new Vector3f(40, 30, 121)).offsetZ(-5).pointLight(true).build();
+        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-6.8f, 19.7f, 124)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .regionMin(new Vector3f(-40, -1, 27)).regionMax(new Vector3f(40, 30, 121)).offsetZ(-5)
+                .pointLight(true).scale(new Vector3f(0.8f)).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
-        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-42, 20, -5)).colour(lanternLightColour).attenuation(lanternAttenuation)
-                .regionMin(new Vector3f(-50, -1, -65)).regionMax(new Vector3f(31, 30, 62)).offsetX(5).pointLight(true).build();
+        lantern = new LightEntity.Builder(lanternModel, new Vector3f(-42.7f, 22.5f, -12.15f)).colour(lanternLightColour).attenuation(lanternAttenuation)
+                .regionMin(new Vector3f(-50, -1, -65)).regionMax(new Vector3f(31, 30, 62))
+                .offsetX(5).pointLight(true).scale(new Vector3f(0.8f)).build();
         lights.add(lantern.getLight());
         lanterns.add(lantern);
         return lanterns;
@@ -192,6 +196,6 @@ public class TavernGenerator implements Generator {
     public Player generatePlayer() throws IOException {
         ModelTexture purpleTexture = new ModelTexture(Game.getInstance().getLoader().loadObjectTexture("purple"));
         TexturedModel playerModel = GeneratorUtil.getTexturedModel("player", purpleTexture);
-        return new Player.Builder(playerModel, new Vector3f(-25, 34.5f, -50)).scale(new Vector3f(3)).build();
+        return new Player.Builder(playerModel, new Vector3f(-240, 9, 64)).scale(new Vector3f(3)).build();
     }
 }

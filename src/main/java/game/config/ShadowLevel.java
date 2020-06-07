@@ -4,7 +4,7 @@ public enum ShadowLevel {
 
     LOW(1024, "Low"),
     MEDIUM(2048, "Medium"),
-    HIGH(4096, "High");
+    HIGH(8192, "High");
 
     private final int resolution;
     private final String levelAsString;

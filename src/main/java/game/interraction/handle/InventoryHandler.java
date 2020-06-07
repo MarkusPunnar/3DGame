@@ -6,7 +6,6 @@ import game.interraction.LootableEntity;
 import game.object.Player;
 import game.object.item.Slot;
 import game.ui.ObjectType;
-import util.HandlerUtil;
 
 import java.io.IOException;
 import java.util.List;

@@ -13,7 +13,7 @@ import org.joml.Vector3f;
 import engine.loader.VAOLoader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import util.GeneratorUtil;
+import game.object.generation.GeneratorUtil;
 import util.math.MathUtil;
 import util.math.structure.Triangle;
 

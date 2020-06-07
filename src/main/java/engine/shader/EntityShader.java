@@ -1,9 +1,9 @@
 package engine.shader;
 
 import com.google.common.flogger.FluentLogger;
-import game.state.Game;
 import game.object.env.Camera;
 import game.object.env.Light;
+import game.state.Game;
 import util.math.MathUtil;
 
 import java.io.IOException;
@@ -31,8 +31,9 @@ public class EntityShader extends Shader {
     @Override
     public void loadUniforms(List<Light> lights) {
         Camera camera = Game.getInstance().getPlayerCamera();
+        loadLights(lights, uniformLocations);
         doLoadMatrix(MathUtil.createViewMatrix(camera), "viewMatrix");
-        doLoadMatrix(MathUtil.getLightSpaceMatrix(lights.get(0), camera), "lightSpaceMatrix");
+        doLoadMatrix(MathUtil.getLightSpaceMatrix(shadowBox), "lightSpaceMatrix");
         doLoadFloat(PointShadowShader.FAR_PLANE, "farPlane");
     }
 

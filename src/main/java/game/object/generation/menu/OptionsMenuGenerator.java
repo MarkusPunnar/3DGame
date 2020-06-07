@@ -15,7 +15,7 @@ import game.ui.menu.Menu;
 import game.ui.menu.MenuCache;
 import game.ui.menu.MenuType;
 import org.joml.Vector2f;
-import util.GeneratorUtil;
+import game.object.generation.GeneratorUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;

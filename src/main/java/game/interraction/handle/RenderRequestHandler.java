@@ -19,8 +19,7 @@ import game.ui.UIComponent;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import util.GeneratorUtil;
-import util.HandlerUtil;
+import game.object.generation.GeneratorUtil;
 
 import java.io.IOException;
 import java.util.List;

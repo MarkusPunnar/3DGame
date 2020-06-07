@@ -21,10 +21,9 @@ public class EntityRenderer implements Renderer {
     private Shader shader;
     private Model currentTexture;
 
-    public EntityRenderer(Matrix4f projectionMatrix, List<Light> lights) throws IOException {
+    public EntityRenderer(Matrix4f projectionMatrix) throws IOException {
         this.shader = new EntityShader();
         shader.start();
-        shader.loadLights(lights, shader.getUniformLocations());
         shader.doLoadMatrix(projectionMatrix, "projectionMatrix");
         shader.doLoadInt(5, "shadowMap");
         shader.doLoadInts(6, "shadowCube");

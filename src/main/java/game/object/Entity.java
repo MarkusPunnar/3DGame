@@ -6,13 +6,12 @@ import engine.shader.Shader;
 import game.ui.ObjectType;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import util.GeneratorUtil;
+import game.object.generation.GeneratorUtil;
 import util.math.MathUtil;
 import util.math.structure.Triangle;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class Entity extends RenderObject {
 

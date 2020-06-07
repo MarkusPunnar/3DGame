@@ -28,7 +28,8 @@ public class DirectionalShadowShader extends Shader {
 
     @Override
     public void loadUniforms(List<Light> lights) {
-        doLoadMatrix(MathUtil.getLightSpaceMatrix(lights.get(0), Game.getInstance().getPlayerCamera()), "lightSpaceMatrix");
+        shadowBox.update();
+        doLoadMatrix(MathUtil.getLightSpaceMatrix(shadowBox), "lightSpaceMatrix");
     }
 
     @Override

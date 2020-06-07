@@ -4,7 +4,6 @@ import game.state.Game;
 import game.state.HandlerState;
 import game.state.State;
 import game.interraction.LootableEntity;
-import util.HandlerUtil;
 
 import java.io.IOException;
 

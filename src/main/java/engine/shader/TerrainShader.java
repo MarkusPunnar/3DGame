@@ -32,8 +32,9 @@ public class TerrainShader extends Shader {
     @Override
     public void loadUniforms(List<Light> lights) {
         Camera camera = Game.getInstance().getPlayerCamera();
+        loadLights(lights, uniformLocations);
         doLoadMatrix(MathUtil.createViewMatrix(camera), "viewMatrix");
-        doLoadMatrix(MathUtil.getLightSpaceMatrix(lights.get(0), camera), "lightSpaceMatrix");
+        doLoadMatrix(MathUtil.getLightSpaceMatrix(shadowBox), "lightSpaceMatrix");
     }
 
     @Override

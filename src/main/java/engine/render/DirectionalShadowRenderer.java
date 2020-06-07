@@ -16,8 +16,8 @@ public class DirectionalShadowRenderer extends EntityRenderer {
 
     private Shader shadowShader;
 
-    public DirectionalShadowRenderer(Matrix4f projectionMatrix, List<Light> lights) throws IOException {
-        super(projectionMatrix, lights);
+    public DirectionalShadowRenderer(Matrix4f projectionMatrix) throws IOException {
+        super(projectionMatrix);
         shadowShader = new DirectionalShadowShader();
     }
 

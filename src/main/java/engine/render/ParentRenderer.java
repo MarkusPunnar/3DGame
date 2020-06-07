@@ -7,6 +7,7 @@ import engine.font.structure.TextMeshData;
 import engine.shader.Shader;
 import engine.shadow.ShadowFrameBuffer;
 import game.object.item.Icon;
+import game.ui.ObjectType;
 import game.ui.UIComponent;
 import game.state.Game;
 import game.state.State;
@@ -17,8 +18,9 @@ import game.object.env.Camera;
 import game.object.env.Light;
 import game.object.terrain.Terrain;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.lwjgl.opengl.GL13;
-import util.ObjectComparator;
+import game.object.ObjectComparator;
 import util.OpenGLUtil;
 
 import java.io.IOException;
@@ -59,20 +61,20 @@ public class ParentRenderer {
         this.fontRenderer = new FontRenderer();
     }
 
-    public void load(Camera camera, List<Light> lights) throws IOException {
+    public void load(Camera camera) throws IOException {
         OpenGLUtil.enableCulling();
         this.projectionMatrix = camera.createProjectionMatrix();
-        initRenderers(lights);
+        initRenderers();
     }
 
-    private void initRenderers(List<Light> lights) throws IOException {
-        this.entityRenderer = new EntityRenderer(projectionMatrix, lights);
-        this.terrainRenderer = new TerrainRenderer(projectionMatrix, lights);
-        this.directionalShadowRenderer = new DirectionalShadowRenderer(projectionMatrix, lights);
-        this.pointShadowRenderer = new PointShadowRenderer(projectionMatrix, lights);
+    private void initRenderers() throws IOException {
+        this.entityRenderer = new EntityRenderer(projectionMatrix);
+        this.terrainRenderer = new TerrainRenderer(projectionMatrix);
+        this.directionalShadowRenderer = new DirectionalShadowRenderer(projectionMatrix);
+        this.pointShadowRenderer = new PointShadowRenderer(projectionMatrix);
     }
 
-    private void processEntity(Entity entity) {
+    public void processEntity(Entity entity) {
         entityBatches.add(entity);
     }
 
@@ -100,11 +102,10 @@ public class ParentRenderer {
         icons.add(icon);
     }
 
-    public void processEntities(List<Entity> entities, Player player) {
+    public void processEntities(List<Entity> entities) {
         for (Entity entity : entities) {
             processEntity(entity);
         }
-        processEntity(player);
     }
 
     public void renderObjects(List<Light> lights) {
@@ -122,6 +123,9 @@ public class ParentRenderer {
             GL13.glBindTexture(GL_TEXTURE_2D, fontType.getTextureAtlas());
             doRender(fontRenderer, texts.get(fontType), lights);
         }
+        if (Game.getInstance().getCurrentState() == State.IN_GAME) {
+            getGuis().clear();
+        }
     }
 
     public void updateDepthMaps(List<Light> lights, Player player) {
@@ -138,6 +142,7 @@ public class ParentRenderer {
             light.setInitialized(true);
         }
         glCullFace(GL_BACK);
+        guis.add(new UIComponent(lights.get(0).getFbo().getDepthMapTextureID(), new Vector2f(0.5f), new Vector2f(0.5f), ObjectType.INVENTORY));
     }
 
     private void renderDirectionalDepthMap(Light sun) {

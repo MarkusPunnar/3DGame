@@ -1,16 +1,17 @@
 package game.object.scene;
 
 import com.google.common.flogger.FluentLogger;
+import engine.model.TexturedModel;
 import engine.render.RenderRequest;
-import game.state.Game;
-import game.state.HandlerState;
 import engine.render.RequestInfo;
 import engine.render.RequestType;
-import game.ui.ObjectType;
-import engine.model.TexturedModel;
 import game.interraction.LootableEntity;
+import game.object.Entity;
 import game.object.item.Item;
 import game.object.item.Slot;
+import game.state.Game;
+import game.state.HandlerState;
+import game.ui.ObjectType;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -41,6 +42,18 @@ public class Chest extends LootableEntity {
         @Override
         public Builder capacity(int capacity) {
             super.capacity(capacity);
+            return this;
+        }
+
+        @Override
+        public Builder rotationY(float rotationY) {
+            super.rotationY(rotationY);
+            return this;
+        }
+
+        @Override
+        public Builder scale(Vector3f scale) {
+            super.scale(scale);
             return this;
         }
 

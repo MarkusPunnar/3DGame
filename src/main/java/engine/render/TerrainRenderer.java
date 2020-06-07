@@ -19,10 +19,9 @@ public class TerrainRenderer implements Renderer {
 
     private TerrainShader shader;
 
-    public TerrainRenderer(Matrix4f projectionMatrix, List<Light> lights) throws IOException {
+    public TerrainRenderer(Matrix4f projectionMatrix) throws IOException {
         this.shader = new TerrainShader();
         shader.start();
-        shader.loadLights(lights, shader.getUniformLocations());
         shader.doLoadMatrix(projectionMatrix, "projectionMatrix");
         shader.connectTextureUnits();
         shader.stop();

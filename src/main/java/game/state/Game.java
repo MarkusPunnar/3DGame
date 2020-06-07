@@ -4,8 +4,11 @@ import com.google.common.flogger.FluentLogger;
 import engine.DisplayManager;
 import engine.font.structure.FontType;
 import engine.loader.VAOLoader;
+import engine.model.ModelCache;
 import engine.render.ParentRenderer;
+import engine.shader.Shader;
 import engine.texture.TextureCache;
+import game.object.generation.DormGenerator;
 import game.ui.menu.Button;
 import game.ui.menu.Menu;
 import game.ui.UIComponent;
@@ -31,6 +34,7 @@ import util.octree.OctTree;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -56,6 +60,7 @@ public class Game {
     private MenuType currentMenu;
     private MenuCache menuCache;
     private TextureCache textureCache;
+    private ModelCache modelCache;
     private FontType gameFont;
 
     private Game() {
@@ -73,6 +78,7 @@ public class Game {
         loader = new VAOLoader();
         menuCache = new MenuCache();
         textureCache = new TextureCache();
+        modelCache = new ModelCache();
         renderer = new ParentRenderer();
         currentMenu = MenuType.MAIN_MENU;
         gameFont = new FontType(Game.getInstance().getLoader().loadFontAtlas("gamefont"));
@@ -120,24 +126,30 @@ public class Game {
         initGameCallbacks();
         initGameHandlers();
         playerCamera = new Camera();
-        renderer.load(playerCamera, activeLights);
+        renderer.load(playerCamera);
         mousePicker.init();
         OctTree octTree = new OctTree(new BoundingBox(new Vector3f(-400, -1, -400), new Vector3f(200, 100, 200)));
         octTree.initTree(activeObjects);
         currentTree = octTree;
+        Shader.initShadowBox();
         logger.atInfo().log("Octree initialized with %d objects", activeObjects.size());
     }
 
     private void loadRenderObjects() throws IOException {
         TavernGenerator tavernGenerator = new TavernGenerator();
         TerrainGenerator terrainGenerator = new TerrainGenerator();
+        DormGenerator dormGenerator = new DormGenerator();
         player = tavernGenerator.generatePlayer();
-        List<Entity> roomEntities = tavernGenerator.generate();
-        renderer.processEntities(roomEntities, player);
+        List<Entity> tavernEntities = tavernGenerator.generate();
+        List<Entity> dormEntities = dormGenerator.generate();
+        renderer.processEntity(player);
+        renderer.processEntities(tavernEntities);
+        renderer.processEntities(dormEntities);
         List<Terrain> terrains = terrainGenerator.generate();
         renderer.processTerrains(terrains);
-        activeObjects.addAll(roomEntities);
+        activeObjects.addAll(tavernEntities);
         activeObjects.addAll(terrains);
+        activeObjects.addAll(dormEntities);
     }
 
     private void initGameHandlers() {
@@ -204,6 +216,7 @@ public class Game {
             playerCamera.move(activeObjects);
         }
         mousePicker.update();
+        Collections.sort(activeLights);
         renderer.updateDepthMaps(activeLights, player);
     }
 
@@ -259,5 +272,13 @@ public class Game {
 
     public TextureCache getTextureCache() {
         return textureCache;
+    }
+
+    public ModelCache getModelCache() {
+        return modelCache;
+    }
+
+    public Light getSun() {
+        return activeLights.get(0);
     }
 }

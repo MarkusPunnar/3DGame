@@ -68,6 +68,12 @@ public class LightEntity extends Entity {
             return this;
         }
 
+        @Override
+        public Builder scale(Vector3f scale) {
+            super.scale(scale);
+            return this;
+        }
+
         public Builder offsetZ(float offsetZ) {
             this.offsetZ = offsetZ;
             return this;

@@ -12,8 +12,8 @@ public class PointShadowRenderer extends DirectionalShadowRenderer {
 
     private Shader pointShadowShader;
 
-    public PointShadowRenderer(Matrix4f projectionMatrix, List<Light> lights) throws IOException {
-        super(projectionMatrix, lights);
+    public PointShadowRenderer(Matrix4f projectionMatrix) throws IOException {
+        super(projectionMatrix);
         this.pointShadowShader = new PointShadowShader();
     }
 
