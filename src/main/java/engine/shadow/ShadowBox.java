@@ -14,7 +14,7 @@ import static game.object.env.CameraUtil.NEAR_PLANE;
 
 public class ShadowBox {
 
-    private static float SHADOW_DISTANCE = 300;
+    private static float SHADOW_DISTANCE = 270;
 
     private float minX = Float.MAX_VALUE;
     private float maxX = Float.MIN_VALUE;

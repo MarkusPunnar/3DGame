@@ -2,9 +2,8 @@ package game.object.generation.menu;
 
 import engine.font.GUIText;
 import engine.loader.VAOLoader;
-import engine.render.RenderRequest;
-import engine.render.RequestInfo;
-import engine.render.RequestType;
+import engine.render.request.ItemRenderRequest;
+import engine.render.request.RequestType;
 import game.config.Config;
 import game.state.Game;
 import game.state.HandlerState;
@@ -125,9 +124,9 @@ public class OptionsMenuGenerator implements MenuGenerator {
     private void updateText(Button button, String newValue) {
         GUIText text = button.getGuiText();
         if (text != null) {
-            HandlerState.getInstance().registerRequest(new RenderRequest(RequestType.REMOVE_TEXT, new RequestInfo(null, text)));
+            HandlerState.getInstance().registerRequest(new ItemRenderRequest(RequestType.REMOVE, ObjectType.TEXT,  null, text));
             GUIText newText = text.copyWithValueChange(newValue);
-            HandlerState.getInstance().registerRequest(new RenderRequest(RequestType.REFRESH_TEXT, new RequestInfo(null, newText)));
+            HandlerState.getInstance().registerRequest(new ItemRenderRequest(RequestType.UPDATE, ObjectType.TEXT, null, newText));
             optionsMenu.getMenuTexts().remove(text);
             optionsMenu.addText(newText);
         }

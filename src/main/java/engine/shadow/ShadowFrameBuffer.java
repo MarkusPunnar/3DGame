@@ -12,8 +12,8 @@ public class ShadowFrameBuffer {
 
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-    public static final int SHADOW_WIDTH = Config.getInstance().getShadowLevel().getResolution();
-    public static final int SHADOW_HEIGHT = Config.getInstance().getShadowLevel().getResolution();
+    private int shadowWidth;
+    private int shadowHeight;
 
     private int fboID;
     private int depthMapTextureID;
@@ -22,8 +22,12 @@ public class ShadowFrameBuffer {
     public ShadowFrameBuffer(boolean isCubeMap) {
         fboID = glGenFramebuffers();
         if (isCubeMap) {
+            shadowWidth = 1024;
+            shadowHeight = 1024;
             depthMapTextureID = createCubeMapDepthTexture();
         } else {
+            shadowWidth = Config.getInstance().getShadowLevel().getResolution();
+            shadowHeight = Config.getInstance().getShadowLevel().getResolution();
             depthMapTextureID = create2DDepthTexture();
         }
 
@@ -47,7 +51,7 @@ public class ShadowFrameBuffer {
     private int create2DDepthTexture() {
         int textureID = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer) null);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer) null);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -60,7 +64,7 @@ public class ShadowFrameBuffer {
         int textureID = glGenTextures();
         glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
         for (int i = 0; i < 6; i++) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT,
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight,
                     0, GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer) null);
             glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -77,5 +81,13 @@ public class ShadowFrameBuffer {
 
     public int getDepthMapTextureID() {
         return depthMapTextureID;
+    }
+
+    public int getShadowWidth() {
+        return shadowWidth;
+    }
+
+    public int getShadowHeight() {
+        return shadowHeight;
     }
 }

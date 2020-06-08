@@ -42,10 +42,6 @@ public class UIComponent extends RenderObject {
         return textureID;
     }
 
-    public void setID(int textureID) {
-        this.textureID = textureID;
-    }
-
     @Override
     public Model getModel() {
         return null;

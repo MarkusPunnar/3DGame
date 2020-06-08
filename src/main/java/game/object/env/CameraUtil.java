@@ -13,9 +13,9 @@ import java.util.List;
 
 public class CameraUtil {
 
-    public static final float FOV = 70;
+    public static final float FOV = 55;
     public static final float NEAR_PLANE = 0.1f;
-    public static final float FAR_PLANE = 750;
+    public static final float FAR_PLANE = 1000;
 
     private static final float MIN_CAMERA_DISTANCE = 0.1f;
     private static final float MAX_FRAME_OFFSET = 4f;

@@ -4,9 +4,8 @@ import com.google.common.flogger.FluentLogger;
 import engine.DisplayManager;
 import engine.font.GUIText;
 import engine.render.ParentRenderer;
-import engine.render.RenderRequest;
-import engine.render.RequestInfo;
-import engine.render.RequestType;
+import engine.render.request.ItemRenderRequest;
+import engine.render.request.RequestType;
 import game.object.RenderObject;
 import game.object.item.Item;
 import game.object.item.Slot;
@@ -33,13 +32,13 @@ public class HandlerUtil {
             boolean xMatch = Math.abs(content.getPosition().x - currentMousePosition.x) < content.getScale().x;
             boolean yMatch = Math.abs(content.getPosition().y - currentMousePosition.y) < content.getScale().y;
             if (xMatch && yMatch) {
-                 return content;
+                return content;
             }
         }
         return null;
     }
 
-    public static void moveItems(Slot[] source, Slot[] destination) throws IOException {
+    protected static void moveItems(Slot[] source, Slot[] destination) throws IOException {
         Vector2f currentMousePosition = Game.getInstance().getMousePicker().calculateDeviceCoords();
         Item bindedItem = HandlerState.getInstance().getBindedItem();
         int leftMouseButtonState = GLFW.glfwGetMouseButton(DisplayManager.getWindow(), GLFW.GLFW_MOUSE_BUTTON_LEFT);
@@ -67,8 +66,7 @@ public class HandlerUtil {
                     lastInteracted = activeSlot;
                 }
             }
-        }
-        else {
+        } else {
             if (leftMouseButtonPressed) {
                 //Move item
                 bindedItem.getIcon().setPosition(currentMousePosition);
@@ -112,15 +110,14 @@ public class HandlerUtil {
             existingItem.stack(otherItem);
             GUIText newText = otherItem.getGuiText().copyWithValueChange(String.valueOf(existingItem.getAmount()));
             logger.atInfo().log("Sending requests to remove old item icons and text");
-            handlerState.registerRequest(new RenderRequest(RequestType.REMOVE_TEXT, new RequestInfo(selectedSlot.getItem().getIcon(), selectedSlot.getItem().getGuiText())));
+            handlerState.registerRequest(new ItemRenderRequest(RequestType.REMOVE, ObjectType.TEXT, selectedSlot.getItem().getIcon(), selectedSlot.getItem().getGuiText()));
             existingItem.setGuiText(newText);
             setItemText(existingItem, selectedSlot.getPosition());
-            handlerState.registerRequest(new RenderRequest(RequestType.REMOVE_ITEM, new RequestInfo(otherItem.getIcon(), otherItem.getGuiText())));
-            handlerState.registerRequest(new RenderRequest(RequestType.REFRESH_TEXT,  new RequestInfo(existingItem.getIcon(), existingItem.getGuiText())));
+            handlerState.registerRequest(new ItemRenderRequest(RequestType.REMOVE, ObjectType.ICON, otherItem.getIcon(), otherItem.getGuiText()));
+            handlerState.registerRequest(new ItemRenderRequest(RequestType.UPDATE, ObjectType.TEXT, existingItem.getIcon(), existingItem.getGuiText()));
             lastInteracted.setItem(null);
             otherItem.setGuiText(null);
-        }
-        else {
+        } else {
             bindedItem.getIcon().setPosition(new Vector2f(lastInteracted.getPosition().x, lastInteracted.getPosition().y));
             setItemText(bindedItem, selectedSlot.getPosition());
         }

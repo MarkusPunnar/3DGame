@@ -2,8 +2,8 @@ package game.config;
 
 public enum ShadowLevel {
 
-    LOW(1024, "Low"),
-    MEDIUM(2048, "Medium"),
+    LOW(2048, "Low"),
+    MEDIUM(4096, "Medium"),
     HIGH(8192, "High");
 
     private final int resolution;

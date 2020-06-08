@@ -8,6 +8,7 @@ import engine.model.ModelCache;
 import engine.render.ParentRenderer;
 import engine.shader.Shader;
 import engine.texture.TextureCache;
+import game.object.generation.CampGenerator;
 import game.object.generation.DormGenerator;
 import game.ui.menu.Button;
 import game.ui.menu.Menu;
@@ -139,17 +140,21 @@ public class Game {
         TavernGenerator tavernGenerator = new TavernGenerator();
         TerrainGenerator terrainGenerator = new TerrainGenerator();
         DormGenerator dormGenerator = new DormGenerator();
+        CampGenerator campGenerator = new CampGenerator();
         player = tavernGenerator.generatePlayer();
         List<Entity> tavernEntities = tavernGenerator.generate();
         List<Entity> dormEntities = dormGenerator.generate();
+        List<Entity> campEntities = campGenerator.generate();
         renderer.processEntity(player);
         renderer.processEntities(tavernEntities);
         renderer.processEntities(dormEntities);
+        renderer.processEntities(campEntities);
         List<Terrain> terrains = terrainGenerator.generate();
         renderer.processTerrains(terrains);
         activeObjects.addAll(tavernEntities);
         activeObjects.addAll(terrains);
         activeObjects.addAll(dormEntities);
+        activeObjects.addAll(campEntities);
     }
 
     private void initGameHandlers() {

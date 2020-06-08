@@ -4,7 +4,7 @@ public class Config {
 
     private static final Config INSTANCE = new Config();
 
-    private ShadowLevel shadowLevel = ShadowLevel.LOW;
+    private ShadowLevel shadowLevel = ShadowLevel.HIGH;
     private int invertedMouse = 1;
 
     private Config() {

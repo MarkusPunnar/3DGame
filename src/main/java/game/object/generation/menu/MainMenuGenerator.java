@@ -53,26 +53,26 @@ public class MainMenuGenerator implements MenuGenerator {
     }
 
     private List<Button> generateMainMenuButtons() throws IOException {
-        float buttonWidth = 0.3f;
-        float buttonHeight = 0.1f;
-        Button newGameButton = new Button(loader.loadGuiTexture("invtitle"), new Vector2f(0, 0.15f),
+        float buttonHeight = 0.2f;
+        float buttonWidth = 0.2f;
+        Button newGameButton = new Button(loader.loadGuiTexture("newgame"), new Vector2f(-0.75f, -0.5f),
                 new Vector2f(buttonWidth, buttonHeight));
         newGameButton.setClickCallback(() -> {
             Game.getInstance().loadGame();
             return null;
         });
         mainMenu.addButton(newGameButton);
-        Button loadGameButton = new Button(loader.loadGuiTexture("invtitle"), new Vector2f(0, -0.15f),
+        Button loadGameButton = new Button(loader.loadGuiTexture("loadgame"), new Vector2f(-0.25f, -0.5f),
                 new Vector2f(buttonWidth, buttonHeight));
         mainMenu.addButton(loadGameButton);
-        Button optionsButton = new Button(loader.loadGuiTexture("invtitle"), new Vector2f(0, -0.45f),
+        Button optionsButton = new Button(loader.loadGuiTexture("options"), new Vector2f(0.25f, -0.5f),
                 new Vector2f(buttonWidth, buttonHeight));
         optionsButton.setClickCallback(() -> {
             Game.getInstance().loadOptionsMenu();
             return null;
         });
         mainMenu.addButton(optionsButton);
-        Button quitButton = new Button(loader.loadGuiTexture("invtitle"), new Vector2f(0, -0.75f),
+        Button quitButton = new Button(loader.loadGuiTexture("quitgame"), new Vector2f(0.75f, -0.5f),
                 new Vector2f(buttonWidth, buttonHeight));
         quitButton.setClickCallback(() -> {
             GLFW.glfwSetWindowShouldClose(DisplayManager.getWindow(), true);

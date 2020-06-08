@@ -61,7 +61,7 @@ public class TavernGenerator implements Generator {
         //Generate nightstands
         roomEntities.addAll(generateNightstands());
         //Generate lanterns
-//        roomEntities.addAll(generateLanterns());
+        roomEntities.addAll(generateLanterns());
         //Generate cabinets
         roomEntities.addAll(generateCabinets());
         //Generate shelves
@@ -172,11 +172,11 @@ public class TavernGenerator implements Generator {
     private List<Entity> generateDoors() throws IOException {
         List<Entity> doors = new ArrayList<>();
         TexturedModel doorModel = GeneratorUtil.getTexturedModel( "door");
-        Door door = new Door.Builder(doorModel, new Vector3f(-44, 0, -26.5f)).facing(FacingDirection.WEST).build();
+        Door door = new Door.Builder(doorModel, new Vector3f(-44, 0, -26.5f)).build();
         HandlerState.getInstance().registerInteractableEntity(door);
         doors.add(door);
         for (int i = 0; i < 3; i++) {
-            door = new Door.Builder(doorModel, new Vector3f(-13.7f, 34.5f, 54.3f - 46.2f * i)).facing(FacingDirection.EAST).build();
+            door = new Door.Builder(doorModel, new Vector3f(-13.7f, 34.5f, 54.3f - 46.2f * i)).locked(true).facing(FacingDirection.EAST).build();
             HandlerState.getInstance().registerInteractableEntity(door);
             doors.add(door);
         }

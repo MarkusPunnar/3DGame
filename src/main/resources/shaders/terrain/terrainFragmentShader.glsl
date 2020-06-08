@@ -26,12 +26,26 @@ uniform float fakeLighting;
 const float ambientStrength = 0.2;
 const float specularStrength = 0.5;
 
+const int pcfCount = 2;
+const float totalTexels = (pcfCount * 2.0 + 1.0) * (pcfCount * 2.0 + 1.0);
+
 float shadowCalculation(vec4 shadowCoords) {
     vec3 projectedCoords = shadowCoords.xyz / shadowCoords.w;
     projectedCoords = projectedCoords * 0.5 + 0.5;
-    float closestDepth = texture(shadowMap, projectedCoords.xy).r;
+    float mapSize = 8192.0;
+    float texelSize = 1 / mapSize;
+    float total = 0.0;
     float currentDepth = projectedCoords.z;
-    return closestDepth < currentDepth ? 1.0 : 0.0;
+    float bias = 0.0015;
+    for (int x = -pcfCount; x <= pcfCount; x++) {
+        for (int y = -pcfCount; y <= pcfCount; y++) {
+            float closestDepth = texture(shadowMap, projectedCoords.xy + vec2(x, y) * texelSize).r;
+            if (closestDepth < currentDepth - bias) {
+                total += 1.0;
+            }
+        }
+    }
+    return total / totalTexels;
 }
 
 

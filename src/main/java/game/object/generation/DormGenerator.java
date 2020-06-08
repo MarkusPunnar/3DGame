@@ -12,6 +12,7 @@ import game.object.scene.Door;
 import game.object.scene.FacingDirection;
 import game.state.Game;
 import game.state.HandlerState;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import util.math.structure.Triangle;
 
@@ -32,7 +33,7 @@ public class DormGenerator implements Generator {
         GeneratorUtil.setParentObject(dorm);
         dormEntities.add(dorm);
         //add lanterns
-//        dormEntities.addAll(generateLanterns());
+        dormEntities.addAll(generateLanterns());
         //add doors
         dormEntities.addAll(generateDoors());
         //add beds
@@ -78,8 +79,8 @@ public class DormGenerator implements Generator {
         ModelData bedModelData = ObjectLoader.loadObjectModel("hitbox/bedbox");
         List<Triangle> hitboxTriangles = Game.getInstance().getLoader().createTriangles(bedModelData.getVertices(), bedModelData.getIndices());
         for (int i = 0; i < 5; i++) {
-            beds.add(generateBed(bedModel, hitboxTriangles, new Vector3f(-350, 9, 30 - 60f * i)));
-            beds.add(generateBed(bedModel, hitboxTriangles, new Vector3f(-350, 9,-10 - 60f * i)));
+            beds.add(generateBed(bedModel, hitboxTriangles, new Vector3f(-351, 9, 30 - 60f * i)));
+            beds.add(generateBed(bedModel, hitboxTriangles, new Vector3f(-351, 9,-10 - 60f * i)));
         }
         return beds;
     }
@@ -95,14 +96,15 @@ public class DormGenerator implements Generator {
     private List<Entity> generateDoors() throws IOException {
         List<Entity> doors = new ArrayList<>();
         TexturedModel doorModel = GeneratorUtil.getTexturedModel("door");
-        Door door = new Door.Builder(doorModel, new Vector3f(-335f, 9, 66.7f)).scale(new Vector3f(1, 0.96f, 0.96f)).facing(FacingDirection.WEST).build();
+        Door door = new Door.Builder(doorModel, new Vector3f(-335f, 9, 66.7f)).scale(new Vector3f(1, 0.96f, 0.96f)).build();
         HandlerState.getInstance().registerInteractableEntity(door);
         doors.add(door);
-        door = new Door.Builder(doorModel, new Vector3f(-335f, 9, -284.8f)).scale(new Vector3f(1, 0.96f, 0.96f)).facing(FacingDirection.WEST).build();
+        door = new Door.Builder(doorModel, new Vector3f(-335f, 9, -284.8f)).scale(new Vector3f(1, 0.96f, 0.96f)).build();
         HandlerState.getInstance().registerInteractableEntity(door);
         doors.add(door);
         for (int i = 0; i < 5; i++) {
-            door = new Door.Builder(doorModel, new Vector3f(-394f, 9, 12.1f - 60f * i)).scale(new Vector3f(1, 0.96f, 1.1f)).facing(FacingDirection.EAST).build();
+            door = new Door.Builder(doorModel, new Vector3f(-394f, 9, 12.1f - 60f * i)).scale(new Vector3f(1, 0.96f, 1.1f))
+                    .facing(FacingDirection.EAST).locked(true).build();
             HandlerState.getInstance().registerInteractableEntity(door);
             doors.add(door);
         }

@@ -2,9 +2,8 @@ package game.object;
 
 import com.google.common.flogger.FluentLogger;
 import engine.model.TexturedModel;
-import engine.render.RenderRequest;
-import engine.render.RequestInfo;
-import engine.render.RequestType;
+import engine.render.request.GuiRenderRequest;
+import engine.render.request.RequestType;
 import game.ui.ObjectType;
 import game.state.Game;
 import game.state.HandlerState;
@@ -122,7 +121,7 @@ public class Player extends Entity {
             return packet.getBasePoint().add(packet.getEllipticVelocity(), new Vector3f());
         }
         Vector3f newBasePoint = new Vector3f(packet.getBasePoint());
-        Vector3f destinationPoint = packet.getBasePoint().add(packet.getEllipticVelocity(), new Vector3f());;
+        Vector3f destinationPoint = packet.getBasePoint().add(packet.getEllipticVelocity(), new Vector3f());
         if (packet.getNearestDistance() >= veryCloseDistance) {
             packet.getBasePoint().add(packet.getEllipticVelocity(), destinationPoint);
             Vector3f v = new Vector3f(packet.getEllipticVelocity());
@@ -147,7 +146,7 @@ public class Player extends Entity {
         slidePlaneNormal.normalize();
         Plane3D slidingPlane = new Plane3D(slidePlaneNormal, slidePlaneOrigin);
         float signedDistanceToDest = CollisionUtil.signedDistance(destinationPoint, slidingPlane);
-        Vector3f newDestinationPoint = destinationPoint.sub(new Vector3f(slidePlaneNormal).mul(signedDistanceToDest, new Vector3f()), new Vector3f());;
+        Vector3f newDestinationPoint = destinationPoint.sub(new Vector3f(slidePlaneNormal).mul(signedDistanceToDest, new Vector3f()), new Vector3f());
         Vector3f newVelocityVector = newDestinationPoint.sub(packet.getIntersectionPoint(),  new Vector3f());
         if (newVelocityVector.length() < veryCloseDistance) {
             return newBasePoint;
@@ -212,11 +211,12 @@ public class Player extends Entity {
     public void interactWithInventory() {
         if (!inventory.isOpen()) {
             logger.atInfo().log("Request to open inventory sent");
-            HandlerState.getInstance().registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0, -0.15f), new Vector2f(1.6f, 1.6f), ObjectType.INVENTORY)));
+            HandlerState.getInstance().registerRequest(new GuiRenderRequest(RequestType.ADD, ObjectType.INVENTORY,
+                    new Vector2f(0, -0.15f), new Vector2f(1.6f, 1.6f)));
         }
         else {
             logger.atInfo().log("Request to close inventory sent");
-            HandlerState.getInstance().registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(ObjectType.INVENTORY)));
+            HandlerState.getInstance().registerRequest(new GuiRenderRequest(RequestType.REMOVE, ObjectType.INVENTORY));
         }
     }
 

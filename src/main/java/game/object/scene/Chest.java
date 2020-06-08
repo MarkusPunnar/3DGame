@@ -2,11 +2,9 @@ package game.object.scene;
 
 import com.google.common.flogger.FluentLogger;
 import engine.model.TexturedModel;
-import engine.render.RenderRequest;
-import engine.render.RequestInfo;
-import engine.render.RequestType;
+import engine.render.request.GuiRenderRequest;
+import engine.render.request.RequestType;
 import game.interraction.LootableEntity;
-import game.object.Entity;
 import game.object.item.Item;
 import game.object.item.Slot;
 import game.state.Game;
@@ -88,13 +86,13 @@ public class Chest extends LootableEntity {
     public void handleGui(Game state) {
         HandlerState handlerState = HandlerState.getInstance();
         handlerState.setLastLooted(this);
-        logger.atInfo().log("Handling GUI changes for game.object of type %s", getClass().getSimpleName());
+        logger.atInfo().log("Handling GUI changes for object of type %s", getClass().getSimpleName());
         if (isOpened) {
-            handlerState.registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(-0.55f, -0.2f), new Vector2f(1f, 1.2f), ObjectType.INVENTORY)));
-            handlerState.registerRequest(new RenderRequest(RequestType.ADD, new RequestInfo(new Vector2f(0.45f, -0.2f), new Vector2f(1f, 1.2f), ObjectType.CHEST)));
+            handlerState.registerRequest(new GuiRenderRequest(RequestType.ADD, ObjectType.INVENTORY, new Vector2f(-0.55f, -0.2f), new Vector2f(1f, 1.2f)));
+            handlerState.registerRequest(new GuiRenderRequest(RequestType.ADD, ObjectType.CHEST, new Vector2f(0.45f, -0.2f), new Vector2f(1f, 1.2f)));
         } else {
-            handlerState.registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(ObjectType.INVENTORY)));
-            handlerState.registerRequest(new RenderRequest(RequestType.REMOVE, new RequestInfo(ObjectType.CHEST)));
+            handlerState.registerRequest(new GuiRenderRequest(RequestType.REMOVE, ObjectType.INVENTORY));
+            handlerState.registerRequest(new GuiRenderRequest(RequestType.REMOVE, ObjectType.CHEST));
         }
     }
 

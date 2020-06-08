@@ -1,7 +1,7 @@
 package game.state;
 
 import com.google.common.flogger.FluentLogger;
-import engine.render.RenderRequest;
+import engine.render.request.RenderRequest;
 import game.interraction.InteractableEntity;
 import game.interraction.LootableEntity;
 import game.object.item.Item;

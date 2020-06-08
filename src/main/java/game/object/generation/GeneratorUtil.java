@@ -15,8 +15,14 @@ import org.joml.Vector2f;
 import util.math.structure.Triangle;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class GeneratorUtil {
+
+    private static double TWO_PI = Math.PI * 2.0;
+    private static double thetaAccuracy = 0.0001;
 
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
@@ -26,13 +32,13 @@ public class GeneratorUtil {
         }
     }
 
-    public static TexturedModel getTexturedModel(String objName, ModelTexture texture) throws IOException {
+    protected static TexturedModel getTexturedModel(String objName, ModelTexture texture) throws IOException {
         ModelData modelData = ObjectLoader.loadObjectModel(objName);
         RawModel rawModel = Game.getInstance().getLoader().loadToVAO(modelData.getVertices(), modelData.getIndices(), modelData.getNormals(), modelData.getTextureCoords());
         return new TexturedModel(rawModel, texture);
     }
 
-    public static TexturedModel getTexturedModel(String fileName) throws IOException {
+    protected static TexturedModel getTexturedModel(String fileName) throws IOException {
         ModelCache modelCache = Game.getInstance().getModelCache();
         TexturedModel cachedModel = modelCache.getByName(fileName);
         if (cachedModel != null) {
@@ -49,7 +55,7 @@ public class GeneratorUtil {
     }
 
     public static Vector2f fromOpenGLCoords(float x, float y) {
-       return new Vector2f((1 + x) / 2f,  Math.abs(y - 1) / 2f);
+        return new Vector2f((1 + x) / 2f, Math.abs(y - 1) / 2f);
     }
 
 
@@ -62,5 +68,39 @@ public class GeneratorUtil {
             textureCache.addTexture(textureName, textureID);
         }
         return textureID;
+    }
+
+    protected static List<Vector2f> generateEllipsePoints(int n, float a, float b) {
+        List<Vector2f> ellipsePoints = new ArrayList<>();
+        double theta = 0.0;
+        double numIntegrals = Math.round(TWO_PI / thetaAccuracy);
+        double circ = 0.0;
+        double dpt;
+        for (int i = 0; i < numIntegrals; i++) {
+            theta += i * thetaAccuracy;
+            dpt = computeDpt(a, b, theta);
+            circ += dpt;
+        }
+        int nextPoint = 0;
+        double run = 0.0;
+        theta = 0.0;
+        for (int i = 0; i < numIntegrals; i++) {
+            theta += thetaAccuracy;
+            double subIntegral = n * run / circ;
+            if ((int) subIntegral >= nextPoint) {
+                float x = (float) (a * Math.cos(theta));
+                float y = (float) (b * Math.sin(theta));
+                ellipsePoints.add(new Vector2f(x, y));
+                nextPoint++;
+            }
+            run += computeDpt(a, b, theta);
+        }
+        return ellipsePoints;
+    }
+
+    private static double computeDpt(double r1, double r2, double theta) {
+        double dpt_sin = Math.pow(r1 * Math.sin(theta), 2.0);
+        double dpt_cos = Math.pow(r2 * Math.cos(theta), 2.0);
+        return Math.sqrt(dpt_sin + dpt_cos);
     }
 }

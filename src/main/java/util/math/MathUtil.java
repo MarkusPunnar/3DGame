@@ -50,9 +50,9 @@ public class MathUtil {
 
     public static Matrix4f getLightSpaceMatrix(ShadowBox shadowBox) {
         Matrix4f orthoProjectionMatrix = new Matrix4f();
-        orthoProjectionMatrix.set(0, 0, 2f / (shadowBox.getWidth() * 1.4f));
-        orthoProjectionMatrix.set(1, 1, 2f / (shadowBox.getHeight() * 1.4f));
-        orthoProjectionMatrix.set(2, 2, -2f / (shadowBox.getLength() * 1.4f));
+        orthoProjectionMatrix.set(0, 0, 2f / (shadowBox.getWidth() * 1.65f));
+        orthoProjectionMatrix.set(1, 1, 2f / (shadowBox.getHeight() * 1.65f));
+        orthoProjectionMatrix.set(2, 2, -2f / (shadowBox.getLength() * 1.65f));
         Matrix4f lightViewMatrix = shadowBox.getLightViewMatrix();
         return orthoProjectionMatrix.mul(lightViewMatrix, new Matrix4f());
     }

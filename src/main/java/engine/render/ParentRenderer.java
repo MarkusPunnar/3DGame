@@ -7,7 +7,6 @@ import engine.font.structure.TextMeshData;
 import engine.shader.Shader;
 import engine.shadow.ShadowFrameBuffer;
 import game.object.item.Icon;
-import game.ui.ObjectType;
 import game.ui.UIComponent;
 import game.state.Game;
 import game.state.State;
@@ -18,7 +17,6 @@ import game.object.env.Camera;
 import game.object.env.Light;
 import game.object.terrain.Terrain;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.lwjgl.opengl.GL13;
 import game.object.ObjectComparator;
 import util.OpenGLUtil;
@@ -123,15 +121,12 @@ public class ParentRenderer {
             GL13.glBindTexture(GL_TEXTURE_2D, fontType.getTextureAtlas());
             doRender(fontRenderer, texts.get(fontType), lights);
         }
-        if (Game.getInstance().getCurrentState() == State.IN_GAME) {
-            getGuis().clear();
-        }
     }
 
     public void updateDepthMaps(List<Light> lights, Player player) {
-        glViewport(0, 0, ShadowFrameBuffer.SHADOW_WIDTH, ShadowFrameBuffer.SHADOW_HEIGHT);
         glCullFace(GL_FRONT);
         for (Light light : lights) {
+            glViewport(0, 0, light.getFbo().getShadowWidth(), light.getFbo().getShadowHeight());
             if (light.isActive(player)) {
                 if (light.isPointLight()) {
                     renderPointDepthMap(light);
@@ -142,7 +137,6 @@ public class ParentRenderer {
             light.setInitialized(true);
         }
         glCullFace(GL_BACK);
-        guis.add(new UIComponent(lights.get(0).getFbo().getDepthMapTextureID(), new Vector2f(0.5f), new Vector2f(0.5f), ObjectType.INVENTORY));
     }
 
     private void renderDirectionalDepthMap(Light sun) {
