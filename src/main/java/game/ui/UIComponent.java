@@ -24,17 +24,27 @@ public class UIComponent extends RenderObject {
     private ObjectType type;
     private GUIText guiText;
     private boolean isTransparent;
+    private float lifetime;
 
     public UIComponent(int textureID, Vector2f position, Vector2f scale, ObjectType type) {
-        this(textureID, position, new Vector2f(), scale, type);
+        this(textureID, position, new Vector2f(), scale, type, Float.MAX_VALUE);
     }
 
     public UIComponent(int textureID, Vector2f position, Vector2f rotation, Vector2f scale, ObjectType type) {
+        this(textureID, position, rotation, scale, type, Float.MAX_VALUE);
+    }
+
+    public UIComponent(int textureID, Vector2f position, Vector2f scale, ObjectType type, float lifetime) {
+        this(textureID, position, new Vector2f(), scale, type, lifetime);
+    }
+
+    public UIComponent(int textureID, Vector2f position, Vector2f rotation, Vector2f scale, ObjectType type, float lifetime) {
         this.textureID = textureID;
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
         this.type = type;
+        this.lifetime = lifetime;
     }
 
     @Override
@@ -115,5 +125,13 @@ public class UIComponent extends RenderObject {
 
     public void setTransparent(boolean transparent) {
         isTransparent = transparent;
+    }
+
+    public float getLifetime() {
+        return lifetime;
+    }
+
+    public void decreaseLifetime(float time) {
+        this.lifetime -= time;
     }
 }

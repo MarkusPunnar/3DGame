@@ -5,7 +5,6 @@ import engine.font.GUIText;
 import engine.font.structure.FontType;
 import engine.font.structure.TextMeshData;
 import engine.shader.Shader;
-import engine.shadow.ShadowFrameBuffer;
 import game.object.item.Icon;
 import game.ui.UIComponent;
 import game.state.Game;
@@ -51,7 +50,7 @@ public class ParentRenderer {
 
     public ParentRenderer() throws IOException {
         this.guis = new ArrayList<>();
-        this.entityBatches = new TreeSet<>(new ObjectComparator());
+        this.entityBatches = Collections.synchronizedSet(new TreeSet<>(new ObjectComparator()));
         this.terrains = new ArrayList<>();
         this.texts = new HashMap<>();
         this.icons = new ArrayList<>();

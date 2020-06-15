@@ -2,6 +2,7 @@ package game.object.generation.menu;
 
 import engine.DisplayManager;
 import engine.loader.VAOLoader;
+import game.object.generation.GenerationUtil;
 import game.ui.menu.Button;
 import game.ui.menu.Menu;
 import game.ui.UIComponent;
@@ -11,7 +12,6 @@ import game.ui.menu.MenuCache;
 import game.ui.menu.MenuType;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
-import game.object.generation.GeneratorUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class MainMenuGenerator implements MenuGenerator {
     public List<UIComponent> generate() throws IOException {
         List<UIComponent> mainMenuComponents = new ArrayList<>();
         //add background image
-        UIComponent backgroundImage = new UIComponent(GeneratorUtil.getTextureFromCache("background"), new Vector2f(),
+        UIComponent backgroundImage = new UIComponent(GenerationUtil.getTextureFromCache("background"), new Vector2f(),
                 new Vector2f(1, 1), ObjectType.BACKGROUND_IMAGE);
         mainMenu.addStaticComponent(backgroundImage);
         mainMenuComponents.add(backgroundImage);

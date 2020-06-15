@@ -6,7 +6,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
@@ -17,6 +17,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class DisplayManager {
 
+    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+
     private static int width = 1280;
     private static int height = 720;
     private static long window = NULL;
@@ -24,7 +26,7 @@ public class DisplayManager {
     private static double lastFrameTime = 0.0;
     private static float delta;
 
-    private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+    private static GLCapabilities capabilities;
 
     public static void createDisplay() {
         //Set the error callback routine to use System.err
@@ -52,7 +54,7 @@ public class DisplayManager {
         delta = ((float) lastFrameTime);
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1); //Enable V-Sync
-        GL.createCapabilities();
+        capabilities = GL.createCapabilities();
         glfwShowWindow(window); //Show screen
         logger.atInfo().log("Display created successfully");
     }
@@ -73,9 +75,9 @@ public class DisplayManager {
     }
 
     public static void closeDisplay() {
-        Callbacks.glfwFreeCallbacks(window); //Release callbacks
-        glfwDestroyWindow(window); //Destroy the window
-        glfwTerminate(); //Terminate GLFW
+        Callbacks.glfwFreeCallbacks(window);
+        glfwDestroyWindow(window);
+        glfwTerminate();
         logger.atInfo().log("Terminated GLFW");
         glfwSetErrorCallback(null).free();
     }
@@ -98,5 +100,9 @@ public class DisplayManager {
 
     public static float getAspectRatio() {
         return (float) width / (float) height;
+    }
+
+    public static GLCapabilities getCapabilities() {
+        return capabilities;
     }
 }

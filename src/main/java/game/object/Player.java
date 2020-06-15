@@ -41,33 +41,12 @@ public class Player extends Entity {
     private boolean isMoving;
     private Inventory inventory;
 
-    private Player(Builder builder) {
-        super(builder);
-        this.currentForwardSpeed = builder.currentForwardSpeed;
-        this.currentSidewaysSpeed = builder.currentSidewaysSpeed;
-        this.isInAir = builder.isInAir;
-        this.inventory = builder.inventory;
-    }
-
-    public static class Builder extends Entity.Builder {
-
-        private float currentForwardSpeed = 0;
-        private float currentSidewaysSpeed = 0;
-        private boolean isInAir = false;
-        private Inventory inventory = new Inventory();
-
-        public Builder(TexturedModel texturedModel, Vector3f position) {
-            super(texturedModel, position);
-        }
-
-        public Builder scale(Vector3f scale) {
-            super.scale(scale);
-            return this;
-        }
-
-        public Player build() {
-            return new Player(this);
-        }
+    public Player(TexturedModel model, Vector3f position, Vector3f rotation, Vector3f scaleVector) {
+        super(model, position, rotation, scaleVector);
+        this.currentForwardSpeed = 0;
+        this.currentSidewaysSpeed = 0;
+        this.isInAir = false;
+        this.inventory = new Inventory();
     }
 
     public void move(List<RenderObject> renderedObjects) {
@@ -211,12 +190,12 @@ public class Player extends Entity {
     public void interactWithInventory() {
         if (!inventory.isOpen()) {
             logger.atInfo().log("Request to open inventory sent");
-            HandlerState.getInstance().registerRequest(new GuiRenderRequest(RequestType.ADD, ObjectType.INVENTORY,
-                    new Vector2f(0, -0.15f), new Vector2f(1.6f, 1.6f)));
+            HandlerState.getInstance().registerRequest(new GuiRenderRequest.Builder(RequestType.ADD, ObjectType.INVENTORY).position(new Vector2f(0, -0.15f))
+                    .scale(new Vector2f(1.6f, 1.6f)).build());
         }
         else {
             logger.atInfo().log("Request to close inventory sent");
-            HandlerState.getInstance().registerRequest(new GuiRenderRequest(RequestType.REMOVE, ObjectType.INVENTORY));
+            HandlerState.getInstance().registerRequest(new GuiRenderRequest.Builder(RequestType.REMOVE, ObjectType.INVENTORY).build());
         }
     }
 

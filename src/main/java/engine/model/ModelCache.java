@@ -1,5 +1,6 @@
 package engine.model;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +9,7 @@ public class ModelCache {
     private Map<String, TexturedModel> modelCache;
 
     public ModelCache() {
-        this.modelCache = new HashMap<>();
+        this.modelCache = Collections.synchronizedMap(new HashMap<>());
     }
 
     public TexturedModel getByName(String name) {

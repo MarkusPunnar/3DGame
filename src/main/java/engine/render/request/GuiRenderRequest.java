@@ -6,7 +6,8 @@ import engine.font.GUIText;
 import game.interraction.Inventory;
 import game.interraction.LootableEntity;
 import game.interraction.handle.HandlerUtil;
-import game.object.generation.GeneratorUtil;
+import game.object.RenderObject;
+import game.object.generation.GenerationUtil;
 import game.object.item.Item;
 import game.object.item.Slot;
 import game.state.Game;
@@ -25,30 +26,76 @@ public class GuiRenderRequest extends RenderRequest {
 
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
+    private final RenderObject object;
     private final Vector2f position;
     private final Vector2f scale;
     private final String name;
+    private final float lifeTime;
+    private final GUIText text;
 
-    public GuiRenderRequest(RequestType requestType, ObjectType type) {
-        super(requestType, type);
-        this.position = null;
-        this.scale = null;
-        this.name = null;
+
+    private GuiRenderRequest(Builder builder) {
+        super(builder);
+        this.position = builder.position;
+        this.scale = builder.scale;
+        this.name = builder.name;
+        this.lifeTime = builder.lifeTime;
+        this.object = builder.object;
+        this.text = builder.text;
     }
 
-    public GuiRenderRequest(RequestType requestType, ObjectType type, Vector2f position, Vector2f scale) {
-        this(requestType, type, position, scale, null);
-    }
+    public static class Builder extends RenderRequest.Builder {
 
-    public GuiRenderRequest(RequestType requestType, ObjectType type, Vector2f position, Vector2f scale, String name) {
-        super(requestType, type);
-        this.position = position;
-        this.scale = scale;
-        this.name = name;
+        private Vector2f position = new Vector2f();
+        private Vector2f scale = new Vector2f();
+        private  String name = "";
+        private float lifeTime = Float.MAX_VALUE;
+        private GUIText text = null;
+        private RenderObject object = null;
+
+        public Builder(RequestType requestType, ObjectType objectType) {
+            super(requestType, objectType);
+        }
+
+        public Builder position(Vector2f position) {
+            this.position = position;
+            return this;
+        }
+
+        public Builder scale(Vector2f scale) {
+            this.scale = scale;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder lifetime(float time) {
+            this.lifeTime = time;
+            return this;
+        }
+
+        public Builder forObject(RenderObject object) {
+            this.object = object;
+            return this;
+        }
+
+        public Builder withText(GUIText text) {
+            this.text = text;
+            return this;
+        }
+
+        @Override
+        public RenderRequest build() {
+            return new GuiRenderRequest(this);
+        }
     }
 
     @Override
     protected void handleUpdate() {
+        //TODO: Text updating
     }
 
     @Override
@@ -74,7 +121,7 @@ public class GuiRenderRequest extends RenderRequest {
                 GLFW.glfwSetCursorPos(DisplayManager.getWindow(), DisplayManager.getWidth() / 2f, DisplayManager.getHeight() / 2f);
                 logger.atInfo().log("Chest interface removed");
                 break;
-
+            //TODO: TEXT
         }
     }
 
@@ -94,8 +141,13 @@ public class GuiRenderRequest extends RenderRequest {
                 logger.atInfo().log("Rendered chest interface");
                 break;
             case GUI:
-                renderer.getGuis().add(new UIComponent(GeneratorUtil.getTextureFromCache(name),
-                        position, scale, ObjectType.GUI));
+                UIComponent gui = new UIComponent(GenerationUtil.getTextureFromCache(name),
+                        position, scale, ObjectType.GUI, lifeTime);
+                renderer.getGuis().add(gui);
+                if (text != null) {
+                    gui.setGuiText(text);
+                    renderer.loadText(text);
+                }
                 break;
             default:
         }
@@ -104,7 +156,7 @@ public class GuiRenderRequest extends RenderRequest {
     private void renderInventory() throws IOException {
         Inventory playerInventory = Game.getInstance().getPlayer().getInventory();
         playerInventory.updateSlots(position, scale);
-        renderer.getGuis().add(new UIComponent(GeneratorUtil.getTextureFromCache("inventory"),
+        renderer.getGuis().add(new UIComponent(GenerationUtil.getTextureFromCache("inventory"),
                 position, scale, ObjectType.INVENTORY));
         renderItems(playerInventory.getInventorySlots());
     }
@@ -112,7 +164,7 @@ public class GuiRenderRequest extends RenderRequest {
     private void renderChestInterface() throws IOException {
         LootableEntity lastLootable = HandlerState.getInstance().getLastLooted();
         lastLootable.updateSlots(position, scale);
-        renderer.getGuis().add(new UIComponent(GeneratorUtil.getTextureFromCache("inventory"),
+        renderer.getGuis().add(new UIComponent(GenerationUtil.getTextureFromCache("inventory"),
                 position, scale, ObjectType.CHEST));
         renderChestItems(lastLootable);
     }

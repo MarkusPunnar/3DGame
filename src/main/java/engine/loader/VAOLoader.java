@@ -16,6 +16,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -33,12 +34,12 @@ public class VAOLoader {
     private List<Integer> textures;
 
     public VAOLoader() {
-        this.VAOs = new ArrayList<>();
-        this.VBOs = new ArrayList<>();
-        this.textures = new ArrayList<>();
+        this.VAOs = Collections.synchronizedList(new ArrayList<>());
+        this.VBOs = Collections.synchronizedList(new ArrayList<>());
+        this.textures = Collections.synchronizedList(new ArrayList<>());
     }
 
-    public RawModel loadToVAO(float[] positions, int[] indices, float[] normals, float[] textureCoords) {
+    public synchronized RawModel loadToVAO(float[] positions, int[] indices, float[] normals, float[] textureCoords) {
         int vaoID = createVAO();
         VAOs.add(vaoID);
         storeIndicesInAttributeList(indices);
@@ -50,7 +51,7 @@ public class VAOLoader {
         return new RawModel(vaoID, indices.length, modelBoundingBox);
     }
 
-    public int loadToVAO(float[] positions, float[] textureCoords) {
+    public synchronized int loadToVAO(float[] positions, float[] textureCoords) {
         int vaoID = createVAO();
         VAOs.add(vaoID);
         storeDataInAttributeList(0, 2, positions);
@@ -118,7 +119,7 @@ public class VAOLoader {
         return triangles;
     }
 
-    public RawModel loadToVAO(float[] positions) {
+    public synchronized RawModel loadToVAO(float[] positions) {
         int vaoID = createVAO();
         VAOs.add(vaoID);
         storeDataInAttributeList(0, 2, positions);

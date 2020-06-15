@@ -35,10 +35,4 @@ public abstract class RenderObject {
 
     public abstract void prepareObject(Shader shader);
 
-    abstract static class Builder {
-
-        public abstract RenderObject build();
-
-        protected abstract Builder self();
-    }
 }

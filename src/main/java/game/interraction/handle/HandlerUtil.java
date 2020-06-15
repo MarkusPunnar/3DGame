@@ -4,7 +4,7 @@ import com.google.common.flogger.FluentLogger;
 import engine.DisplayManager;
 import engine.font.GUIText;
 import engine.render.ParentRenderer;
-import engine.render.request.ItemRenderRequest;
+import engine.render.request.GuiRenderRequest;
 import engine.render.request.RequestType;
 import game.object.RenderObject;
 import game.object.item.Item;
@@ -110,11 +110,17 @@ public class HandlerUtil {
             existingItem.stack(otherItem);
             GUIText newText = otherItem.getGuiText().copyWithValueChange(String.valueOf(existingItem.getAmount()));
             logger.atInfo().log("Sending requests to remove old item icons and text");
-            handlerState.registerRequest(new ItemRenderRequest(RequestType.REMOVE, ObjectType.TEXT, selectedSlot.getItem().getIcon(), selectedSlot.getItem().getGuiText()));
+            handlerState.registerRequest(new GuiRenderRequest.Builder(RequestType.REMOVE, ObjectType.TEXT)
+                    .withText(selectedSlot.getItem().getGuiText())
+                    .forObject(selectedSlot.getItem().getIcon()).build());
             existingItem.setGuiText(newText);
             setItemText(existingItem, selectedSlot.getPosition());
-            handlerState.registerRequest(new ItemRenderRequest(RequestType.REMOVE, ObjectType.ICON, otherItem.getIcon(), otherItem.getGuiText()));
-            handlerState.registerRequest(new ItemRenderRequest(RequestType.UPDATE, ObjectType.TEXT, existingItem.getIcon(), existingItem.getGuiText()));
+            handlerState.registerRequest(new GuiRenderRequest.Builder(RequestType.REMOVE, ObjectType.ICON)
+                    .withText(otherItem.getGuiText())
+                    .forObject(otherItem.getIcon()).build());
+            handlerState.registerRequest(new GuiRenderRequest.Builder(RequestType.UPDATE, ObjectType.TEXT)
+                    .withText(existingItem.getGuiText())
+                    .forObject(existingItem.getGuiText()).build());
             lastInteracted.setItem(null);
             otherItem.setGuiText(null);
         } else {

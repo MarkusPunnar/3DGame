@@ -15,13 +15,12 @@ public abstract class LootableEntity extends InteractableEntity {
     private static final float SLOT_SCALE_X = 0.048f;
     private static final float SLOT_SCALE_Y = 0.079f;
 
-
     protected Slot[] content;
     private boolean isInitialized;
 
-    protected LootableEntity(Builder builder) {
-        super(builder);
-        this.content = new Slot[builder.capacity];
+    protected LootableEntity(TexturedModel model, Vector3f position, Vector3f rotation, Vector3f scaleVector, int capacity) {
+        super(model, position, rotation, scaleVector);
+        this.content = new Slot[capacity];
         for (int i = 0; i < content.length; i++) {
             content[i] = new Slot();
         }
@@ -40,22 +39,6 @@ public abstract class LootableEntity extends InteractableEntity {
                 slotItemIcon.setScale(new Vector2f(slot.getScale().x / 1.3f, slot.getScale().y / 1.3f));
             }
         }
-    }
-
-    public abstract static class Builder extends InteractableEntity.Builder {
-
-        private int capacity = 5;
-
-        public Builder(TexturedModel texturedModel, Vector3f position) {
-            super(texturedModel, position);
-        }
-
-        public Builder capacity(int capacity) {
-            this.capacity = capacity;
-            return self();
-        }
-
-        protected abstract Builder self();
     }
 
     public Slot[] getContent() {

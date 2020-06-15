@@ -2,9 +2,10 @@ package game.object.generation.menu;
 
 import engine.font.GUIText;
 import engine.loader.VAOLoader;
-import engine.render.request.ItemRenderRequest;
+import engine.render.request.GuiRenderRequest;
 import engine.render.request.RequestType;
 import game.config.Config;
+import game.object.generation.GenerationUtil;
 import game.state.Game;
 import game.state.HandlerState;
 import game.ui.ObjectType;
@@ -14,7 +15,6 @@ import game.ui.menu.Menu;
 import game.ui.menu.MenuCache;
 import game.ui.menu.MenuType;
 import org.joml.Vector2f;
-import game.object.generation.GeneratorUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public class OptionsMenuGenerator implements MenuGenerator {
     @Override
     public List<UIComponent> generate() throws IOException {
         List<UIComponent> optionsMenuComponents = new ArrayList<>();
-        UIComponent backgroundImage = new UIComponent(GeneratorUtil.getTextureFromCache("background"),
+        UIComponent backgroundImage = new UIComponent(GenerationUtil.getTextureFromCache("background"),
                 new Vector2f(), new Vector2f(1, 1), ObjectType.BACKGROUND_IMAGE);
         optionsMenu.addStaticComponent(backgroundImage);
         optionsMenuComponents.add(backgroundImage);
@@ -68,22 +68,22 @@ public class OptionsMenuGenerator implements MenuGenerator {
         optionButtons.add(returnButton);
         //Generate texts
         GUIText shadowQuality = new GUIText.Builder("Shadow Quality")
-                .position(GeneratorUtil.fromOpenGLCoords(-0.6f, 0.3f)).fontSize(0.9f)
+                .position(GenerationUtil.fromOpenGLCoords(-0.6f, 0.3f)).fontSize(0.9f)
                 .lineLength(0.3f).centered(true).build();
         GUIText shadowLevel = new GUIText.Builder(Config.getInstance().getShadowLevel().getLevelAsString())
-                .position(GeneratorUtil.fromOpenGLCoords(-0.6f, 0.15f)).fontSize(0.6f)
+                .position(GenerationUtil.fromOpenGLCoords(-0.6f, 0.15f)).fontSize(0.6f)
                 .lineLength(0.3f).centered(true).build();
         String invertedMouseText = Config.getInstance().getInvertedMouse() == 1 ? "Off" : "On";
-        GUIText invertedMouse = new GUIText.Builder("Inverted Mouse").position(GeneratorUtil.fromOpenGLCoords(0f, 0.3f))
+        GUIText invertedMouse = new GUIText.Builder("Inverted Mouse").position(GenerationUtil.fromOpenGLCoords(0f, 0.3f))
                 .fontSize(0.9f).lineLength(0.3f).centered(true).build();
-        GUIText invertedMouseOption = new GUIText.Builder(invertedMouseText).position(GeneratorUtil.fromOpenGLCoords(0f, 0.15f))
+        GUIText invertedMouseOption = new GUIText.Builder(invertedMouseText).position(GenerationUtil.fromOpenGLCoords(0f, 0.15f))
                 .fontSize(0.6f).lineLength(0.3f).centered(true).build();
         optionsMenu.addText(shadowLevel);
         optionsMenu.addText(shadowQuality);
         optionsMenu.addText(invertedMouseOption);
         optionsMenu.addText(invertedMouse);
         //Add shadow quality increase button
-        Button increaseShadowQualityButton = new Button(GeneratorUtil.getTextureFromCache("arrow"), new Vector2f(-0.15f, 0.12f),
+        Button increaseShadowQualityButton = new Button(GenerationUtil.getTextureFromCache("arrow"), new Vector2f(-0.15f, 0.12f),
                 new Vector2f(0.025f, 0.03f));
         increaseShadowQualityButton.setClickCallback(() -> {
             Config.getInstance().changeShadowLevel(1);
@@ -94,7 +94,7 @@ public class OptionsMenuGenerator implements MenuGenerator {
         increaseShadowQualityButton.setGuiText(shadowLevel);
         optionsMenu.addButton(increaseShadowQualityButton);
         //Add shadow quality decrease button
-        Button decreaseShadowQualityButton = new Button(GeneratorUtil.getTextureFromCache("arrow"), new Vector2f(-0.46f, 0.12f),
+        Button decreaseShadowQualityButton = new Button(GenerationUtil.getTextureFromCache("arrow"), new Vector2f(-0.46f, 0.12f),
                 new Vector2f(0, 180), new Vector2f(0.025f, 0.03f));
         decreaseShadowQualityButton.setClickCallback(() -> {
             Config.getInstance().changeShadowLevel(-1);
@@ -105,7 +105,7 @@ public class OptionsMenuGenerator implements MenuGenerator {
         decreaseShadowQualityButton.setGuiText(shadowLevel);
         optionsMenu.addButton(decreaseShadowQualityButton);
         //Add inverted mouse control button
-        Button invertedMouseButton = new Button(GeneratorUtil.getTextureFromCache("arrow"), new Vector2f(0.4f, 0.12f),
+        Button invertedMouseButton = new Button(GenerationUtil.getTextureFromCache("arrow"), new Vector2f(0.4f, 0.12f),
                 new Vector2f(0.025f, 0.03f));
         invertedMouseButton.setClickCallback(() -> {
             Config config = Config.getInstance();
@@ -124,9 +124,9 @@ public class OptionsMenuGenerator implements MenuGenerator {
     private void updateText(Button button, String newValue) {
         GUIText text = button.getGuiText();
         if (text != null) {
-            HandlerState.getInstance().registerRequest(new ItemRenderRequest(RequestType.REMOVE, ObjectType.TEXT,  null, text));
+            HandlerState.getInstance().registerRequest(new GuiRenderRequest.Builder(RequestType.REMOVE, ObjectType.TEXT).withText(text).build());
             GUIText newText = text.copyWithValueChange(newValue);
-            HandlerState.getInstance().registerRequest(new ItemRenderRequest(RequestType.UPDATE, ObjectType.TEXT, null, newText));
+            HandlerState.getInstance().registerRequest(new GuiRenderRequest.Builder(RequestType.UPDATE, ObjectType.TEXT).withText(newText).build());
             optionsMenu.getMenuTexts().remove(text);
             optionsMenu.addText(newText);
         }

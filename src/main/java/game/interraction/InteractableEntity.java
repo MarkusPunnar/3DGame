@@ -10,26 +10,10 @@ public abstract class InteractableEntity extends Entity {
     protected float sinceLastInteraction;
     protected boolean isOpened;
 
-    protected InteractableEntity(Builder builder) {
-        super(builder);
+    protected InteractableEntity(TexturedModel model, Vector3f position, Vector3f rotation, Vector3f scaleVector) {
+        super(model, position, rotation, scaleVector);
         sinceLastInteraction = Float.MAX_VALUE;
-        this.isOpened = builder.isOpened;
-    }
-
-    public abstract static class Builder extends Entity.Builder {
-
-        private boolean isOpened = false;
-
-        public Builder(TexturedModel texturedModel, Vector3f position) {
-            super(texturedModel, position);
-        }
-
-        public Builder opened(boolean opened) {
-            this.isOpened = opened;
-            return self();
-        }
-
-        protected abstract Builder self();
+        this.isOpened = false;
     }
 
     public abstract void interact();

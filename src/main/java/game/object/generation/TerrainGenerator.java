@@ -13,14 +13,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TerrainGenerator implements Generator {
+public class TerrainGenerator  {
 
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-    @Override
-    public List<Terrain> generate() throws IOException {
+    public List<Terrain> generateTerrain() throws IOException {
         VAOLoader loader = Game.getInstance().getLoader();
         List<Terrain> terrains = new ArrayList<>();
+        //TODO: Async
         TerrainData test = TerrainLoader.loadTerrainModel("terrain");
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTerrainTexture("grass"));
         TerrainTexture greenTexture = new TerrainTexture(loader.loadTerrainTexture("moss"));

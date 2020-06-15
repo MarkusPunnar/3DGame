@@ -8,8 +8,7 @@ import engine.model.ModelCache;
 import engine.render.ParentRenderer;
 import engine.shader.Shader;
 import engine.texture.TextureCache;
-import game.object.generation.CampGenerator;
-import game.object.generation.DormGenerator;
+import game.object.generation.*;
 import game.ui.menu.Button;
 import game.ui.menu.Menu;
 import game.ui.UIComponent;
@@ -17,14 +16,11 @@ import game.ui.menu.MenuCache;
 import game.ui.menu.MenuType;
 import game.interraction.MousePicker;
 import game.interraction.handle.*;
-import game.object.Entity;
 import game.object.Player;
 import game.object.RenderObject;
 import game.object.env.Camera;
 import game.object.env.Light;
 import game.object.generation.menu.MainMenuGenerator;
-import game.object.generation.TavernGenerator;
-import game.object.generation.TerrainGenerator;
 import game.object.generation.menu.MenuGenerator;
 import game.object.generation.menu.OptionsMenuGenerator;
 import game.object.terrain.Terrain;
@@ -67,7 +63,7 @@ public class Game {
     private Game() {
         this.activeHandlers = new ArrayList<>();
         this.activeLights = new ArrayList<>();
-        this.activeObjects = new ArrayList<>();
+        this.activeObjects = Collections.synchronizedList(new ArrayList<>());
     }
 
     public static Game getInstance() {
@@ -123,13 +119,16 @@ public class Game {
         currentState = State.IN_GAME;
         currentMenu = null;
         activeLights.add(new Light(new Vector3f(3000, 5000, 3000), new Vector3f(1), false, null));
+        long start = System.currentTimeMillis();
         loadRenderObjects();
+        System.out.println(System.currentTimeMillis() - start);
         initGameCallbacks();
         initGameHandlers();
         playerCamera = new Camera();
         renderer.load(playerCamera);
         mousePicker.init();
         OctTree octTree = new OctTree(new BoundingBox(new Vector3f(-400, -1, -400), new Vector3f(200, 100, 200)));
+
         octTree.initTree(activeObjects);
         currentTree = octTree;
         Shader.initShadowBox();
@@ -139,22 +138,18 @@ public class Game {
     private void loadRenderObjects() throws IOException {
         TavernGenerator tavernGenerator = new TavernGenerator();
         TerrainGenerator terrainGenerator = new TerrainGenerator();
-        DormGenerator dormGenerator = new DormGenerator();
-        CampGenerator campGenerator = new CampGenerator();
         player = tavernGenerator.generatePlayer();
-        List<Entity> tavernEntities = tavernGenerator.generate();
-        List<Entity> dormEntities = dormGenerator.generate();
-        List<Entity> campEntities = campGenerator.generate();
+        EntityLoader.generateEntities("tavern");
+//        List<Entity> dormEntities = dormGenerator.generate();
+//        List<Entity> campEntities = campGenerator.generate();
         renderer.processEntity(player);
-        renderer.processEntities(tavernEntities);
-        renderer.processEntities(dormEntities);
-        renderer.processEntities(campEntities);
-        List<Terrain> terrains = terrainGenerator.generate();
+//        renderer.processEntities(dormEntities);
+//        renderer.processEntities(campEntities);
+        List<Terrain> terrains = terrainGenerator.generateTerrain();
         renderer.processTerrains(terrains);
-        activeObjects.addAll(tavernEntities);
         activeObjects.addAll(terrains);
-        activeObjects.addAll(dormEntities);
-        activeObjects.addAll(campEntities);
+//        activeObjects.addAll(dormEntities);
+//        activeObjects.addAll(campEntities);
     }
 
     private void initGameHandlers() {
@@ -208,6 +203,7 @@ public class Game {
         if (currentState != State.IN_MENU) {
             updateGame();
         }
+        updateGUIs();
         for (Handler handler : activeHandlers) {
             handler.handle();
         }
@@ -223,6 +219,18 @@ public class Game {
         mousePicker.update();
         Collections.sort(activeLights);
         renderer.updateDepthMaps(activeLights, player);
+    }
+
+    private void updateGUIs() {
+        for (UIComponent gui : new ArrayList<>(renderer.getGuis())) {
+            gui.decreaseLifetime(DisplayManager.getFrameTime());
+            if (gui.getLifetime() <= 0.0f) {
+                if (gui.getGuiText() != null) {
+                    renderer.removeText(gui.getGuiText());
+                }
+                renderer.getGuis().remove(gui);
+            }
+        }
     }
 
     public void cleanUp() {
@@ -245,10 +253,6 @@ public class Game {
 
     public MousePicker getMousePicker() {
         return mousePicker;
-    }
-
-    public List<Light> getActiveLights() {
-        return activeLights;
     }
 
     public ParentRenderer getRenderer() {
@@ -285,5 +289,9 @@ public class Game {
 
     public Light getSun() {
         return activeLights.get(0);
+    }
+
+    public List<RenderObject> getActiveObjects() {
+        return activeObjects;
     }
 }

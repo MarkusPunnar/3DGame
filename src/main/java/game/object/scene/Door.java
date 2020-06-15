@@ -1,19 +1,21 @@
 package game.object.scene;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.flogger.FluentLogger;
 import engine.font.GUIText;
 import engine.model.TexturedModel;
 import engine.render.request.GuiRenderRequest;
-import engine.render.request.ItemRenderRequest;
 import engine.render.request.RequestType;
 import game.interraction.InteractableEntity;
-import game.interraction.handle.Handler;
-import game.object.generation.GeneratorUtil;
+import game.object.generation.EntityLoader;
+import game.object.generation.GenerationUtil;
 import game.state.Game;
 import game.state.HandlerState;
 import game.ui.ObjectType;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+
+import java.util.Map;
 
 public class Door extends InteractableEntity {
 
@@ -22,50 +24,34 @@ public class Door extends InteractableEntity {
     private FacingDirection facingDirection;
     private boolean isLocked;
 
-    private Door(Builder builder) {
-        super(builder);
-        this.facingDirection = builder.facingDirection;
-        this.isLocked = builder.isLocked;
+    private Door(TexturedModel model, Vector3f position, Vector3f rotation, Vector3f scaleVector, FacingDirection direction, boolean isLocked) {
+        super(model, position, rotation, scaleVector);
+        this.facingDirection = direction;
+        this.isLocked = isLocked;
     }
 
-    public static class Builder extends InteractableEntity.Builder {
+    public static Door build(TexturedModel model, JsonNode attributeNode, Map<String, Vector3f> objectData) {
+        JsonNode positionNode = attributeNode.get("position");
+        Vector3f rotation = attributeNode.has("rotation") ? EntityLoader.getVectorFromNode(attributeNode.get("rotation")) : new Vector3f();
+        FacingDirection direction = getDirectionFromString(attributeNode.get("facing").asText());
+        boolean isLocked = attributeNode.get("locked").asBoolean();
+        Vector3f scale = objectData.containsKey("scale") ? objectData.get("scale") : new Vector3f(1);
+        return new Door(model, new Vector3f(EntityLoader.getVectorFromNode(positionNode)), rotation, scale, direction, isLocked);
+    }
 
-        private FacingDirection facingDirection = FacingDirection.WEST;
-        private boolean isLocked = false;
-
-        public Builder(TexturedModel texturedModel, Vector3f position) {
-            super(texturedModel, position);
+    private static FacingDirection getDirectionFromString(String direction) {
+        switch (direction) {
+            case "west":
+                return FacingDirection.WEST;
+            case "east":
+                return FacingDirection.EAST;
+            case "north":
+                return FacingDirection.NORTH;
+            case "south":
+                return FacingDirection.SOUTH;
         }
-
-        public Builder facing(FacingDirection direction) {
-            this.facingDirection = direction;
-            return this;
-        }
-
-        public Builder locked(boolean isLocked) {
-            this.isLocked = isLocked;
-            return this;
-        }
-
-        @Override
-        public Builder scale(Vector3f scale) {
-            super.scale(scale);
-            return this;
-        }
-
-        @Override
-        public Builder rotationY(float rotationY) {
-            super.rotationY(rotationY);
-            return this;
-        }
-
-        public Door build() {
-            return new Door(this);
-        }
-
-        public Builder self() {
-            return this;
-        }
+        logger.atWarning().log("Unknown direction %s", direction);
+        return null;
     }
 
     @Override
@@ -110,10 +96,9 @@ public class Door extends InteractableEntity {
     public void handleGui(Game state) {
         if (isLocked) {
             GUIText lockedText = new GUIText.Builder("This door seems to be locked...").centered(true)
-                    .position(GeneratorUtil.fromOpenGLCoords(-1, -0.65f)).build();
-            HandlerState.getInstance().registerRequest(new GuiRenderRequest(RequestType.ADD, ObjectType.GUI,
-                    new Vector2f(0, -0.7f), new Vector2f(0.6f, 0.1f), "slot"));
-            HandlerState.getInstance().registerRequest(new ItemRenderRequest(RequestType.ADD, ObjectType.TEXT, null, lockedText));
+                    .position(GenerationUtil.fromOpenGLCoords(-1, -0.65f)).build();
+            HandlerState.getInstance().registerRequest(new GuiRenderRequest.Builder(RequestType.ADD, ObjectType.GUI).position(new Vector2f(0, -0.7f))
+                    .scale(new Vector2f(0.6f, 0.1f)).name("slot").lifetime(1).withText(lockedText).build());
         }
     }
 }

@@ -71,7 +71,7 @@ public class ObjectLoader {
         float[] normalsArray = new float[vertices.size() * 3];
         float furthest = convertDataToArrays(vertices, textures, normals, verticesArray, texturesArray, normalsArray);
         int[] indicesArray = convertIndicesListToArray(indices);
-        logger.atInfo().log("%s game.object model was loaded successfully", fileName);
+        logger.atInfo().log("%s object model was loaded successfully", fileName);
         return new ModelData(verticesArray, texturesArray, normalsArray, indicesArray, furthest);
     }
 

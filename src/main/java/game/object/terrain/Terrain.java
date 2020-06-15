@@ -7,13 +7,14 @@ import game.object.RenderObject;
 import engine.model.RawModel;
 import engine.model.TexturedModel;
 import engine.shader.Shader;
+import game.object.generation.GenerationUtil;
 import game.ui.ObjectType;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import engine.loader.VAOLoader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import game.object.generation.GeneratorUtil;
+import game.object.generation.EntityLoader;
 import util.math.MathUtil;
 import util.math.structure.Triangle;
 
@@ -46,7 +47,7 @@ public class Terrain extends RenderObject {
         this.blendMap = blendMap;
         this.texturesBound = false;
         this.triangles = texturedModel.getRawModel().createTrianglesFromBox();
-        GeneratorUtil.setParentObject(this);
+        GenerationUtil.setParentObject(this);
     }
 
     private RawModel generateTerrain(VAOLoader loader, TerrainData data) {

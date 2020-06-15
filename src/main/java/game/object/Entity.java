@@ -1,16 +1,19 @@
 package game.object;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.flogger.FluentLogger;
 import engine.model.TexturedModel;
 import engine.shader.Shader;
+import game.object.generation.GenerationUtil;
 import game.ui.ObjectType;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import game.object.generation.GeneratorUtil;
+import game.object.generation.EntityLoader;
 import util.math.MathUtil;
 import util.math.structure.Triangle;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class Entity extends RenderObject {
@@ -23,57 +26,22 @@ public class Entity extends RenderObject {
     private Vector3f scaleVector;
     private List<Triangle> triangles;
 
-    protected Entity(Builder builder) {
-        this.texturedModel = builder.texturedModel;
-        this.position = builder.position;
-        this.rotation = builder.rotation;
-        this.scaleVector = builder.scaleVector;
+    protected Entity(TexturedModel model, Vector3f position, Vector3f rotation, Vector3f scaleVector) {
+        this.texturedModel = model;
+        this.position = position;
+        this.rotation = rotation;
+        this.scaleVector = scaleVector;
         this.triangles = texturedModel.getRawModel().createTrianglesFromBox();
-        GeneratorUtil.setParentObject(this);
+        GenerationUtil.setParentObject(this);
     }
 
-    public static class Builder extends RenderObject.Builder {
-
-        private final TexturedModel texturedModel;
-        private final Vector3f position;
-
-        private Vector3f rotation = new Vector3f();
-        private Vector3f scaleVector = new Vector3f(1);
-
-        public Builder(TexturedModel texturedModel, Vector3f position) {
-            this.texturedModel = texturedModel;
-            this.position = position;
-        }
-
-        public Builder rotation(Vector3f rotation) {
-            this.rotation = rotation;
-            return self();
-        }
-
-        public Builder rotationY(float rotationY) {
-            this.rotation.y = rotationY;
-            return self();
-        }
-
-        public Builder scale(Vector3f scale) {
-            this.scaleVector = scale;
-            return self();
-        }
-
-        public Builder scaleY(float scaleY) {
-            this.scaleVector.y = scaleY;
-            return self();
-        }
-
-        public Entity build() {
-            return new Entity(this);
-        }
-
-        @Override
-        protected Builder self() {
-            return this;
-        }
+    public static Entity build(TexturedModel model, JsonNode attributeNode, Map<String, Vector3f> objectData) {
+        JsonNode positionNode = attributeNode.get("position");
+        Vector3f rotation = attributeNode.has("rotation") ? EntityLoader.getVectorFromNode(attributeNode.get("rotation")) : new Vector3f();
+        Vector3f scale = objectData.containsKey("scale") ? objectData.get("scale") : new Vector3f(1);
+        return new Entity(model, EntityLoader.getVectorFromNode(positionNode), rotation, scale);
     }
+
 
     public void increasePosition(float dx, float dy, float dz) {
         position.x += dx;
@@ -153,7 +121,7 @@ public class Entity extends RenderObject {
             return false;
         }
         Entity entity = (Entity) other;
-        return  rotation.equals(entity.getRotation()) &&
+        return rotation.equals(entity.getRotation()) &&
                 scaleVector.equals(entity.getScaleVector()) &&
                 texturedModel.equals(entity.texturedModel) &&
                 position.equals(entity.position);

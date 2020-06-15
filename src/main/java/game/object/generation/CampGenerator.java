@@ -9,21 +9,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CampGenerator implements Generator {
-    @Override
-    public List<Entity> generate() throws IOException {
-        List<Entity> campEntities = new ArrayList<>();
-//        campEntities.addAll(generateWall());
-        return campEntities;
-    }
+public class CampGenerator {
 
-    private List<Entity> generateWall() throws IOException {
-        List<Entity> spikes = new ArrayList<>();
-        List<Vector2f> ellipsePoints = GeneratorUtil.generateEllipsePoints(1000, 420, 450);
-        TexturedModel spikeModel = GeneratorUtil.getTexturedModel("spike");
-        for (Vector2f point : ellipsePoints) {
-            spikes.add(new Entity.Builder(spikeModel, new Vector3f(point.x - 120, 0, point.y - 150)).build());
-        }
-        return spikes;
-    }
+//    public List<Entity> generate() throws IOException {
+//        List<Entity> campEntities = new ArrayList<>();
+//        campEntities.addAll(generateWall());
+//        return campEntities;
+//    }
+//
+//    private List<Entity> generateWall() throws IOException {
+//        List<Entity> spikes = new ArrayList<>();
+//        List<Vector2f> ellipsePoints = GenerationUtil.generateEllipsePoints(1000, 420, 450);
+//        TexturedModel spikeModel = EntityLoader.getTexturedModel("spike");
+//        for (Vector2f point : ellipsePoints) {
+//            spikes.add(new Entity.Builder(spikeModel, new Vector3f(point.x - 120, 0, point.y - 150)).build());
+//        }
+//        return spikes;
+//    }
 }

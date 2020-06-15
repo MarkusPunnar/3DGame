@@ -1,10 +1,12 @@
 package game.object.scene;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.flogger.FluentLogger;
 import engine.model.TexturedModel;
 import engine.render.request.GuiRenderRequest;
 import engine.render.request.RequestType;
 import game.interraction.LootableEntity;
+import game.object.generation.EntityLoader;
 import game.object.item.Item;
 import game.object.item.Slot;
 import game.state.Game;
@@ -13,6 +15,8 @@ import game.ui.ObjectType;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.util.Map;
+
 public class Chest extends LootableEntity {
 
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
@@ -20,49 +24,18 @@ public class Chest extends LootableEntity {
     private TexturedModel openModel;
     private TexturedModel closedModel;
 
-    public Chest(Builder builder) {
-        super(builder);
-        this.openModel = builder.openModel;
-        this.closedModel = builder.closedModel;
+    public Chest(TexturedModel model, Vector3f position, Vector3f rotation, Vector3f scaleVector, TexturedModel secondaryModel, int capacity) {
+        super(model, position, rotation, scaleVector, capacity);
+        this.openModel = secondaryModel;
+        this.closedModel = model;
     }
 
-    public static class Builder extends LootableEntity.Builder {
-
-        private final TexturedModel openModel;
-        private final TexturedModel closedModel;
-
-        public Builder(TexturedModel closedModel, Vector3f position, TexturedModel openModel) {
-            super(closedModel, position);
-            this.openModel = openModel;
-            this.closedModel = closedModel;
-        }
-
-        @Override
-        public Builder capacity(int capacity) {
-            super.capacity(capacity);
-            return this;
-        }
-
-        @Override
-        public Builder rotationY(float rotationY) {
-            super.rotationY(rotationY);
-            return this;
-        }
-
-        @Override
-        public Builder scale(Vector3f scale) {
-            super.scale(scale);
-            return this;
-        }
-
-        public Chest build() {
-            return new Chest(this);
-        }
-
-        @Override
-        protected Builder self() {
-            return this;
-        }
+    public static Chest build(TexturedModel closedModel, TexturedModel openModel, JsonNode attributeNode, Map<String, Vector3f> objectData) {
+        JsonNode positionNode = attributeNode.get("position");
+        Vector3f rotation = attributeNode.has("rotation") ? EntityLoader.getVectorFromNode(attributeNode.get("rotation")) : new Vector3f();
+        int capacity = attributeNode.get("capacity").asInt();
+        Vector3f scale = objectData.containsKey("scale") ? objectData.get("scale") : new Vector3f(1);
+        return new Chest(closedModel, new Vector3f(EntityLoader.getVectorFromNode(positionNode)), rotation, scale, openModel, capacity);
     }
 
     @Override
@@ -88,11 +61,13 @@ public class Chest extends LootableEntity {
         handlerState.setLastLooted(this);
         logger.atInfo().log("Handling GUI changes for object of type %s", getClass().getSimpleName());
         if (isOpened) {
-            handlerState.registerRequest(new GuiRenderRequest(RequestType.ADD, ObjectType.INVENTORY, new Vector2f(-0.55f, -0.2f), new Vector2f(1f, 1.2f)));
-            handlerState.registerRequest(new GuiRenderRequest(RequestType.ADD, ObjectType.CHEST, new Vector2f(0.45f, -0.2f), new Vector2f(1f, 1.2f)));
+            handlerState.registerRequest(new GuiRenderRequest.Builder(RequestType.ADD, ObjectType.INVENTORY).position(new Vector2f(-0.55f, -0.2f))
+                    .scale(new Vector2f(1f, 1.2f)).build());
+            handlerState.registerRequest(new GuiRenderRequest.Builder(RequestType.ADD, ObjectType.CHEST).position(new Vector2f(0.45f, -0.2f))
+                    .scale(new Vector2f(1f, 1.2f)).build());
         } else {
-            handlerState.registerRequest(new GuiRenderRequest(RequestType.REMOVE, ObjectType.INVENTORY));
-            handlerState.registerRequest(new GuiRenderRequest(RequestType.REMOVE, ObjectType.CHEST));
+            handlerState.registerRequest(new GuiRenderRequest.Builder(RequestType.REMOVE, ObjectType.INVENTORY).build());
+            handlerState.registerRequest(new GuiRenderRequest.Builder(RequestType.REMOVE, ObjectType.CHEST).build());
         }
     }
 

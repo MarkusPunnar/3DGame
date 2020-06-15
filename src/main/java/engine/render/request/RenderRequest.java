@@ -8,14 +8,14 @@ import java.io.IOException;
 
 public abstract class RenderRequest {
 
-    private RequestType requestType;
-    private ObjectType objectType;
+    private final RequestType requestType;
+    private final ObjectType objectType;
 
     protected ParentRenderer renderer;
 
-    public RenderRequest(RequestType requestType, ObjectType objectType) {
-        this.requestType = requestType;
-        this.objectType = objectType;
+    protected RenderRequest(Builder builder) {
+        this.requestType = builder.requestType;
+        this.objectType = builder.objectType;
         this.renderer = Game.getInstance().getRenderer();
     }
 
@@ -39,6 +39,19 @@ public abstract class RenderRequest {
     protected abstract void handleRemove();
 
     protected abstract void handleAdd() throws IOException;
+
+    abstract static class Builder {
+
+        private final RequestType requestType;
+        private final ObjectType objectType;
+
+        public Builder(RequestType requestType, ObjectType objectType) {
+            this.requestType = requestType;
+            this.objectType = objectType;
+        }
+
+        public abstract RenderRequest build();
+    }
 
     public RequestType getRequestType() {
         return requestType;
